@@ -95,7 +95,9 @@ class ChatHandler
         bool ParseCommands(const char* text);
         ChatCommand const* FindCommand(char const* text);
 
-        bool isValidChatMessage(const char* message) const;
+        static bool HasEscapeSequences(const char* message);
+        static bool CheckEscapeSequences(const char* message);
+
         bool HasSentErrorMessage() const { return sentErrorMessage;}
 
         /**
@@ -242,6 +244,9 @@ class ChatHandler
         bool HandleCharacterRenameCommand(char* args);
         bool HandleCharacterReputationCommand(char* args);
         bool HandleCharacterTitlesCommand(char* args);
+
+        bool HandleChannelListCommand(char* args);
+        bool HandleChannelStaticCommand(char* args);
 
         bool HandleDebugAnimCommand(char* args);
         bool HandleDebugArenaCommand(char* args);
