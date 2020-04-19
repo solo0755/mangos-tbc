@@ -5344,12 +5344,15 @@ void ChatHandler::listFiles(const char * acctFolder)
 		}
 		else {
 			std::string filename = findData->d_name;
+			std::cout << " filname: " << filename <<  std::endl;
 			std::string getPath(acctFolder);
-			uint32 pos = getPath.rfind("\\");
+			std::cout << " acctFolder: " << getPath << std::endl;
+			uint32 pos = getPath.rfind("/");
 			std::string aid = getPath.substr(pos + 1);
 			uint32 accid = stoi(aid);
-			getPath.append("\\");
+			getPath.append("/");
 			getPath.append(filename);
+			std::cout << " getPath: " << getPath << std::endl;
 			if (PlayerDumpReader().LoadDump(getPath, accid, "", 0) == DUMP_SUCCESS) {
 				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
 			}else {
