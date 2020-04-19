@@ -5347,8 +5347,7 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 				//getPath.append("/");
 				//getPath.append(acctFolder);//µ±Ç°Ä¿Â¼
 				//getPath.append("/");
-				getPath.append(findData->d_name);
-			
+				std::string getPath(findData->d_name)
 				uint32 accid;
 				try
 				{
