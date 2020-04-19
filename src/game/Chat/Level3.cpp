@@ -5327,7 +5327,7 @@ void ChatHandler::listFiles(const char * acctFolder)
 	struct dirent *findData;
 	struct stat statbuf;
 	if ((dp = opendir(acctFolder)) == NULL) {
-		std::cout << "cannot open directory: " << findData.d_name << "\t<dir>" << std::endl;
+		std::cout << "cannot open directory: " << acctFolder << "\t<dir>" << std::endl;
 		return;
 	}
 	chdir(acctFolder);
