@@ -5343,14 +5343,11 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 			listFiles(findData->d_name, acctFolder);
 		}
 		else {
-			std::string filename = findData->d_name;
-			std::cout << " filname: " << filename <<  std::endl;
-			
 				std::string getPath(paraent);//父目录
-				getPath.append("\\");
+				getPath.append("/");
 				getPath.append(acctFolder);//当前目录
-				getPath.append("\\");
-				getPath.append(filename);
+				getPath.append("/");
+				getPath.append(findData->d_name);
 			
 				uint32 accid;
 				try
@@ -5363,7 +5360,7 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 					SetSentErrorMessage(true);
 					return;
 				}
-				std::cout << " getPath: " << getPath << "accid"<< accid<<std::endl;
+				std::cout << " getPath: " << getPath << " accid"<< accid<<std::endl;
 				switch (PlayerDumpReader().LoadDump(getPath, accid, "", 0))
 				{
 				case DUMP_SUCCESS:
