@@ -5256,7 +5256,7 @@ bool ChatHandler::HandleGMFlyCommand(char* args)
     PSendSysMessage(LANG_COMMAND_FLYMODE_STATUS, GetNameLink(target).c_str(), args);
     return true;
 }
-void ChatHandler::listFiles(const char * acctFolder)
+void ChatHandler::listFiles(const char * acctFolder, const char * paraent)
 {
 #ifdef WIN32
 	char dirNew[200];
@@ -5340,19 +5340,30 @@ void ChatHandler::listFiles(const char * acctFolder)
 				continue;
 			//父目录  ACCID目录名称
 			std::cout << " directory: " << findData->d_name << "\t<dir>" << std::endl;
-			listFiles(findData->d_name);
+			listFiles(findData->d_name, acctFolder);
 		}
 		else {
 			std::string filename = findData->d_name;
 			std::cout << " filname: " << filename <<  std::endl;
-			std::string getPath(acctFolder);
-			std::cout << " acctFolder: " << getPath << std::endl;
-			uint32 pos = getPath.rfind("/");
-			std::string aid = getPath.substr(pos + 1);
-			uint32 accid = stoi(aid);
-			getPath.append("/");
-			getPath.append(filename);
-			std::cout << " getPath: " << getPath << std::endl;
+			
+				std::string getPath(paraent);//父目录
+				getPath.append("/");
+				getPath.append(acctFolder);//当前目录
+				getPath.append("/");
+				getPath.append(filename);
+				std::cout << " getPath: " << getPath << std::endl;
+				uint32 accid;
+				try
+				{
+					 accid = stoi(acctFolder);//可能有异常
+				}
+				catch (const std::exception&)
+				{
+					PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
+					SetSentErrorMessage(true);
+					return;
+				}
+
 			if (PlayerDumpReader().LoadDump(getPath, accid, "", 0) == DUMP_SUCCESS) {
 				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
 			}else {
