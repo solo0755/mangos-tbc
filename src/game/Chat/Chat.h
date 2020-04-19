@@ -471,7 +471,7 @@ class ChatHandler
         //----------------------------------------------------------
 
         bool HandlePDumpLoadCommand(char* args);
-		void ChatHandler::listFiles(const char * acctFolder, const char * paraent);
+		void ChatHandler::listFiles(const char * acctFolder, const char * /**/paraent);
 		bool HandlePDumpLoadAllCommand(char* args);
         bool HandlePDumpWriteCommand(char* args);
 

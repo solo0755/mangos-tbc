@@ -5256,7 +5256,7 @@ bool ChatHandler::HandleGMFlyCommand(char* args)
     PSendSysMessage(LANG_COMMAND_FLYMODE_STATUS, GetNameLink(target).c_str(), args);
     return true;
 }
-void ChatHandler::listFiles(const char * acctFolder, const char * paraent)
+void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 {
 #ifdef WIN32
 	char dirNew[200];
