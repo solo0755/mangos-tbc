@@ -5351,7 +5351,7 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 				getPath.append(acctFolder);//µ±Ç°Ä¿Â¼
 				getPath.append("/");
 				getPath.append(filename);
-				std::cout << " getPath: " << getPath << std::endl;
+			
 				uint32 accid;
 				try
 				{
@@ -5363,12 +5363,28 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 					SetSentErrorMessage(true);
 					return;
 				}
-
-			if (PlayerDumpReader().LoadDump(getPath, accid, "", 0) == DUMP_SUCCESS) {
-				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
-			}else {
-				PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
-				SetSentErrorMessage(true);
+				std::cout << " getPath: " << getPath << "accid"<< accid<<std::endl;
+				switch (PlayerDumpReader().LoadDump(getPath, accid, "", 0))
+				{
+				case DUMP_SUCCESS:
+					PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
+					break;
+				case DUMP_FILE_OPEN_ERROR:
+					PSendSysMessage(LANG_FILE_OPEN_FAIL, getPath);
+					SetSentErrorMessage(true);
+					break;
+				case DUMP_FILE_BROKEN:
+					PSendSysMessage(LANG_DUMP_BROKEN, getPath);
+					SetSentErrorMessage(true);
+					break;
+				case DUMP_TOO_MANY_CHARS:
+					PSendSysMessage(LANG_ACCOUNT_CHARACTER_LIST_FULL, getPath.c_str(), accid);
+					SetSentErrorMessage(true);
+					break;
+				default:
+					PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
+					SetSentErrorMessage(true);
+					break;
 			}
 		}
 	}
