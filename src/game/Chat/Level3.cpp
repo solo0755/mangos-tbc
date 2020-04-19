@@ -57,7 +57,14 @@
 #include "Server/SQLStorages.h"
 #include "Loot/LootMgr.h"
 #include "World/WorldState.h"
+#ifdef _WIN32
 #include <io.h>
+#else
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#endif
 
 static uint32 ahbotQualityIds[MAX_AUCTION_QUALITY] =
 {
@@ -5251,6 +5258,7 @@ bool ChatHandler::HandleGMFlyCommand(char* args)
 }
 void ChatHandler::listFiles(const char * acctFolder)
 {
+#ifdef WIN32
 	char dirNew[200];
 	strcpy(dirNew, acctFolder);
 	strcat(dirNew, "\\*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
@@ -5289,22 +5297,22 @@ void ChatHandler::listFiles(const char * acctFolder)
 			sLog.outString(">> Loaded %s %d", getPath.c_str(), accid);
 			switch (PlayerDumpReader().LoadDump(getPath, accid, "", 0))
 			{
-				case DUMP_SUCCESS:
+			case DUMP_SUCCESS:
 				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
 				break;
-				case DUMP_FILE_OPEN_ERROR:
+			case DUMP_FILE_OPEN_ERROR:
 				PSendSysMessage(LANG_FILE_OPEN_FAIL, getPath);
 				SetSentErrorMessage(true);
 				break;
-				case DUMP_FILE_BROKEN:
+			case DUMP_FILE_BROKEN:
 				PSendSysMessage(LANG_DUMP_BROKEN, getPath);
 				SetSentErrorMessage(true);
 				break;
-				case DUMP_TOO_MANY_CHARS:
+			case DUMP_TOO_MANY_CHARS:
 				PSendSysMessage(LANG_ACCOUNT_CHARACTER_LIST_FULL, getPath.c_str(), accid);
 				SetSentErrorMessage(true);
 				break;
-				default:
+			default:
 				PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
 				SetSentErrorMessage(true);
 				break;
@@ -5313,6 +5321,47 @@ void ChatHandler::listFiles(const char * acctFolder)
 	} while (_findnext(handle, &findData) == 0);
 
 	_findclose(handle);    // 关闭搜索句柄
+
+#else //Linux文件遍历方法
+	DIR *dp;
+	struct dirent *findData;
+	struct stat statbuf;
+	if ((dp = opendir(acctFolder)) == NULL) {
+		std::cout << "cannot open directory: " << findData.name << "\t<dir>" << endl;
+		return;
+	}
+	chdir(acctFolder);
+	while ((findData = readdir(dp)) != NULL) {
+		lstat(findData->d_name, &statbuf);
+		if (S_ISDIR(statbuf.st_mode)) {
+
+			if (strcmp(".", findData->d_name) == 0 ||
+				strcmp("..", findData->d_name) == 0)
+				continue;
+			//父目录  ACCID目录名称
+			std::cout << " directory: " << findData->d_name << "\t<dir>" << endl;
+			listFiles(findData->d_name);
+		}
+		else {
+			string filename = findData->d_name;
+			std::string getPath(acctFolder);
+			uint32 pos = getPath.rfind("\\");
+			std::string aid = getPath.substr(pos + 1);
+			uint32 accid = stoi(aid);
+			getPath.append("\\");
+			getPath.append(findData.d_name);
+			if (PlayerDumpReader().LoadDump(getPath, accid, "", 0) == DUMP_SUCCESS) {
+				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
+			}else {
+				PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
+				SetSentErrorMessage(true);
+			}
+		}
+	}
+	chdir("..");
+	closedir(dp);
+#endif
+
 }
 bool ChatHandler::HandlePDumpLoadAllCommand(char* args) {
 	listFiles("dump");
