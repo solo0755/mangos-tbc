@@ -5343,10 +5343,10 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 			listFiles(findData->d_name, acctFolder);
 		}
 		else {
-				std::string getPath(paraent);//父目录
-				getPath.append("/");
-				getPath.append(acctFolder);//当前目录
-				getPath.append("/");
+				//std::string getPath(paraent);//父目录
+				//getPath.append("/");
+				//getPath.append(acctFolder);//当前目录
+				//getPath.append("/");
 				getPath.append(findData->d_name);
 			
 				uint32 accid;
