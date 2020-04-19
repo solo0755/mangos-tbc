@@ -57,6 +57,7 @@
 #include "Server/SQLStorages.h"
 #include "Loot/LootMgr.h"
 #include "World/WorldState.h"
+#include <io.h>
 
 static uint32 ahbotQualityIds[MAX_AUCTION_QUALITY] =
 {
@@ -5248,7 +5249,76 @@ bool ChatHandler::HandleGMFlyCommand(char* args)
     PSendSysMessage(LANG_COMMAND_FLYMODE_STATUS, GetNameLink(target).c_str(), args);
     return true;
 }
+void ChatHandler::listFiles(const char * acctFolder)
+{
+	char dirNew[200];
+	strcpy(dirNew, acctFolder);
+	strcat(dirNew, "\\*.*");    // 在目录后面加上"\\*.*"进行第一次搜索
 
+	intptr_t handle;
+	_finddata_t findData;
+
+	handle = _findfirst(dirNew, &findData);
+	if (handle == -1)        // 检查是否成功
+		return;
+
+	do
+	{
+		if (findData.attrib & _A_SUBDIR)
+		{
+			if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
+				continue;
+
+			std::cout << findData.name << "\t<dir>\n";
+
+			// 在目录后面加上"\\"和搜索到的目录名进行下一次搜索
+			strcpy(dirNew, acctFolder);
+			strcat(dirNew, "\\");
+			strcat(dirNew, findData.name);
+
+			listFiles(dirNew);
+		}
+		else {
+			std::cout << findData.name << "\t" << findData.size << " bytes.\n";
+			std::string getPath(acctFolder);
+			uint32 pos = getPath.rfind("\\");
+			std::string aid = getPath.substr(pos + 1);
+			uint32 accid = stoi(aid);
+			getPath.append("\\");
+			getPath.append(findData.name);
+			sLog.outString(">> Loaded %s %d", getPath.c_str(), accid);
+			switch (PlayerDumpReader().LoadDump(getPath, accid, "", 0))
+			{
+				case DUMP_SUCCESS:
+				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
+				break;
+				case DUMP_FILE_OPEN_ERROR:
+				PSendSysMessage(LANG_FILE_OPEN_FAIL, getPath);
+				SetSentErrorMessage(true);
+				break;
+				case DUMP_FILE_BROKEN:
+				PSendSysMessage(LANG_DUMP_BROKEN, getPath);
+				SetSentErrorMessage(true);
+				break;
+				case DUMP_TOO_MANY_CHARS:
+				PSendSysMessage(LANG_ACCOUNT_CHARACTER_LIST_FULL, getPath.c_str(), accid);
+				SetSentErrorMessage(true);
+				break;
+				default:
+				PSendSysMessage(LANG_COMMAND_IMPORT_FAILED);
+				SetSentErrorMessage(true);
+				break;
+			}
+		}
+	} while (_findnext(handle, &findData) == 0);
+
+	_findclose(handle);    // 关闭搜索句柄
+}
+bool ChatHandler::HandlePDumpLoadAllCommand(char* args) {
+	listFiles("dump");
+
+	return true;
+}
 bool ChatHandler::HandlePDumpLoadCommand(char* args)
 {
     char* file = ExtractQuotedOrLiteralArg(&args);

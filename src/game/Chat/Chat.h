@@ -471,6 +471,8 @@ class ChatHandler
         //----------------------------------------------------------
 
         bool HandlePDumpLoadCommand(char* args);
+		void listFiles(const char * acctFolder);
+		bool HandlePDumpLoadAllCommand(char* args);
         bool HandlePDumpWriteCommand(char* args);
 
         bool HandlePoolListCommand(char* args);
