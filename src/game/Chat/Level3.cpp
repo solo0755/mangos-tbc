@@ -5327,7 +5327,7 @@ void ChatHandler::listFiles(const char * acctFolder)
 	struct dirent *findData;
 	struct stat statbuf;
 	if ((dp = opendir(acctFolder)) == NULL) {
-		std::cout << "cannot open directory: " << findData.name << "\t<dir>" << endl;
+		std::cout << "cannot open directory: " << findData.d_name << "\t<dir>" << std::endl;
 		return;
 	}
 	chdir(acctFolder);
@@ -5339,17 +5339,17 @@ void ChatHandler::listFiles(const char * acctFolder)
 				strcmp("..", findData->d_name) == 0)
 				continue;
 			//¸¸Ä¿Â¼  ACCIDÄ¿Â¼Ãû³Æ
-			std::cout << " directory: " << findData->d_name << "\t<dir>" << endl;
+			std::cout << " directory: " << findData->d_name << "\t<dir>" << std::endl;
 			listFiles(findData->d_name);
 		}
 		else {
-			string filename = findData->d_name;
+			std::string filename = findData->d_name;
 			std::string getPath(acctFolder);
 			uint32 pos = getPath.rfind("\\");
 			std::string aid = getPath.substr(pos + 1);
 			uint32 accid = stoi(aid);
 			getPath.append("\\");
-			getPath.append(findData.d_name);
+			getPath.append(filename);
 			if (PlayerDumpReader().LoadDump(getPath, accid, "", 0) == DUMP_SUCCESS) {
 				PSendSysMessage(LANG_COMMAND_IMPORT_SUCCESS);
 			}else {
