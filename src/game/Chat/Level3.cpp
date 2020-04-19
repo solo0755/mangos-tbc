@@ -5355,7 +5355,7 @@ void ChatHandler::listFiles(const char * acctFolder, const char * paraent="")
 				uint32 accid;
 				try
 				{
-					 accid = stoi(acctFolder);//可能有异常
+					 accid = std::stoi(acctFolder);//可能有异常
 				}
 				catch (const std::exception&)
 				{
