@@ -474,6 +474,12 @@ bool ChatHandler::HandleAccountOnlineListCommand(char* args)
     return ShowAccountListHelper(result, &limit);
 }
 
+bool ChatHandler::HandleAccountLoadAllCommand(char* args) {
+
+	sAccountMgr.LoadOldToNeW("test", "test");
+	PSendSysMessage(LANG_ACCOUNT_CREATED, "loadTest");
+	return true;
+}
 /// Create an account
 bool ChatHandler::HandleAccountCreateCommand(char* args)
 {

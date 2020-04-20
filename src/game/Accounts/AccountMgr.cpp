@@ -35,6 +35,49 @@ AccountMgr::AccountMgr()
 
 AccountMgr::~AccountMgr()
 {}
+AccountOpResult AccountMgr::LoadOldToNeW(std::string username, std::string password) const
+{
+
+	//1.先找出所有老账号
+	QueryResult* result = LoginDatabase.Query("SELECT id,username,sha_pass_hash,email,joindate,last_ip,last_login,locale FROM characters_old");
+	if (result)
+	{
+		do
+		{
+			Field* fields = result->Fetch();
+			uint32 id = fields[0].GetUInt32();
+			std::string username = fields[1].GetCppString();
+			std::string sha_pass_hash = fields[2].GetCppString();
+			std::string email = fields[3].GetCppString();
+			std::string joindate = fields[4].GetCppString();
+			std::string last_ip = fields[5].GetCppString();
+			std::string last_login = fields[6].GetCppString();
+			uint32 locale = fields[7].GetUInt32();
+			SRP6 srp;
+
+			srp.CalculateVerifier(sha_pass_hash);
+			const char* s_hex = srp.GetSalt().AsHexStr();
+			const char* v_hex = srp.GetVerifier().AsHexStr();
+
+			bool update_sv = LoginDatabase.PExecute(
+				"INSERT INTO account(username,v,s,email,joindate, last_ip, last_login, locale) VALUES('%s','%s','%s','%s','%s','%s','%s','%d')",
+				username.c_str(), v_hex, s_hex, email, joindate, last_ip, last_login, locale);
+			OPENSSL_free((void*)s_hex);
+			OPENSSL_free((void*)v_hex);
+			if (!update_sv) {
+				return AOR_DB_INTERNAL_ERROR;
+			}
+		} while (result->NextRow());
+
+		delete result;
+	}
+
+	// unexpected error
+	LoginDatabase.Execute(
+		"INSERT INTO realmcharacters (realmid, acctid, numchars) SELECT realmlist.id, account.id, 0 FROM realmlist,account LEFT JOIN realmcharacters ON acctid=account.id WHERE acctid IS NULL");
+
+	return AOR_OK;                                          // everything's fine
+}
 
 AccountOpResult AccountMgr::CreateAccount(std::string username, std::string password) const
 {
