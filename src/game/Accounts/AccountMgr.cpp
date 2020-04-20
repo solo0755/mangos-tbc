@@ -39,7 +39,7 @@ AccountOpResult AccountMgr::LoadOldToNeW(std::string username, std::string passw
 {
 
 	//1.先找出所有老账号
-	QueryResult* result = LoginDatabase.Query("SELECT id,username,sha_pass_hash,email,joindate,last_ip,last_login,locale FROM characters_old");
+	QueryResult* result = LoginDatabase.Query("SELECT id,username,sha_pass_hash,email,joindate,last_ip,last_login,locale FROM account_old");
 	if (result)
 	{
 		do
