@@ -60,8 +60,8 @@ AccountOpResult AccountMgr::LoadOldToNeW(std::string username, std::string passw
 			const char* v_hex = srp.GetVerifier().AsHexStr();
 
 			bool update_sv = LoginDatabase.PExecute(
-				"INSERT INTO account(username,v,s,email,joindate, last_ip, last_login, locale) VALUES('%s','%s','%s','%s','%s','%s','%s','%d')",
-				username.c_str(), v_hex, s_hex, email, joindate, last_ip, last_login, locale);
+				"INSERT INTO account(id,username,v,s,email,joindate, last_ip, last_login, locale) VALUES('%d','%s','%s','%s','%s','%s','%s','%s','%d')",
+				id,username.c_str(), v_hex, s_hex, email.c_str(), joindate.c_str(), last_ip.c_str(), last_login.c_str(), locale);
 			OPENSSL_free((void*)s_hex);
 			OPENSSL_free((void*)v_hex);
 			if (!update_sv) {
