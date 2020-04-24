@@ -486,6 +486,7 @@ bool ChatHandler::HandleAccountCreateCommand(char* args)
     ///- %Parse the command line arguments
     char* szAcc = ExtractQuotedOrLiteralArg(&args);
     char* szPassword = ExtractQuotedOrLiteralArg(&args);
+	char* email = ExtractQuotedOrLiteralArg(&args);
     if (!szAcc || !szPassword)
         return false;
 
@@ -496,9 +497,9 @@ bool ChatHandler::HandleAccountCreateCommand(char* args)
     AccountOpResult result;
     uint32 expansion = 0;
     if (ExtractUInt32(&args, expansion))
-        result = sAccountMgr.CreateAccount(account_name, password, expansion);
+        result = sAccountMgr.CreateAccount(account_name, password, email,expansion);
     else
-        result = sAccountMgr.CreateAccount(account_name, password);
+        result = sAccountMgr.CreateAccount(account_name, password, email);
     switch (result)
     {
         case AOR_OK:

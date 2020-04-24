@@ -79,7 +79,7 @@ AccountOpResult AccountMgr::LoadOldToNeW(std::string username, std::string passw
 	return AOR_OK;                                          // everything's fine
 }
 
-AccountOpResult AccountMgr::CreateAccount(std::string username, std::string password) const
+AccountOpResult AccountMgr::CreateAccount(std::string username, std::string password, std::string email) const
 {
     if (utf8length(username) > MAX_ACCOUNT_STR)
         return AOR_NAME_TOO_LONG;                           // username's too long
@@ -99,8 +99,8 @@ AccountOpResult AccountMgr::CreateAccount(std::string username, std::string pass
     const char* v_hex = srp.GetVerifier().AsHexStr();
 
     bool update_sv = LoginDatabase.PExecute(
-        "INSERT INTO account(username,v,s,joindate) VALUES('%s','%s','%s',NOW())",
-            username.c_str(), v_hex, s_hex);
+        "INSERT INTO account(username,v,s,email,joindate) VALUES('%s','%s','%s','%s',NOW())",
+            username.c_str(), v_hex, s_hex, email.c_str());
 
     OPENSSL_free((void*)s_hex);
     OPENSSL_free((void*)v_hex);
@@ -113,38 +113,40 @@ AccountOpResult AccountMgr::CreateAccount(std::string username, std::string pass
     return AOR_OK;                                          // everything's fine
 }
 
-AccountOpResult AccountMgr::CreateAccount(std::string username, std::string password, uint32 expansion) const
+AccountOpResult AccountMgr::CreateAccount(std::string username, std::string password, std::string email, uint32 expansion) const
 {
-    if (utf8length(username) > MAX_ACCOUNT_STR)
-        return AOR_NAME_TOO_LONG;                           // username's too long
+	if (utf8length(username) > MAX_ACCOUNT_STR)
+		return AOR_NAME_TOO_LONG;                           // username's too long
 
-    normalizeString(username);
-    normalizeString(password);
+	normalizeString(username);
+	normalizeString(password);
 
-    if (GetId(username))
-    {
-        return AOR_NAME_ALREADY_EXIST;                       // username does already exist
-    }
+	if (GetId(username))
+	{
+		return AOR_NAME_ALREADY_EXIST;                       // username does already exist
+	}
 
-    SRP6 srp;
+	SRP6 srp;
 
-    srp.CalculateVerifier(CalculateShaPassHash(username, password));
-    const char* s_hex = srp.GetSalt().AsHexStr();
-    const char* v_hex = srp.GetVerifier().AsHexStr();
+	srp.CalculateVerifier(CalculateShaPassHash(username, password));
+	const char* s_hex = srp.GetSalt().AsHexStr();
+	const char* v_hex = srp.GetVerifier().AsHexStr();
 
-    bool update_sv = LoginDatabase.PExecute(
-        "INSERT INTO account(username,v,s,joindate,expansion) VALUES('%s','%s','%s',NOW(), %u)",
-            username.c_str(), v_hex, s_hex, expansion);
+	bool update_sv = LoginDatabase.PExecute(
+		"INSERT INTO account(username,v,s,email,joindate,expansion) VALUES('%s','%s','%s','%s',NOW(), %u)",
+		username.c_str(), v_hex, s_hex, email.c_str(),expansion);
 
-    OPENSSL_free((void*)s_hex);
-    OPENSSL_free((void*)v_hex);
+	OPENSSL_free((void*)s_hex);
+	OPENSSL_free((void*)v_hex);
 
-    if (!update_sv)
-        return AOR_DB_INTERNAL_ERROR;                       // unexpected error
-    LoginDatabase.Execute("INSERT INTO realmcharacters (realmid, acctid, numchars) SELECT realmlist.id, account.id, 0 FROM realmlist,account LEFT JOIN realmcharacters ON acctid=account.id WHERE acctid IS NULL");
+	if (!update_sv)
+		return AOR_DB_INTERNAL_ERROR;                       // unexpected error
+	LoginDatabase.Execute("INSERT INTO realmcharacters (realmid, acctid, numchars) SELECT realmlist.id, account.id, 0 FROM realmlist,account LEFT JOIN realmcharacters ON acctid=account.id WHERE acctid IS NULL");
 
-    return AOR_OK;                                          // everything's fine
+	return AOR_OK;                                          // everything's fine
 }
+
+
 
 AccountOpResult AccountMgr::DeleteAccount(uint32 accid) const
 {
