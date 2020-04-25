@@ -1,4 +1,4 @@
-/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
+ï»¿/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -258,7 +258,7 @@ bool check(Player *player, bool modify) {
 	for (uint32 id = 0; id<NUM_BREATHS; id++) {
 		const initClazz clzz = all[id];
 		if (clzz.clazz>0 && player->getClass() == clzz.clazz) {
-			//¼ì²é¼¼ÄÜ
+			//æ£€æŸ¥æŠ€èƒ½
 			const uint32* spells = clzz.checkSpells;
 			while (spells != nullptr&&*spells>0) {
 				if (!player->HasSpell(*spells)) {
@@ -272,7 +272,7 @@ bool check(Player *player, bool modify) {
 				spells++;
 			}
 
-			//¼ì²éÎïÆ·
+			//æ£€æŸ¥ç‰©å“
 			const uint32* items = clzz.checkItems;
 			while (items != nullptr&&*items>0) {
 				if (!player->HasItemCount(*items, 1, true)) {
@@ -285,17 +285,17 @@ bool check(Player *player, bool modify) {
 							Item* item = player->StoreNewItem(dest, *items, true);
 							//player->SendNewItem(item, 1, false, true);
 							player->SendNewItem(item, 1, true, false);
-							ChatHandler(player).PSendSysMessage( u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖÐ", item->GetProto()->Name1);
+							ChatHandler(player).PSendSysMessage( u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 						}
 						else
 						{
 							player->SendEquipError(msg, nullptr, nullptr, *items);
-							ChatHandler(player).PSendSysMessage( u8"[ÏµÍ³ÏûÏ¢]:Çë±£³Ö°ü°üÓÐ×ã¹»¿Õ¼ä");
+							ChatHandler(player).PSendSysMessage( u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·ä¿æŒåŒ…åŒ…æœ‰è¶³å¤Ÿç©ºé—´");
 							isok = false;
 						}
 					}
 					else
-						break;//¼ì²éÄ£Ê½¾ÍÍ£Ö¹
+						break;//æ£€æŸ¥æ¨¡å¼å°±åœæ­¢
 				}
 				items++;
 			}
@@ -311,15 +311,15 @@ bool check(Player *player, bool modify) {
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"Ãâ·ÑÌáÉýµ½70¼¶+³õÊ¼Ì××°", GOSSIP_SENDER_MAIN, 122);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"æå‡åˆ°70çº§+åˆå§‹å¥—è£…+æ­¦å™¨ç†Ÿç»ƒåº¦", GOSSIP_SENDER_MAIN, 122);
 	if (sPzxConfig.GetIntDefault("openPre", 1)) {
-		if (pPlayer->getLevel() >= 70 && !check(pPlayer, false)) {//ÔÝ¶¨60¼¶²ÅÄÜÑ§Ï°
+		if (pPlayer->getLevel() >= 70 && !check(pPlayer, false)) {//æš‚å®š60çº§æ‰èƒ½å­¦ä¹ 
 			const char* getmenu = all[pPlayer->getClass()].menuName;
-			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  Ö°Òµ²Ëµ¥
+			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  èŒä¸šèœå•
 		}
 	}
 	if (pPlayer->getClass() == CLASS_HUNTER) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"ÌáÉý ÎÒµÄ³èÎï|cff6247c8ÖÒ³Ï¶ÈºÍµÈ¼¶|h|r ", GOSSIP_SENDER_MAIN, 205);
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"æå‡ æˆ‘çš„å® ç‰©|cff6247c8å¿ è¯šåº¦å’Œç­‰çº§|h|r ", GOSSIP_SENDER_MAIN, 205);
 	}
    // pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
     pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
@@ -338,7 +338,7 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 			if (pProto->ItemSet == itemsetid)
 			{
-				if (player->HasItemCount(pProto->ItemId, 1, true)) {//ÒÑ¾­ÓÐÒ»¼þÁË
+				if (player->HasItemCount(pProto->ItemId, 1, true)) {//å·²ç»æœ‰ä¸€ä»¶äº†
 					continue;
 				}
 				ItemPosCountVec dest;
@@ -351,12 +351,12 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 					//player->SendNewItem(item, 1, false, true);
 					player->SendNewItem(item, 1, true, false);
-					ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖÐ", item->GetProto()->Name1);
+					ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 				}
 				else
 				{
 					player->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
-					ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:Çë±£³Ö°ü°üÓÐ×ã¹»¿Õ¼ä");
+					ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·ä¿æŒåŒ…åŒ…æœ‰è¶³å¤Ÿç©ºé—´");
 					//PSendSysMessage(LANG_ITEM_CANNOT_CREATE, pProto->ItemId, 1);
 				}
 			}
@@ -389,12 +389,12 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 			pPlayer->SetUInt32Value(PLAYER_XP, 0);
 			pPlayer->UpdateSkillsForLevel(true);
 			if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
-				addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//Ôö¼ÓT1Ì××°
+				addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//å¢žåŠ T1å¥—è£…
 			}
 		}
 	if (uiAction == 201) {
 
-			check(pPlayer, true); //Ñ§Ï°Ö°Òµ¼¼ÄÜ
+			check(pPlayer, true); //å­¦ä¹ èŒä¸šæŠ€èƒ½
 	}
 	if (uiAction == 205) {
 
@@ -403,18 +403,17 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 			Pet* HunterPet = pPlayer->GetPet();
 			if (HunterPet->getLevel() < maxlevel || HunterPet->GetLoyaltyLevel() < LoyaltyLevel(BEST_FRIEND)) {
 
-				//player->ADD_GOSSIP_ITEM(3, u8"ÌáÉý ÎÒµÄ³èÎïÖÒ³Ï¶ÈºÍµÈ¼¶ ", GOSSIP_SENDER_MAIN, 205);
+				//player->ADD_GOSSIP_ITEM(3, u8"æå‡ æˆ‘çš„å® ç‰©å¿ è¯šåº¦å’Œç­‰çº§ ", GOSSIP_SENDER_MAIN, 205);
 				pPlayer->GetPet()->GivePetXP(99999999);
 				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage( u8"[ÏµÍ³ÏûÏ¢]:|cff0000ff ÄúµÄ³èÎïÒÑ¾­Ç¿»¯Íê³É!|h|r");
+				ChatHandler(pPlayer).PSendSysMessage( u8"[ç³»ç»Ÿæ¶ˆæ¯]:|cff0000ff æ‚¨çš„å® ç‰©å·²ç»å¼ºåŒ–å®Œæˆ!|h|r");
 			}
 		}
 		else {
-			ChatHandler(pPlayer).PSendSysMessage( u8"[ÏµÍ³ÏûÏ¢]:ÇëÏÈ|cffff0000 Ñ±·þ»òÕßÕÙ»½³ö|h|rÒ»Ö»ÒªÇ¿»¯µÄ³èÎï");
+			ChatHandler(pPlayer).PSendSysMessage( u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·å…ˆ|cffff0000 é©¯æœæˆ–è€…å¬å”¤å‡º|h|rä¸€åªè¦å¼ºåŒ–çš„å® ç‰©");
 		}
-
 	}
 			pPlayer->CLOSE_GOSSIP_MENU();
     return true;
@@ -425,7 +424,7 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 void AddSC_example_creature()
 {
 	if (!sPzxConfig.SetSource("pzx.conf")) {
-		sLog.outError(u8"Î´ÕÒµ½pzx.conf");
+		sLog.outError(u8"æœªæ‰¾åˆ°pzx.conf");
 	}
     Script* pNewScript = new Script;
     pNewScript->Name = "example_creature";
