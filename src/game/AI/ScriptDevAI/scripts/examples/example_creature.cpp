@@ -385,7 +385,9 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 				pPlayer->GiveLevel(70);
 				pPlayer->InitTalentForLevel();
 			}
-			pPlayer->learnSpell(33392, false);//
+			//pPlayer->learnSpell(33392, false);//中级骑术
+			pPlayer->learnSpell(34093, false);//专家级级骑术
+
 			pPlayer->SetUInt32Value(PLAYER_XP, 0);
 			pPlayer->UpdateSkillsForLevel(true);
 			if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
