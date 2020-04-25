@@ -5,6 +5,7 @@
 #include "include/sc_common.h"
 #include "Policies/Singleton.h"
 #include "Config/Config.h"
+#include "Config/PzxConfig.h"
 #include "Database/DatabaseEnv.h"
 #include "Server/DBCStores.h"
 #include "Globals/ObjectMgr.h"

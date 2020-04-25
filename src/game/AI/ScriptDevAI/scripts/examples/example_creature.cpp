@@ -69,6 +69,7 @@ enum
 // If (and only if) a gossip must be handled within SD2, then it should be moved to SD2-database!
 #define GOSSIP_ITEM     "I'm looking for a fight"
 
+
 struct example_creatureAI : public ScriptedAI
 {
     // *** HANDLED FUNCTION ***
@@ -251,28 +252,171 @@ UnitAI* GetAI_example_creature(Creature* pCreature)
     return new example_creatureAI(pCreature);
 }
 
+bool check(Player *player, bool modify) {
+	bool isok = true;
+	const static uint32 NUM_BREATHS = sizeof(all) / sizeof(all[0]);
+	for (uint32 id = 0; id<NUM_BREATHS; id++) {
+		const initClazz clzz = all[id];
+		if (clzz.clazz>0 && player->getClass() == clzz.clazz) {
+			//检查技能
+			const uint32* spells = clzz.checkSpells;
+			while (spells != nullptr&&*spells>0) {
+				if (!player->HasSpell(*spells)) {
+					isok = false;
+					if (modify) {
+						player->learnSpell(*spells, false);
+					}
+					else
+						break;
+				}
+				spells++;
+			}
+
+			//检查物品
+			const uint32* items = clzz.checkItems;
+			while (items != nullptr&&*items>0) {
+				if (!player->HasItemCount(*items, 1, true)) {
+					isok = false;
+					if (modify) {
+						ItemPosCountVec dest;
+						InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, *items, 1);
+						if (msg == EQUIP_ERR_OK)
+						{
+							Item* item = player->StoreNewItem(dest, *items, true);
+							//player->SendNewItem(item, 1, false, true);
+							player->SendNewItem(item, 1, true, false);
+							ChatHandler(player).PSendSysMessage( u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+						}
+						else
+						{
+							player->SendEquipError(msg, nullptr, nullptr, *items);
+							ChatHandler(player).PSendSysMessage( u8"[系统消息]:请保持包包有足够空间");
+							isok = false;
+						}
+					}
+					else
+						break;//检查模式就停止
+				}
+				items++;
+			}
+
+		}
+		if (!modify && !isok) {
+			break;
+		}
+	}
+	return isok;
+}
 // This function is called when the player opens the gossip menu
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
-    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"免费提升到70级+初始套装", GOSSIP_SENDER_MAIN, 122);
+	if (sPzxConfig.GetIntDefault("openPre", 1)) {
+		if (pPlayer->getLevel() >= 70 && !check(pPlayer, false)) {//暂定60级才能学习
+			const char* getmenu = all[pPlayer->getClass()].menuName;
+			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
+		}
+	}
+	if (pPlayer->getClass() == CLASS_HUNTER) {
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
+	}
+   // pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
     pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
 
     return true;
 }
 
+void addItemSet(Player *player, uint8 itemindex) {
+	uint32 itemsetid = IDS[player->getClass()][itemindex];
+	if (itemsetid) {
+		for (uint32 id = 0; id < sItemStorage.GetMaxEntry(); id++)
+		{
+			ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(id);
+			if (!pProto)
+				continue;
+
+			if (pProto->ItemSet == itemsetid)
+			{
+				if (player->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
+					continue;
+				}
+				ItemPosCountVec dest;
+				InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, 1);
+				if (msg == EQUIP_ERR_OK)
+				{
+					Item* item = player->StoreNewItem(dest, pProto->ItemId, true);
+
+					// remove binding (let GM give it to another player later)
+
+					//player->SendNewItem(item, 1, false, true);
+					player->SendNewItem(item, 1, true, false);
+					ChatHandler(player).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+				}
+				else
+				{
+					player->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
+					ChatHandler(player).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
+					//PSendSysMessage(LANG_ITEM_CANNOT_CREATE, pProto->ItemId, 1);
+				}
+			}
+		}
+
+	}
+}
 // This function is called when the player clicks an option on the gossip menu
 // In this case here the faction change could be handled by world-DB gossip, hence it should be handled there!
 bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 {
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-    {
-        pPlayer->CLOSE_GOSSIP_MENU();
-        // Set our faction to hostile towards all
-        pCreature->SetFactionTemporary(FACTION_WORGEN, TEMPFACTION_RESTORE_RESPAWN);
-        pCreature->AI()->AttackStart(pPlayer);
-    }
+    //if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+    //{
+    //    pPlayer->CLOSE_GOSSIP_MENU();
+    //    // Set our faction to hostile towards all
+    //    pCreature->SetFactionTemporary(FACTION_WORGEN, TEMPFACTION_RESTORE_RESPAWN);
+    //    pCreature->AI()->AttackStart(pPlayer);
+    //}
 
+	if (uiAction ==122)
+		{
+		pPlayer->CLOSE_GOSSIP_MENU();
+			//player->LearnSpell(33389, false);
+			ObjectGuid target_guid;
+			if (pPlayer->getLevel() < 60) {
+				pPlayer->GiveLevel(70);
+				pPlayer->InitTalentForLevel();
+			}
+			pPlayer->learnSpell(33392, false);//
+			pPlayer->SetUInt32Value(PLAYER_XP, 0);
+			pPlayer->UpdateSkillsForLevel(true);
+			if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
+				addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//增加T1套装
+			}
+		}
+	if (uiAction == 201) {
+
+			check(pPlayer, true); //学习职业技能
+	}
+	if (uiAction == 205) {
+
+		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
+			uint32 maxlevel = 70;
+			Pet* HunterPet = pPlayer->GetPet();
+			if (HunterPet->getLevel() < maxlevel || HunterPet->GetLoyaltyLevel() < LoyaltyLevel(BEST_FRIEND)) {
+
+				//player->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物忠诚度和等级 ", GOSSIP_SENDER_MAIN, 205);
+				pPlayer->GetPet()->GivePetXP(99999999);
+				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
+			}
+			else {
+				ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
+			}
+		}
+		else {
+			ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
+		}
+
+	}
+			pPlayer->CLOSE_GOSSIP_MENU();
     return true;
 }
 
@@ -280,9 +424,12 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 // It must define all handled functions that are to be run in this script
 void AddSC_example_creature()
 {
+	if (!sPzxConfig.SetSource("pzx.conf")) {
+		sLog.outError(u8"未找到pzx.conf");
+	}
     Script* pNewScript = new Script;
     pNewScript->Name = "example_creature";
-    pNewScript->GetAI = &GetAI_example_creature;
+   // pNewScript->GetAI = &GetAI_example_creature;
     pNewScript->pGossipHello = &GossipHello_example_creature;
     pNewScript->pGossipSelect = &GossipSelect_example_creature;
     pNewScript->RegisterSelf(false);
