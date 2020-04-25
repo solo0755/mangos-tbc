@@ -313,7 +313,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
 	if (sPzxConfig.GetIntDefault("openPre", 1)) {
-		if (pPlayer->getLevel() >= 70 && !check(pPlayer, false)) {//暂定60级才能学习
+		if (pPlayer->getLevel() >= 60 && !check(pPlayer, false)) {//暂定60级才能学习
 			const char* getmenu = all[pPlayer->getClass()].menuName;
 			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
@@ -381,7 +381,7 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		pPlayer->CLOSE_GOSSIP_MENU();
 			//player->LearnSpell(33389, false);
 			ObjectGuid target_guid;
-			if (pPlayer->getLevel() < 60) {
+			if (pPlayer->getLevel() < 70) {
 				pPlayer->GiveLevel(70);
 				pPlayer->InitTalentForLevel();
 			}
