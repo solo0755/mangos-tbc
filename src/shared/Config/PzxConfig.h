@@ -16,8 +16,8 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef PZXCONFIG_H
+#define PZXCONFIG_H
 
 #include "Common.h"
 #include "Policies/Singleton.h"
