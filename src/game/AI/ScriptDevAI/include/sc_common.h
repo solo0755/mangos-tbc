@@ -10,9 +10,14 @@
 #include "AI/ScriptDevAI/include/sc_grid_searchers.h"
 #include "AI/ScriptDevAI/include/sc_instance.h"
 #include "Config/PzxConfig.h"
+const uint32 factionID[2][53] =
+{
 
+	{ 947,942,1011,935,989 },//H
+	{ 946,942,1011,935,989 }//B
+};
 
-//0.5~2.5,勇士、督军 
+//0.5~2.5,
 const uint32 IDS[13][7] =
 {
 	{ 0,0, 0, 0, 0, 0 ,0 },

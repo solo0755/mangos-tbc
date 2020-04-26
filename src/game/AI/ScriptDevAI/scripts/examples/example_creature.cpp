@@ -14,54 +14,54 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ScriptData
-SDName: Example_Creature
-SD%Complete: 100
-SDComment: Short custom scripting example
-SDCategory: Script Examples
-EndScriptData */
+ /* ScriptData
+ SDName: Example_Creature
+ SD%Complete: 100
+ SDComment: Short custom scripting example
+ SDCategory: Script Examples
+ EndScriptData */
 
 #include "AI/ScriptDevAI/include/sc_common.h"
 
-// **** This script is designed as an example for others to build on ****
-// **** Please modify whatever you'd like to as this script is only for developement ****
+ // **** This script is designed as an example for others to build on ****
+ // **** Please modify whatever you'd like to as this script is only for developement ****
 
-// **** Script Info ****
-// This script is written in a way that it can be used for both friendly and hostile monsters
-// Its primary purpose is to show just how much you can really do with scripts
-// I recommend trying it out on both an agressive NPC and on friendly npc
+ // **** Script Info ****
+ // This script is written in a way that it can be used for both friendly and hostile monsters
+ // Its primary purpose is to show just how much you can really do with scripts
+ // I recommend trying it out on both an agressive NPC and on friendly npc
 
-// **** Quick Info ****
-// Functions with Handled Function marked above them are functions that are called automatically by the core
-// Functions that are marked Custom Function are functions I've created to simplify code
+ // **** Quick Info ****
+ // Functions with Handled Function marked above them are functions that are called automatically by the core
+ // Functions that are marked Custom Function are functions I've created to simplify code
 
 enum
 {
-    // List of text id's. The text is stored in database, also in a localized version
-    // (if translation not exist for the textId, default english text will be used)
-    SAY_AGGRO       = -1999900,
-    SAY_RANDOM_0    = -1999901,
-    SAY_RANDOM_1    = -1999902,
-    SAY_RANDOM_2    = -1999903,
-    SAY_RANDOM_3    = -1999904,
-    SAY_RANDOM_4    = -1999905,
-    SAY_BESERK      = -1999906,
-    SAY_PHASE       = -1999907,
-    SAY_DANCE       = -1999908,
-    SAY_SALUTE      = -1999909,
+	// List of text id's. The text is stored in database, also in a localized version
+	// (if translation not exist for the textId, default english text will be used)
+	SAY_AGGRO = -1999900,
+	SAY_RANDOM_0 = -1999901,
+	SAY_RANDOM_1 = -1999902,
+	SAY_RANDOM_2 = -1999903,
+	SAY_RANDOM_3 = -1999904,
+	SAY_RANDOM_4 = -1999905,
+	SAY_BESERK = -1999906,
+	SAY_PHASE = -1999907,
+	SAY_DANCE = -1999908,
+	SAY_SALUTE = -1999909,
 
-    // List of used spells
-    SPELL_BUFF      = 25661,
-    SPELL_ONE       = 12555,
-    SPELL_ONE_ALT   = 24099,
-    SPELL_TWO       = 10017,
-    SPELL_THREE     = 26027,
-    SPELL_ENRAGE    = 23537,
-    SPELL_BESERK    = 32309,
+	// List of used spells
+	SPELL_BUFF = 25661,
+	SPELL_ONE = 12555,
+	SPELL_ONE_ALT = 24099,
+	SPELL_TWO = 10017,
+	SPELL_THREE = 26027,
+	SPELL_ENRAGE = 23537,
+	SPELL_BESERK = 32309,
 
-    // Some other information we need to store
-    TEXT_ID_GREET   = 907,
-    FACTION_WORGEN  = 24
+	// Some other information we need to store
+	TEXT_ID_GREET = 907,
+	FACTION_WORGEN = 24
 };
 
 // List of gossip item texts. Items will appear in the gossip window.
@@ -72,195 +72,195 @@ enum
 
 struct example_creatureAI : public ScriptedAI
 {
-    // *** HANDLED FUNCTION ***
-    // This is the constructor, called only once when the creature is first created
-    example_creatureAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+	// *** HANDLED FUNCTION ***
+	// This is the constructor, called only once when the creature is first created
+	example_creatureAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
 
-    // *** CUSTOM VARIABLES ****
-    // These variables are for use only by this individual script.
-    // Nothing else will ever call them but us.
+	// *** CUSTOM VARIABLES ****
+	// These variables are for use only by this individual script.
+	// Nothing else will ever call them but us.
 
-    uint32 m_uiSayTimer;                                    // Timer for random chat
-    uint32 m_uiRebuffTimer;                                 // Timer for rebuffing
-    uint32 m_uiSpellOneTimer;                               // Timer for spell 1 when in combat
-    uint32 m_uiSpellTwoTimer;                               // Timer for spell 1 when in combat
-    uint32 m_uiSpellThreeTimer;                             // Timer for spell 1 when in combat
-    uint32 m_uiBeserkTimer;                                 // Timer until we go into Beserk (enraged) mode
-    uint32 m_uiPhase;                                       // The current battle phase we are in
-    uint32 m_uiPhaseTimer;                                  // Timer until phase transition
+	uint32 m_uiSayTimer;                                    // Timer for random chat
+	uint32 m_uiRebuffTimer;                                 // Timer for rebuffing
+	uint32 m_uiSpellOneTimer;                               // Timer for spell 1 when in combat
+	uint32 m_uiSpellTwoTimer;                               // Timer for spell 1 when in combat
+	uint32 m_uiSpellThreeTimer;                             // Timer for spell 1 when in combat
+	uint32 m_uiBeserkTimer;                                 // Timer until we go into Beserk (enraged) mode
+	uint32 m_uiPhase;                                       // The current battle phase we are in
+	uint32 m_uiPhaseTimer;                                  // Timer until phase transition
 
-    // *** HANDLED FUNCTION ***
-    // This is called whenever the core decides we need to evade
-    void Reset() override
-    {
-        m_uiPhase = 1;                                      // Start in phase 1
-        m_uiPhaseTimer = 60000;                             // 60 seconds
-        m_uiSpellOneTimer = 5000;                           // 5 seconds
-        m_uiSpellTwoTimer = 37000;                          // 37 seconds
-        m_uiSpellThreeTimer = 19000;                        // 19 seconds
-        m_uiBeserkTimer = 120000;                           // 2 minutes
-    }
+	// *** HANDLED FUNCTION ***
+	// This is called whenever the core decides we need to evade
+	void Reset() override
+	{
+		m_uiPhase = 1;                                      // Start in phase 1
+		m_uiPhaseTimer = 60000;                             // 60 seconds
+		m_uiSpellOneTimer = 5000;                           // 5 seconds
+		m_uiSpellTwoTimer = 37000;                          // 37 seconds
+		m_uiSpellThreeTimer = 19000;                        // 19 seconds
+		m_uiBeserkTimer = 120000;                           // 2 minutes
+	}
 
-    // *** HANDLED FUNCTION ***
-    // Aggro is called when we enter combat, against an enemy, and haven't been in combat before
-    void Aggro(Unit* pWho) override
-    {
-        // Say some stuff
-        DoScriptText(SAY_AGGRO, m_creature, pWho);
-    }
+	// *** HANDLED FUNCTION ***
+	// Aggro is called when we enter combat, against an enemy, and haven't been in combat before
+	void Aggro(Unit* pWho) override
+	{
+		// Say some stuff
+		DoScriptText(SAY_AGGRO, m_creature, pWho);
+	}
 
-    // *** HANDLED FUNCTION ***
-    // Our Recive emote function
-    void ReceiveEmote(Player* /*pPlayer*/, uint32 uiTextEmote) override
-    {
-        m_creature->HandleEmote(uiTextEmote);
+	// *** HANDLED FUNCTION ***
+	// Our Recive emote function
+	void ReceiveEmote(Player* /*pPlayer*/, uint32 uiTextEmote) override
+	{
+		m_creature->HandleEmote(uiTextEmote);
 
-        switch (uiTextEmote)
-        {
-            case TEXTEMOTE_DANCE:
-                DoScriptText(SAY_DANCE, m_creature);
-                break;
-            case TEXTEMOTE_SALUTE:
-                DoScriptText(SAY_SALUTE, m_creature);
-                break;
-        }
-    }
+		switch (uiTextEmote)
+		{
+		case TEXTEMOTE_DANCE:
+			DoScriptText(SAY_DANCE, m_creature);
+			break;
+		case TEXTEMOTE_SALUTE:
+			DoScriptText(SAY_SALUTE, m_creature);
+			break;
+		}
+	}
 
-    // *** HANDLED FUNCTION ***
-    // Update AI is called Every single map update (roughly once every 100ms if a player is within the grid)
-    void UpdateAI(const uint32 uiDiff) override
-    {
-        // Out of combat timers
-        if (!m_creature->getVictim())
-        {
-            // Random Say timer
-            if (m_uiSayTimer < uiDiff)
-            {
-                // Random switch between 5 outcomes
-                switch (urand(0, 4))
-                {
-                    case 0: DoScriptText(SAY_RANDOM_0, m_creature); break;
-                    case 1: DoScriptText(SAY_RANDOM_1, m_creature); break;
-                    case 2: DoScriptText(SAY_RANDOM_2, m_creature); break;
-                    case 3: DoScriptText(SAY_RANDOM_3, m_creature); break;
-                    case 4: DoScriptText(SAY_RANDOM_4, m_creature); break;
-                }
+	// *** HANDLED FUNCTION ***
+	// Update AI is called Every single map update (roughly once every 100ms if a player is within the grid)
+	void UpdateAI(const uint32 uiDiff) override
+	{
+		// Out of combat timers
+		if (!m_creature->getVictim())
+		{
+			// Random Say timer
+			if (m_uiSayTimer < uiDiff)
+			{
+				// Random switch between 5 outcomes
+				switch (urand(0, 4))
+				{
+				case 0: DoScriptText(SAY_RANDOM_0, m_creature); break;
+				case 1: DoScriptText(SAY_RANDOM_1, m_creature); break;
+				case 2: DoScriptText(SAY_RANDOM_2, m_creature); break;
+				case 3: DoScriptText(SAY_RANDOM_3, m_creature); break;
+				case 4: DoScriptText(SAY_RANDOM_4, m_creature); break;
+				}
 
-                m_uiSayTimer = 45 * IN_MILLISECONDS;        // Say something agian in 45 seconds
-            }
-            else
-                m_uiSayTimer -= uiDiff;
+				m_uiSayTimer = 45 * IN_MILLISECONDS;        // Say something agian in 45 seconds
+			}
+			else
+				m_uiSayTimer -= uiDiff;
 
-            // Rebuff timer
-            if (m_uiRebuffTimer < uiDiff)
-            {
-                DoCastSpellIfCan(m_creature, SPELL_BUFF);
-                // Rebuff agian in 15 minutes
-                m_uiRebuffTimer = 15 * MINUTE * IN_MILLISECONDS;
-            }
-            else
-                m_uiRebuffTimer -= uiDiff;
-        }
+			// Rebuff timer
+			if (m_uiRebuffTimer < uiDiff)
+			{
+				DoCastSpellIfCan(m_creature, SPELL_BUFF);
+				// Rebuff agian in 15 minutes
+				m_uiRebuffTimer = 15 * MINUTE * IN_MILLISECONDS;
+			}
+			else
+				m_uiRebuffTimer -= uiDiff;
+		}
 
-        // Return since we have no target
-        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
-            return;
+		// Return since we have no target
+		if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+			return;
 
-        // Abilities of all phases
-        // Spell One timer
-        if (m_uiSpellOneTimer < uiDiff)
-        {
-            // Cast spell one on our current target.
-            if (rand() % 50 > 10)
-                DoCastSpellIfCan(m_creature->getVictim(), SPELL_ONE_ALT);
-            else if (m_creature->IsWithinDist(m_creature->getVictim(), 25.0f))
-                DoCastSpellIfCan(m_creature->getVictim(), SPELL_ONE);
+		// Abilities of all phases
+		// Spell One timer
+		if (m_uiSpellOneTimer < uiDiff)
+		{
+			// Cast spell one on our current target.
+			if (rand() % 50 > 10)
+				DoCastSpellIfCan(m_creature->getVictim(), SPELL_ONE_ALT);
+			else if (m_creature->IsWithinDist(m_creature->getVictim(), 25.0f))
+				DoCastSpellIfCan(m_creature->getVictim(), SPELL_ONE);
 
-            m_uiSpellOneTimer = 5000;
-        }
-        else
-            m_uiSpellOneTimer -= uiDiff;
+			m_uiSpellOneTimer = 5000;
+		}
+		else
+			m_uiSpellOneTimer -= uiDiff;
 
-        // Spell Two timer
-        if (m_uiSpellTwoTimer < uiDiff)
-        {
-            // Cast spell two on self (AoE spell with only self-target) if we can
-            if (DoCastSpellIfCan(m_creature, SPELL_TWO) == CAST_OK)
-                m_uiSpellTwoTimer = 37 * IN_MILLISECONDS;   // Only Update Timer, if we could start casting
-        }
-        else
-            m_uiSpellTwoTimer -= uiDiff;
+		// Spell Two timer
+		if (m_uiSpellTwoTimer < uiDiff)
+		{
+			// Cast spell two on self (AoE spell with only self-target) if we can
+			if (DoCastSpellIfCan(m_creature, SPELL_TWO) == CAST_OK)
+				m_uiSpellTwoTimer = 37 * IN_MILLISECONDS;   // Only Update Timer, if we could start casting
+		}
+		else
+			m_uiSpellTwoTimer -= uiDiff;
 
-        // End of abliities of all phases
+		// End of abliities of all phases
 
-        // Phase 1 abilities
-        if (m_uiPhase == 1)
-        {
-            // Phase timer
-            if (m_uiPhaseTimer < uiDiff)
-            {
-                // Only switch phase and display phase-switich text, if out cast was started sucessfull
-                if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
-                {
-                    // Go to next phase
-                    ++m_uiPhase;
-                    DoScriptText(SAY_PHASE, m_creature);
-                }
-            }
-            else
-                m_uiPhaseTimer -= uiDiff;
-        }
-        // Phase 2 abilities
-        else if (m_uiPhase > 1)
-        {
-            // Spell Three timer
-            if (m_uiSpellThreeTimer < uiDiff)
-            {
-                // Cast spell three on self (AoE spell with only self-target)
-                if (DoCastSpellIfCan(m_creature, SPELL_THREE) == CAST_OK)
-                    m_uiSpellThreeTimer = 19000;
-            }
-            else
-                m_uiSpellThreeTimer -= uiDiff;
+		// Phase 1 abilities
+		if (m_uiPhase == 1)
+		{
+			// Phase timer
+			if (m_uiPhaseTimer < uiDiff)
+			{
+				// Only switch phase and display phase-switich text, if out cast was started sucessfull
+				if (DoCastSpellIfCan(m_creature, SPELL_ENRAGE) == CAST_OK)
+				{
+					// Go to next phase
+					++m_uiPhase;
+					DoScriptText(SAY_PHASE, m_creature);
+				}
+			}
+			else
+				m_uiPhaseTimer -= uiDiff;
+		}
+		// Phase 2 abilities
+		else if (m_uiPhase > 1)
+		{
+			// Spell Three timer
+			if (m_uiSpellThreeTimer < uiDiff)
+			{
+				// Cast spell three on self (AoE spell with only self-target)
+				if (DoCastSpellIfCan(m_creature, SPELL_THREE) == CAST_OK)
+					m_uiSpellThreeTimer = 19000;
+			}
+			else
+				m_uiSpellThreeTimer -= uiDiff;
 
-            // Beserk timer
-            if (m_uiBeserkTimer < uiDiff)
-            {
-                // Cast uber death spell if possible
-                if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_BESERK) == CAST_OK)
-                {
-                    // Say our line if we cast
-                    DoScriptText(SAY_BESERK, m_creature, m_creature->getVictim());
+			// Beserk timer
+			if (m_uiBeserkTimer < uiDiff)
+			{
+				// Cast uber death spell if possible
+				if (DoCastSpellIfCan(m_creature->getVictim(), SPELL_BESERK) == CAST_OK)
+				{
+					// Say our line if we cast
+					DoScriptText(SAY_BESERK, m_creature, m_creature->getVictim());
 
-                    // Cast our beserk spell agian in 12 seconds (if we didn't kill everyone)
-                    m_uiBeserkTimer = 12000;
-                }
-            }
-            else
-                m_uiBeserkTimer -= uiDiff;
-        }
+					// Cast our beserk spell agian in 12 seconds (if we didn't kill everyone)
+					m_uiBeserkTimer = 12000;
+				}
+			}
+			else
+				m_uiBeserkTimer -= uiDiff;
+		}
 
-        // Normal behaviour: if possible mobs do attack with melee
-        DoMeleeAttackIfReady();
-    }
+		// Normal behaviour: if possible mobs do attack with melee
+		DoMeleeAttackIfReady();
+	}
 };
 
 // This is the GetAI method used by all scripts that involve AI
 // It is called every time a new creature using this script is created
 UnitAI* GetAI_example_creature(Creature* pCreature)
 {
-    return new example_creatureAI(pCreature);
+	return new example_creatureAI(pCreature);
 }
 
 bool check(Player *player, bool modify) {
 	bool isok = true;
 	const static uint32 NUM_BREATHS = sizeof(all) / sizeof(all[0]);
-	for (uint32 id = 0; id<NUM_BREATHS; id++) {
+	for (uint32 id = 0; id < NUM_BREATHS; id++) {
 		const initClazz clzz = all[id];
-		if (clzz.clazz>0 && player->getClass() == clzz.clazz) {
+		if (clzz.clazz > 0 && player->getClass() == clzz.clazz) {
 			//检查技能
 			const uint32* spells = clzz.checkSpells;
-			while (spells != nullptr&&*spells>0) {
+			while (spells != nullptr&&*spells > 0) {
 				if (!player->HasSpell(*spells)) {
 					isok = false;
 					if (modify) {
@@ -274,7 +274,7 @@ bool check(Player *player, bool modify) {
 
 			//检查物品
 			const uint32* items = clzz.checkItems;
-			while (items != nullptr&&*items>0) {
+			while (items != nullptr&&*items > 0) {
 				if (!player->HasItemCount(*items, 1, true)) {
 					isok = false;
 					if (modify) {
@@ -285,12 +285,12 @@ bool check(Player *player, bool modify) {
 							Item* item = player->StoreNewItem(dest, *items, true);
 							//player->SendNewItem(item, 1, false, true);
 							player->SendNewItem(item, 1, true, false);
-							ChatHandler(player).PSendSysMessage( u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+							ChatHandler(player).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
 						}
 						else
 						{
 							player->SendEquipError(msg, nullptr, nullptr, *items);
-							ChatHandler(player).PSendSysMessage( u8"[系统消息]:请保持包包有足够空间");
+							ChatHandler(player).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
 							isok = false;
 						}
 					}
@@ -312,20 +312,32 @@ bool check(Player *player, bool modify) {
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
 	pPlayer->PrepareGossipMenu(pCreature, pPlayer->GetDefaultGossipMenuForSource(pCreature));
+
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
-	if (sPzxConfig.GetIntDefault("openPre", 1)) {
-		if (pPlayer->getLevel() >= 60 && !check(pPlayer, false)) {//暂定60级才能学习
+	if (pPlayer->getLevel() >= 60) {
+		if (!addRep(pPlayer, false)) {
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升TBC5人副本声望至崇敬 ", GOSSIP_SENDER_MAIN, 206);
+		}
+		if (!check(pPlayer, false)) {//暂定60级才能学习
 			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
 			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
 	}
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+	if (pPlayer->GetTeam() == HORDE) {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+	}else {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+	}
+
 	if (pPlayer->getClass() == CLASS_HUNTER) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
 	}
-   // pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
+	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
 
-    return true;
+	return true;
 }
 
 void addItemSet(Player *player, uint8 itemindex) {
@@ -365,17 +377,34 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 	}
 }
+bool addRep(Player *player, bool modify) {
+	bool isok = true;
+	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
+
+	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
+	for (uint32 id = 0; id < 3; id++) {
+		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
+		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
+		if (player->GetReputationMgr().GetReputation(factionEntry) < 36000) {
+			if (modify) {
+				player->GetReputationMgr().SetReputation(factionEntry, 36001);//声望值
+			}
+			isok = false;
+		}
+	}
+	return isok;
+}
 // This function is called when the player clicks an option on the gossip menu
 // In this case here the faction change could be handled by world-DB gossip, hence it should be handled there!
 bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 {
-    //if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-    //{
-    //    pPlayer->CLOSE_GOSSIP_MENU();
-    //    // Set our faction to hostile towards all
-    //    pCreature->SetFactionTemporary(FACTION_WORGEN, TEMPFACTION_RESTORE_RESPAWN);
-    //    pCreature->AI()->AttackStart(pPlayer);
-    //}
+	//if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+	//{
+	//    pPlayer->CLOSE_GOSSIP_MENU();
+	//    // Set our faction to hostile towards all
+	//    pCreature->SetFactionTemporary(FACTION_WORGEN, TEMPFACTION_RESTORE_RESPAWN);
+	//    pCreature->AI()->AttackStart(pPlayer);
+	//}
 	if (uiAction < 20) {//系统菜单
 		//pPlayer->OnGossipSelect(pCreature, 0);
 		switch (uiAction)
@@ -391,27 +420,29 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		return true;
 
 	}
-	if (uiAction ==122)
-		{
-		pPlayer->CLOSE_GOSSIP_MENU();
-			//player->LearnSpell(33389, false);
-			ObjectGuid target_guid;
-			if (pPlayer->getLevel() < 70) {
-				pPlayer->GiveLevel(70);
-				pPlayer->InitTalentForLevel();
-			}
-			//pPlayer->learnSpell(33392, false);//中级骑术
-			pPlayer->learnSpell(34093, false);//专家级级骑术
 
-			pPlayer->SetUInt32Value(PLAYER_XP, 0);
-			pPlayer->UpdateSkillsForLevel(true);
-			if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
-				addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//增加T1套装
-			}
+
+	if (uiAction == 122)
+	{
+		pPlayer->CLOSE_GOSSIP_MENU();
+		//player->LearnSpell(33389, false);
+		ObjectGuid target_guid;
+		if (pPlayer->getLevel() < 70) {
+			pPlayer->GiveLevel(70);
+			pPlayer->InitTalentForLevel();
 		}
+		//pPlayer->learnSpell(33392, false);//中级骑术
+		pPlayer->learnSpell(34093, false);//专家级级骑术
+
+		pPlayer->SetUInt32Value(PLAYER_XP, 0);
+		pPlayer->UpdateSkillsForLevel(true);
+		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
+			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//增加T1套装
+		}
+	}
 	if (uiAction == 201) {
 
-			check(pPlayer, true); //学习职业技能
+		check(pPlayer, true); //学习职业技能
 	}
 	if (uiAction == 205) {
 
@@ -425,15 +456,48 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
 			}
 		}
 		else {
-			ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
 		}
 	}
+	if (uiAction == 206) {
+		addRep(pPlayer, true);
+	}
+
+	int index = uiAction - GOSSIP_ACTION_INFO_DEF;
+	if (index > 0) {
+
+		switch (index)
+		{
+		case 1://KLZ
 			pPlayer->CLOSE_GOSSIP_MENU();
-    return true;
+			pPlayer->TeleportTo(0, -11120.2f, -2015.27f, 47.1869f, 1.91823f);
+			break;
+
+		case 2://STS
+			pPlayer->CLOSE_GOSSIP_MENU();
+			pPlayer->TeleportTo(530, -1863.0f, 5430.1f, -9.70549f, 3.7f);
+			break;
+
+		case 3://ogrimmar
+			pPlayer->CLOSE_GOSSIP_MENU();
+			pPlayer->TeleportTo(1, 1541.0f, -4426.0f, 11.24f, 0.85f);
+			break;
+
+		case 4://IRONforge
+			pPlayer->CLOSE_GOSSIP_MENU();
+			pPlayer->TeleportTo(0, -4917.0f, -955.0f, 502.0f, 0.0f);
+			break;
+		default:
+			break;
+		}
+		return true;
+	}
+	pPlayer->CLOSE_GOSSIP_MENU();
+	return true;
 }
 
 // This is the actual function called only once durring InitScripts()
@@ -443,10 +507,10 @@ void AddSC_example_creature()
 	if (!sPzxConfig.SetSource("pzx.conf")) {
 		sLog.outError(u8"未找到pzx.conf");
 	}
-    Script* pNewScript = new Script;
-    pNewScript->Name = "example_creature";
-   // pNewScript->GetAI = &GetAI_example_creature;
-    pNewScript->pGossipHello = &GossipHello_example_creature;
-    pNewScript->pGossipSelect = &GossipSelect_example_creature;
-    pNewScript->RegisterSelf(false);
+	Script* pNewScript = new Script;
+	pNewScript->Name = "example_creature";
+	// pNewScript->GetAI = &GetAI_example_creature;
+	pNewScript->pGossipHello = &GossipHello_example_creature;
+	pNewScript->pGossipSelect = &GossipSelect_example_creature;
+	pNewScript->RegisterSelf(false);
 }
