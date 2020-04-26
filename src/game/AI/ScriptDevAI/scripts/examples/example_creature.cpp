@@ -307,6 +307,23 @@ bool check(Player *player, bool modify) {
 	}
 	return isok;
 }
+bool addRep(Player *player, bool modify) {
+	bool isok = true;
+	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
+
+	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
+	for (uint32 id = 0; id < 3; id++) {
+		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
+		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
+		if (player->GetReputationMgr().GetReputation(factionEntry) < 36000) {
+			if (modify) {
+				player->GetReputationMgr().SetReputation(factionEntry, 36001);//声望值
+			}
+			isok = false;
+		}
+	}
+	return isok;
+}
 // This function is called when the player opens the gossip menu
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
@@ -377,23 +394,7 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 	}
 }
-bool addRep(Player *player, bool modify) {
-	bool isok = true;
-	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
 
-	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
-	for (uint32 id = 0; id < 3; id++) {
-		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
-		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
-		if (player->GetReputationMgr().GetReputation(factionEntry) < 36000) {
-			if (modify) {
-				player->GetReputationMgr().SetReputation(factionEntry, 36001);//声望值
-			}
-			isok = false;
-		}
-	}
-	return isok;
-}
 // This function is called when the player clicks an option on the gossip menu
 // In this case here the faction change could be handled by world-DB gossip, hence it should be handled there!
 bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
