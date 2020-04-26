@@ -312,7 +312,7 @@ bool addRep(Player *player, bool modify) {
 	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
 
 	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
-	for (uint32 id = 0; id < 3; id++) {
+	for (uint32 id = 0; id < 5; id++) {
 		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
 		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
 		if (player->GetReputationMgr().GetReputation(factionEntry) < 36000) {
