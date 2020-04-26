@@ -31,10 +31,10 @@ const uint32 IDS[13][7] =
 struct initClazz
 {
 	uint8 clazz;
-	char * menuName;
+	std::string menuName;
 	uint32 checkSpells[6];
 	uint32 checkItems[5];
-	char * talenNames[3];
+	std::string talenNames[3];
 };
 const initClazz all[] = {
 	{ 0, u8"未定义",{},{} ,{} },

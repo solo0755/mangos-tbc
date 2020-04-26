@@ -311,10 +311,11 @@ bool check(Player *player, bool modify) {
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
+	pPlayer->PrepareGossipMenu(pCreature, pPlayer->GetDefaultGossipMenuForSource(pCreature));
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
 	if (sPzxConfig.GetIntDefault("openPre", 1)) {
 		if (pPlayer->getLevel() >= 60 && !check(pPlayer, false)) {//暂定60级才能学习
-			const char* getmenu = all[pPlayer->getClass()].menuName;
+			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
 			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
 	}
@@ -375,7 +376,21 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
     //    pCreature->SetFactionTemporary(FACTION_WORGEN, TEMPFACTION_RESTORE_RESPAWN);
     //    pCreature->AI()->AttackStart(pPlayer);
     //}
+	if (uiAction < 20) {//系统菜单
+		//pPlayer->OnGossipSelect(pCreature, 0);
+		switch (uiAction)
+		{
+		case GOSSIP_OPTION_VENDOR:
+		case GOSSIP_OPTION_ARMORER:
+			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid());
+			break;
+		case GOSSIP_OPTION_TRAINER:
+			pPlayer->GetSession()->SendTrainerList(pCreature->GetObjectGuid());
+			break;
+		}
+		return true;
 
+	}
 	if (uiAction ==122)
 		{
 		pPlayer->CLOSE_GOSSIP_MENU();
