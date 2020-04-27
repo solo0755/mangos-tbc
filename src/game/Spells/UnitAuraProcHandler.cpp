@@ -2015,6 +2015,9 @@ SpellAuraProcResult Unit::HandleProcTriggerSpellAuraProc(ProcExecutionData& data
     uint32 trigger_spell_id = auraSpellInfo->EffectTriggerSpell[triggeredByAura->GetEffIndex()];
     Unit*  target = nullptr;
     int32* basepoints = data.basepoints;
+	if (auraSpellInfo->Id == 15600) {
+		basepoints[0] = 0;//修复正义之手触发多次;
+	}
 
     if (triggeredByAura->GetModifier()->m_auraname == SPELL_AURA_PROC_TRIGGER_SPELL_WITH_VALUE)
         basepoints[0] = triggerAmount;
