@@ -72,6 +72,7 @@ enum SpellSpecific
     SPELL_MAGE_ARMOR,
     SPELL_WARLOCK_ARMOR,
     SPELL_ELEMENTAL_SHIELD,
+    SPELL_BUFF_CASTER_POWER,
     // TBC+ specifics:
     SPELL_BATTLE_ELIXIR,
     SPELL_GUARDIAN_ELIXIR,
@@ -1342,6 +1343,7 @@ inline uint32 GetAffectedTargets(SpellEntry const* spellInfo, WorldObject* caste
                 case 28415:                                 // Summon Type A Trigger (Naxxramas, Kel'Thuzad)
                 case 28416:                                 // Summon Type B Trigger (Naxxramas, Kel'Thuzad)
                 case 28417:                                 // Summon Type C Trigger (Naxxramas, Kel'Thuzad)
+                case 28455:                                 // Summon Type D Trigger (Naxxramas, Kel'Thuzad)
                 case 28560:                                 // Summon Blizzard (Naxx, Sapphiron)
                 case 30541:                                 // Blaze (Magtheridon)
                 case 30769:                                 // Pick Red Riding Hood (Karazhan, Big Bad Wolf)
@@ -1639,6 +1641,7 @@ inline bool IsSpellSpecificUniquePerTarget(SpellSpecific specific)
         case SPELL_WARLOCK_ARMOR:
         case SPELL_MAGE_ARMOR:
         case SPELL_ELEMENTAL_SHIELD:
+        case SPELL_BUFF_CASTER_POWER:
         case SPELL_WELL_FED:
         case SPELL_BATTLE_ELIXIR:
         case SPELL_GUARDIAN_ELIXIR:
