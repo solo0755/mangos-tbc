@@ -38,11 +38,13 @@ INSERT INTO spell_scripts(Id, ScriptName) VALUES
 (28415,'spell_trigger_KT_add'),
 (28416,'spell_trigger_KT_add'),
 (28417,'spell_trigger_KT_add'),
+(28455,'spell_trigger_KT_add'),
 (28749,'spell_check_gothik_side'),
 (28781,'spell_gothik_side_assault'),
 (29330,'spell_sapphiron_despawn_buffet'),
 (29874,'spell_gothik_side_assault'),
 (29875,'spell_check_gothik_side'),
+(29897,'spell_icecrown_guardian_periodic'),
 (30132,'spell_sapphiron_iceblock');
 
 -- TBC
@@ -63,12 +65,13 @@ INSERT INTO spell_scripts(Id, ScriptName) VALUES
 (14323,'spell_hunters_mark'),
 (14324,'spell_hunters_mark'),
 (14325,'spell_hunters_mark'),
-(34026,'spell_kill_command');
+(34026,'spell_kill_command'),
+(34477,'spell_stacking_rules_override');
 
 -- Priest
 INSERT INTO spell_scripts(Id, ScriptName) VALUES
+(10060,'spell_stacking_rules_override'),
 (32676,'spell_consume_magic');
-
 
 -- Warlock
 INSERT INTO spell_scripts(Id, ScriptName) VALUES

@@ -46,7 +46,7 @@ bool TargetedMovementGeneratorMedium<T, D>::Update(T& owner, const uint32& time_
     if (!i_target.isValid() || !i_target->IsInWorld())
         return false;
 
-    if (!owner.isAlive())
+    if (!owner.IsAlive())
         return true;
 
     // prevent movement while casting spells with cast time or channel time
@@ -104,7 +104,7 @@ void ChaseMovementGenerator::_addUnitStateMove(Unit& u) { u.addUnitState(UNIT_ST
 
 bool ChaseMovementGenerator::_lostTarget(Unit& u) const
 {
-    return m_combat && u.getVictim() != this->GetCurrentTarget();
+    return m_combat && u.GetVictim() != this->GetCurrentTarget();
 }
 
 void ChaseMovementGenerator::_reachTarget(Unit& /*owner*/)
@@ -370,7 +370,7 @@ void ChaseMovementGenerator::FanOut(Unit& owner)
     Unit* collider = nullptr;
     MaNGOS::AnyUnitFulfillingConditionInRangeCheck collisionCheck(&owner, [&](Unit* unit)->bool
     {
-        return &owner != unit && unit->getVictim() && unit->getVictim() == this->i_target.getTarget() && !unit->IsMoving() && !unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        return &owner != unit && unit->GetVictim() && unit->GetVictim() == this->i_target.getTarget() && !unit->IsMoving() && !unit->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }, fanningRadius * fanningRadius, DIST_CALC_NONE);
     MaNGOS::UnitSearcher<MaNGOS::AnyUnitFulfillingConditionInRangeCheck> checker(collider, collisionCheck);
     Cell::VisitAllObjects(&owner, checker, fanningRadius);
@@ -507,7 +507,7 @@ bool ChaseMovementGenerator::_getLocation(Unit& owner, float& x, float& y, float
 
     // Chase Movement and angle == 0 case: Chase to current angle
     // Need to avoid readjustment when target is attacking owner
-    const bool currentAngle = (i_angle == 0.f || (i_target->getVictim() && i_target->getVictim() == &owner));
+    const bool currentAngle = (i_angle == 0.f || (i_target->GetVictim() && i_target->GetVictim() == &owner));
 
     float angle = (currentAngle ? i_target->GetAngle(&owner) : (i_target->GetOrientation() + i_angle));
 
@@ -563,7 +563,7 @@ float FollowMovementGenerator::GetSpeed(Unit& owner) const
     const UnitMoveType type = i_target->m_movementInfo.GetSpeedType();
     float speed = owner.GetSpeed(type);
 
-    if (owner.isInCombat() || !i_target.isValid())
+    if (owner.IsInCombat() || !i_target.isValid())
         return speed;
 
     // Use default speed when a mix of PC and NPC units involved (escorting?)
@@ -577,23 +577,25 @@ float FollowMovementGenerator::GetSpeed(Unit& owner) const
     // Followers sync with master's speed when not in combat
     speed = i_target->GetSpeedInMotion();
 
+    // Catchup boost is not allowed, stop here:
+    if (!IsBoostAllowed(owner))
+        return speed;
+
     // Catch-up speed boost if allowed:
-    // * When following PC units: boost up to max hardcoded speed
-    // * When following NPC units: try to boost up to own run speed
-    if (i_target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PLAYER_CONTROLLED) && IsBoostAllowed(owner))
+    // * When following client-controlled units: boost up to max hardcoded speed
+    // * When following server-controlled units: try to boost up to own run speed
+    if (i_target->IsClientControlled())
     {
         const float bonus = (i_target->GetDistance(owner.GetPositionX(), owner.GetPositionY(), owner.GetPositionZ(), DIST_CALC_NONE) / speed);
-        speed = std::max(owner.GetSpeed(MOVE_WALK), std::min((speed + bonus), 40.0f));
+        return std::max(owner.GetSpeed(MOVE_WALK), std::min((speed + bonus), 40.0f));
     }
-    else if (IsBoostAllowed(owner))
-        speed = std::max(speed, owner.GetSpeed(MOVE_RUN));
 
-    return speed;
+    return std::max(speed, owner.GetSpeed(MOVE_RUN));
 }
 
 bool FollowMovementGenerator::IsBoostAllowed(Unit& owner) const
 {
-    if (owner.isInCombat() || !i_target.isValid())
+    if (owner.IsInCombat() || !i_target.isValid())
         return false;
 
     // Do not allow boosting outside of pet/master relationship:
@@ -620,7 +622,7 @@ bool FollowMovementGenerator::IsBoostAllowed(Unit& owner) const
 bool FollowMovementGenerator::IsUnstuckAllowed(Unit &owner) const
 {
     // Do not try to unstuck if in combat
-    if (owner.isInCombat() || !i_target.isValid() || i_target->isInCombat())
+    if (owner.IsInCombat() || !i_target.isValid() || i_target->IsInCombat())
         return false;
 
     // Do not try to unstuck while target has not landed or stabilized on terrain in some way
@@ -639,8 +641,8 @@ void FollowMovementGenerator::Initialize(Unit& owner)
 {
     if (!i_target.isValid() || !i_target->IsInWorld())
         return;
+
     owner.addUnitState(UNIT_STAT_FOLLOW);                   // _MOVE set in _SetTargetLocation after required checks
-    HandleTargetedMovement(owner, 0);
 }
 
 void FollowMovementGenerator::Finalize(Unit& owner)
@@ -725,22 +727,30 @@ bool FollowMovementGenerator::Move(Unit& owner, float x, float y, float z)
 
     if (stuck)
     {
+        float o;
+        _getOrientation(owner, o);
         _getLocation(owner, x, y, z, false);
-        path.resize(2);
-        path[1] = {x, y, z};
-    }
 
-    const float speed = (stuck ? FLT_EPSILON : GetSpeed(owner));
+        if (owner.GetTypeId() == TYPEID_PLAYER)
+            owner.NearTeleportTo(x, y, z, o);
+        else
+        {
+            owner.GetMap()->CreatureRelocation(static_cast<Creature*>(&owner), x, y, z, o);
+            owner.SendHeartBeat();
+        }
+
+        return false;
+    }
 
     _addUnitStateMove(owner);
 
     Movement::MoveSplineInit init(owner);
     init.MovebyPath(path);
     init.SetWalk(EnableWalking());
-    init.SetVelocity(speed);
+    init.SetVelocity(GetSpeed(owner));
     init.Launch();
 
-    return !stuck;
+    return true;
 }
 
 bool FollowMovementGenerator::_getOrientation(Unit& owner, float& o) const
