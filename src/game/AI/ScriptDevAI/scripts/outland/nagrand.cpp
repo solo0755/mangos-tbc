@@ -30,6 +30,7 @@ EndContentData */
 
 #include "AI/ScriptDevAI/include/sc_common.h"
 #include "AI/ScriptDevAI/base/escort_ai.h"
+#include "AI/ScriptDevAI/scripts/outland/world_outland.h"
 
 /*######
 ## mob_lump
@@ -76,7 +77,7 @@ struct mob_lumpAI : public ScriptedAI
         AttackStart(pAttacker);
     }
 
-    void DamageTaken(Unit* /*pDealer*/, uint32& damage, DamageEffectType /*damagetype*/, SpellEntry const* /*spellInfo*/) override
+    void DamageTaken(Unit* /*dealer*/, uint32& damage, DamageEffectType /*damagetype*/, SpellEntry const* /*spellInfo*/) override
     {
         if (m_creature->GetHealth() < damage || (m_creature->GetHealth() - damage) * 100 / m_creature->GetMaxHealth() < 30)
         {
@@ -246,16 +247,16 @@ struct npc_nagrand_captiveAI : public npc_escortAI
         {
             switch (uiPointId)
             {
-                case 4:
+                case 5:
                     DoScriptText(SAY_MAG_MORE, m_creature);
                     break;
-                case 5:
+                case 6:
                     if (Creature *summoned = m_creature->SummonCreature(NPC_MURK_BRUTE, -1496.662f, 8508.388f, 1.015174f, 2.56f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000))
                         DoScriptText(SAY_MURK_BRUTE_WHERE, summoned);
                     m_creature->SummonCreature(NPC_MURK_PUTRIFIER, -1494.623f, 8505.492f, 1.173438f, 2.63f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000);
                     m_creature->SummonCreature(NPC_MURK_SCAVENGER, -1497.349f, 8505.020f, 1.107700f, 2.56f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000);
                     break;
-                case 10:
+                case 11:
                     DoScriptText(SAY_MAG_COMPLETE, m_creature);
 
                     if (Player* pPlayer = GetPlayerForEscort())
@@ -269,23 +270,23 @@ struct npc_nagrand_captiveAI : public npc_escortAI
         {
             switch (uiPointId)
             {
-                case 1:
+                case 2:
                     DoScriptText(SAY_KUR_START, m_creature);
                     break;
-                case 7:
+                case 8:
                     DoScriptText(SAY_KUR_AMBUSH_2, m_creature);
                     break;
-                case 8:
+                case 9:
                     if (Creature *summoned = m_creature->SummonCreature(NPC_MURK_BRUTE, -1417.57f, 8516.55f, 8.593721f, 3.76f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000))
                         DoScriptText(SAY_MURK_BRUTE_WHERE, summoned);
                     m_creature->SummonCreature(NPC_MURK_PUTRIFIER, -1411.089f, 8507.651f, 8.976571f, 3.21f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000);
                     m_creature->SummonCreature(NPC_MURK_SCAVENGER, -1440.539f, 8490.212f, 6.207497f, 1.03f, TEMPSPAWN_TIMED_OOC_OR_DEAD_DESPAWN, 10000);
                     break;
-                case 9:
+                case 10:
                     m_creature->SetFacingTo(0.61f);
                     DoScriptText(SAY_KUR_UP_AHEAD, m_creature);					
                     break;
-                case 12:
+                case 13:
                     DoScriptText(SAY_KUR_COMPLETE, m_creature);
 
                     if (Player* pPlayer = GetPlayerForEscort())
@@ -506,7 +507,7 @@ struct npc_rethhedronAI : public ScriptedAI
         ScriptedAI::JustRespawned();
     }
 
-    void DamageTaken(Unit* /*pDealer*/, uint32& damage, DamageEffectType /*damagetype*/, SpellEntry const* /*spellInfo*/) override
+    void DamageTaken(Unit* /*dealer*/, uint32& damage, DamageEffectType /*damagetype*/, SpellEntry const* /*spellInfo*/) override
     {
         damage = std::min(m_creature->GetHealth() - 1, damage);
 
@@ -601,6 +602,34 @@ UnitAI* GetAI_npc_rethhedron(Creature* pCreature)
     return new npc_rethhedronAI(pCreature);
 }
 
+enum
+{
+    GOSSIP_IN_BATTLE = 7700,
+
+    QUEST_RING_OF_BLOOD_FINAL_CHALLENGE = 9977,
+};
+
+bool QuestAccept_npc_gurthock(Player* /*player*/, Creature* creature, const Quest* quest)
+{
+    if (quest->GetQuestId() == QUEST_RING_OF_BLOOD_FINAL_CHALLENGE)
+    {
+        if (InstanceData* data = creature->GetInstanceData())
+            data->SetData(TYPE_MOGOR, 1);
+    }
+    else
+        creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+    return true;
+}
+
+bool GossipHello_npc_gurthock(Player* player, Creature* creature)
+{
+    if (creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+        return false;
+    player->PrepareGossipMenu(creature, GOSSIP_IN_BATTLE);
+    player->SendPreparedGossip(creature);
+    return true;
+}
+
 void AddSC_nagrand()
 {
     Script* pNewScript = new Script;
@@ -622,5 +651,11 @@ void AddSC_nagrand()
     pNewScript = new Script;
     pNewScript->Name = "npc_rethhedron";
     pNewScript->GetAI = &GetAI_npc_rethhedron;
+    pNewScript->RegisterSelf();
+
+    pNewScript = new Script;
+    pNewScript->Name = "npc_gurthock";
+    pNewScript->pQuestAcceptNPC = &QuestAccept_npc_gurthock;
+    pNewScript->pGossipHello = &GossipHello_npc_gurthock;
     pNewScript->RegisterSelf();
 }

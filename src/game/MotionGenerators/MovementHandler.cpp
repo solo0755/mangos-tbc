@@ -389,7 +389,8 @@ void WorldSession::HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data)
         return;
     }
 
-    _player->m_movementInfo = mi;
+    if (!_player->IsTaxiFlying())
+        _player->m_movementInfo = mi;
 }
 
 void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
@@ -434,8 +435,8 @@ void WorldSession::HandleMoveKnockBackAck(WorldPacket& recv_data)
     WorldPacket data(MSG_MOVE_KNOCK_BACK, recv_data.size() + 15);
     data << mover->GetObjectGuid();
     data << movementInfo;
-    data << movementInfo.GetJumpInfo().sinAngle;
     data << movementInfo.GetJumpInfo().cosAngle;
+    data << movementInfo.GetJumpInfo().sinAngle;
     data << movementInfo.GetJumpInfo().xyspeed;
     data << movementInfo.GetJumpInfo().velocity;
     mover->SendMessageToSetExcept(data, _player);

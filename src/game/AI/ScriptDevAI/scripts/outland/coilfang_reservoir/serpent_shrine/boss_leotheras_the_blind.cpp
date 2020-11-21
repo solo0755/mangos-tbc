@@ -74,6 +74,10 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     boss_leotheras_the_blindAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_creature->GetCombatManager().SetLeashingCheck([&](Unit*, float x, float y, float /*z*/)
+        {
+            return !(x < 409.0f && y > -524.0f && x > 300.0f && y < -301.0f);
+        });
         Reset();
     }
 
@@ -167,6 +171,17 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
     void EnterEvadeMode() override
     {
         m_creature->CastSpell(m_creature, SPELL_WHISPER_CLEAR, TRIGGERED_NONE);
+        for (ObjectGuid guid : m_charmTargets)
+        {
+            if (Player* player = m_creature->GetMap()->GetPlayer(guid))
+            {
+                if (player->HasAura(SPELL_CONS_MADNESS))
+                {
+                    player->RemoveAurasDueToSpell(SPELL_CONS_MADNESS);
+                    player->Suicide();
+                }
+            }
+        }
         ScriptedAI::EnterEvadeMode();
     }
 
@@ -294,7 +309,6 @@ struct boss_leotheras_the_blindAI : public ScriptedAI
             }
 
             DoMeleeAttackIfReady();
-            EnterEvadeIfOutOfCombatArea(uiDiff);
         }
         // Demon form spells
         else
