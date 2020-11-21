@@ -177,7 +177,7 @@ struct GameObjectInfo
             uint32 large;                                   //13
             uint32 openTextID;                              //14 can be used to replace castBarCaption?
             uint32 closeTextID;                             //15
-            uint32 losOK;                                   //16 isBattlegroundObject
+            uint32 isPvPObject;                             //16 flags used only in battlegrounds
             uint32 allowMounted;                            //17
             uint32 floatingTooltip;                         //18
             uint32 gossipID;                                //19
@@ -548,6 +548,18 @@ struct GameObjectInfo
             default: return false;
         }
     }
+
+    bool IsServerOnly() const
+    {
+        switch (type)
+        {
+            case GAMEOBJECT_TYPE_GENERIC: return _generic.serverOnly;
+            case GAMEOBJECT_TYPE_TRAP: return trap.serverOnly;
+            case GAMEOBJECT_TYPE_SPELL_FOCUS: return spellFocus.serverOnly;
+            case GAMEOBJECT_TYPE_AURA_GENERATOR: return auraGenerator.serverOnly;
+            default: return false;
+        }
+    }
 };
 
 // GCC have alternative #pragma pack() syntax and old gcc version not support pack(pop), also any gcc version not support it at some platform
@@ -822,6 +834,8 @@ class GameObject : public WorldObject
 
         GameObjectModel* m_model;
 
+        bool _IsWithinDist(WorldObject const* obj, float dist2compare, bool is3D) const override;
+
         bool IsAtInteractDistance(Position const& pos, float radius) const;
         bool IsAtInteractDistance(Player const* player, uint32 maxRange = 0) const;
 
@@ -830,7 +844,7 @@ class GameObject : public WorldObject
     protected:
         uint32      m_spellId;
         time_t      m_respawnTime;                          // (secs) time of next respawn (or despawn if GO have owner()),
-        uint32      m_respawnDelay;                     // (secs) if 0 then current GO state no dependent from timer
+        uint32      m_respawnDelay;                         // (secs) if 0 then current GO state no dependent from timer
         bool        m_respawnOverriden;
         bool        m_respawnOverrideOnce;
         bool        m_forcedDespawn;

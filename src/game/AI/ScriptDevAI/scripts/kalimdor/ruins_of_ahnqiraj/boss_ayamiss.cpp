@@ -57,8 +57,8 @@ enum
     PHASE_AIR               = 0,
     PHASE_GROUND            = 1,
 
-    POINT_AIR               = 1,
-    POINT_GROUND            = 2,
+    POINT_AIR               = 2,
+    POINT_GROUND            = 3,
 };
 
 struct SummonLocation
@@ -192,7 +192,7 @@ struct boss_ayamissAI : public CombatAI
 
     void StartLanding()
     {
-        m_creature->GetMotionMaster()->MoveWaypoint(0);
+        m_creature->GetMotionMaster()->MoveWaypoint(1);
     }
 
     void ExecuteAction(uint32 action) override
