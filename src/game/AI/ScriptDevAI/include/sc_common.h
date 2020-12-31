@@ -55,4 +55,10 @@ const initClazz all[] = {
 	{ 0, u8"未定义",{},{} ,{ u8"",u8"",u8"" } },
 	{ CLASS_DRUID,u8"学习 |cff6247c8熊形态|h|r 职业技能",{ 5487,9634 },{} ,{ u8"平衡",u8"野性战斗",u8"恢复" } }
 };
+
+//#define PRENERF_2_0_3       // Pre 2.1
+//#define PRENERF_2_1         // Pre 2.2
+//#define PRENERF_2_3         // Pre 2.4
+//#define PRENERF_2_4         // Pre 2.4.3
+
 #endif

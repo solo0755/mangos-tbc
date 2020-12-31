@@ -25,6 +25,7 @@
 #include "Tools/Formulas.h"
 #include "Spells/SpellAuras.h"
 #include "Entities/Unit.h"
+#include "Entities/Transports.h"
 
 // numbers represent minutes * 100 while happy (you get 100 loyalty points per min while happy)
 uint32 const LevelUpLoyalty[6] =
@@ -421,6 +422,9 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petentry /*= 0*/, uint32 petnumber
     SynchronizeLevelWithOwner();
 
     SavePetToDB(PET_SAVE_AS_CURRENT, owner);
+
+    if (GenericTransport* transport = owner->GetTransport())
+        transport->AddPetToTransport(owner, this);
     return true;
 }
 
@@ -2398,4 +2402,23 @@ void Pet::RegenerateHealth()
 void Pet::ResetCorpseRespawn()
 {
     m_corpseExpirationTime = GetMap()->GetCurrentClockTime() + std::chrono::milliseconds(1000); // rudimentary value - just need more than now
+}
+
+void Pet::ForcedDespawn(uint32 timeMSToDespawn, bool onlyAlive)
+{
+    if (timeMSToDespawn)
+    {
+        Creature::ForcedDespawn(timeMSToDespawn, onlyAlive);
+        return;
+    }
+
+    if (IsDespawned())
+        return;
+
+    if (IsAlive())
+        SetDeathState(JUST_DIED);
+
+    RemoveCorpse(true);                                     // force corpse removal in the same grid
+
+    Unsummon(PET_SAVE_NOT_IN_SLOT);
 }

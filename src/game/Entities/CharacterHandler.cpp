@@ -599,10 +599,21 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     WorldPacket data(SMSG_LOGIN_VERIFY_WORLD, 20);
     data << pCurrChar->GetMapId();
-    data << pCurrChar->GetPositionX();
-    data << pCurrChar->GetPositionY();
-    data << pCurrChar->GetPositionZ();
-    data << pCurrChar->GetOrientation();
+    if (pCurrChar->GetTransport())
+    {
+        Position const& transportPosition = pCurrChar->m_movementInfo.GetTransportPos();
+        data << transportPosition.x;
+        data << transportPosition.y;
+        data << transportPosition.z;
+        data << transportPosition.o;
+    }
+    else
+    {
+        data << pCurrChar->GetPositionX();
+        data << pCurrChar->GetPositionY();
+        data << pCurrChar->GetPositionZ();
+        data << pCurrChar->GetOrientation();
+    }
     SendPacket(data);
 
     // load player specific part before send times
@@ -677,7 +688,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     uint32 miscRequirement = 0;
     AreaLockStatus lockStatus = AREA_LOCKSTATUS_OK;
     if (AreaTrigger const* at = sObjectMgr.GetMapEntranceTrigger(pCurrChar->GetMapId()))
-        lockStatus = pCurrChar->GetAreaTriggerLockStatus(at, miscRequirement);
+        lockStatus = pCurrChar->GetAreaTriggerLockStatus(at, miscRequirement, true);
     else
     {
         // Some basic checks in case of a map without areatrigger
