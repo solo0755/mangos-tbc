@@ -341,7 +341,7 @@ void SpellTargetMgr::Initialize()
                     continue;
                 }
                 if ((SpellTargetInfoTable[targetA].type == TARGET_TYPE_LOCATION_DEST && SpellTargetInfoTable[targetB].type == TARGET_TYPE_UNIT)
-                        || SpellTargetInfoTable[targetA].type == TARGET_TYPE_UNIT && SpellTargetInfoTable[targetB].type == TARGET_TYPE_LOCATION_DEST)
+                        || (SpellTargetInfoTable[targetA].type == TARGET_TYPE_UNIT && SpellTargetInfoTable[targetB].type == TARGET_TYPE_LOCATION_DEST))
                 {
                     data.implicitType[effIdx] = TARGET_TYPE_UNIT_DEST;
                     continue;
@@ -495,6 +495,7 @@ void SpellTargetMgr::Initialize()
                             case TARGET_UNIT_FRIEND_NEAR_CASTER:
                             case TARGET_UNIT_NEAR_CASTER:
                             case TARGET_UNIT_ENEMY: scheme = SCHEME_CLOSEST_CHAIN; break;
+                            case TARGET_UNIT: scheme = SCHEME_RANDOM_CHAIN; break;
                             default: break;
                         }
                     }

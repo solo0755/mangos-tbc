@@ -69,7 +69,7 @@ struct AuraScript
     // called before aura apply and after aura unapply
     virtual void OnApply(Aura* /*aura*/, bool /*apply*/) const {}
     // called during proc eligibility checking
-    virtual bool OnCheckProc(Aura* /*aura*/) const { return true; }
+    virtual bool OnCheckProc(Aura* /*aura*/, ProcExecutionData& /*data*/) const { return true; }
     // called before proc handler
     virtual SpellAuraProcResult OnProc(Aura* /*aura*/, ProcExecutionData& /*procData*/) const { return SPELL_AURA_PROC_OK; }
     // called on absorb of this aura
@@ -112,6 +112,8 @@ class SpellScriptMgr
         static std::map<std::string, SpellScript*> m_spellScriptStringMap;
         static std::map<std::string, AuraScript*> m_auraScriptStringMap;
 };
+
+// note - linux name mangling bugs out if two script templates have same class name - avoid it
 
 template <class T>
 void RegisterScript(std::string stringName)
