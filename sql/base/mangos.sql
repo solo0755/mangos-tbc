@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `db_version`;
 CREATE TABLE `db_version` (
   `version` varchar(120) DEFAULT NULL,
   `creature_ai_version` varchar(120) DEFAULT NULL,
-  `required_s2422_01_mangos_creature_template_spells_extension` bit(1) DEFAULT NULL
+  `required_s2426_01_mangos_dbscript_npc_flag_update` bit(1) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Used DB version notes';
 
 --
@@ -950,6 +950,53 @@ LOCK TABLES `creature_conditional_spawn` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `creature_spawn_data`
+--
+
+DROP TABLE IF EXISTS `creature_spawn_data`;
+CREATE TABLE `creature_spawn_data` (
+  `Guid` int unsigned NOT NULL COMMENT 'guid of creature',
+  `Id` int unsigned NOT NULL COMMENT 'ID of template',
+  PRIMARY KEY (`Guid`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Creature System (Spawn Data)';
+
+--
+-- Dumping data for table `creature_spawn_data`
+--
+
+LOCK TABLES `creature_spawn_data` WRITE;
+/*!40000 ALTER TABLE `creature_spawn_data` DISABLE KEYS */;
+/*!40000 ALTER TABLE `creature_spawn_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `creature_spawn_data_template`
+--
+
+DROP TABLE IF EXISTS `creature_spawn_data_template`;
+CREATE TABLE `creature_spawn_data_template` (
+  `Entry` int unsigned NOT NULL COMMENT 'ID of template',
+  `UnitFlags` bigint NOT NULL DEFAULT '-1',
+  `Faction` int unsigned NOT NULL DEFAULT '0',
+  `ModelId` mediumint unsigned NOT NULL DEFAULT '0',
+  `EquipmentId` mediumint NOT NULL DEFAULT '0',
+  `CurHealth` int unsigned NOT NULL DEFAULT '1',
+  `CurMana` int unsigned NOT NULL DEFAULT '0',
+  `SpawnFlags` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Entry`,`UnitFlags`,`ModelId`,`EquipmentId`,`CurHealth`,`CurMana`,`SpawnFlags`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Creature System (Spawn Data Template)';
+
+--
+-- Dumping data for table `creature_spawn_data_template`
+--
+
+LOCK TABLES `creature_spawn_data_template` WRITE;
+/*!40000 ALTER TABLE `creature_spawn_data_template` DISABLE KEYS */;
+INSERT INTO `creature_spawn_data_template` (`Entry`) VALUES (0);
+/*!40000 ALTER TABLE `creature_spawn_data_template` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `creature_spawn_entry`
 --
 
@@ -1427,7 +1474,7 @@ CREATE TABLE `creature_template_spells` (
   `spell8` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `spell9` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `spell10` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`entry`)
+  PRIMARY KEY (`entry`,`setId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Creature System (Spells used by creature)';
 
 --
@@ -4307,6 +4354,7 @@ INSERT INTO `mangos_string` VALUES
 (746,'Done flushing Arena points.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (747,'Awarding Arena Season rewards for Season %u.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (748,'Awarded Arena Season rewards and wiped old stats.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(749,'Someone in your party is still inside an arena.', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (750,'Not enough players. This game will close in %u mins.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (751,'Not enough players. This game will close in %u seconds.',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
 (752,'Only the Alliance can use that portal',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),

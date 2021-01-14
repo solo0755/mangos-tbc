@@ -168,6 +168,11 @@ void instance_temple_of_ahnqiraj::OnCreatureCreate(Creature* creature)
                 creature->AI()->SetCombatMovement(false);
             creature->CastSpell(creature, SPELL_SUMMON_GIANT_PORTAL, TRIGGERED_OLD_TRIGGERED);
             break;
+        case NPC_EXIT_TRIGGER:
+            creature->SetInCombatWithZone(false);
+            if (creature->AI())
+                creature->AI()->SetCombatMovement(false);
+            break;
     }
 }
 
@@ -414,7 +419,7 @@ bool AreaTrigger_at_temple_ahnqiraj(Player* player, AreaTriggerEntry const* at)
 {
     if (at->id == AREATRIGGER_TWIN_EMPERORS || at->id == AREATRIGGER_SARTURA)
     {
-        if (player->isGameMaster() || !player->IsAlive())
+        if (player->IsGameMaster() || !player->IsAlive())
             return false;
 
         if (instance_temple_of_ahnqiraj* pInstance = (instance_temple_of_ahnqiraj*)player->GetInstanceData())
