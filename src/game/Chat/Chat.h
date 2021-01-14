@@ -467,6 +467,7 @@ class ChatHandler
         bool HandleNpcUnFollowCommand(char* args);
         bool HandleNpcWhisperCommand(char* args);
         bool HandleNpcYellCommand(char* args);
+        bool HandleNpcTempSpawn(char* args);
 
         // TODO: NpcCommands that needs to be fixed :
         bool HandleNpcAddWeaponCommand(char* args);
@@ -672,6 +673,7 @@ class ChatHandler
         bool HandleComeToMeCommand(char* args);
         bool HandleMovespeedShowCommand(char* args);
         bool HandleDebugMovement(char* args);
+        bool HandlePrintMovement(char* args);
 
         bool HandleCooldownListCommand(char* args);
         bool HandleCooldownClearCommand(char* args);
@@ -734,6 +736,7 @@ class ChatHandler
         bool HandleArenaFlushPointsCommand(char* args);
         bool HandleArenaSeasonRewardsCommand(char* args);
         bool HandleArenaDataReset(char* args);
+        bool HandleArenaTeamPointSet(char* args);
 
         bool HandleMmapPathCommand(char* args);
         bool HandleMmapLocCommand(char* args);
@@ -751,6 +754,9 @@ class ChatHandler
 
         // worldstate
         bool HandleWarEffortCommand(char* args);
+        bool HandleSunsReachReclamationPhaseCommand(char* args);
+        bool HandleSunsReachReclamationSubPhaseCommand(char* args);
+        bool HandleSunsReachReclamationCounterCommand(char* args);
         bool HandleExpansionRelease(char* args);
 
         // Battleground

@@ -23,15 +23,14 @@ EndScriptData */
 
 /* Pre-nerf Changes
 Add Dragon's Breath ability - used shortly after Flame Wreath dissipates (random target in melee range).
-
-Patches
-2.1.0 - Shade of Aran will no longer cast Dragon's Breath.
+Patch_2.1.0 - Shade of Aran will no longer cast Dragon's Breath.
 */
 
 #include "AI/ScriptDevAI/include/sc_common.h"
 #include "karazhan.h"
 #include "AI/ScriptDevAI/base/CombatAI.h"
 #include "Spells/Scripts/SpellScript.h"
+#include "Globals/ObjectMgr.h"
 
 enum
 {
@@ -179,7 +178,7 @@ struct boss_aranAI : public RangedCombatAI
         }
     }
 
-    uint32 GetNormalSpellCooldown(uint32 spellId) const
+    static uint32 GetNormalSpellCooldown(uint32 spellId)
     {
         switch (spellId)
         {
@@ -348,9 +347,10 @@ struct boss_aranAI : public RangedCombatAI
                 DisableCombatAction(action);
                 return;
             }
+
             case ARAN_ACTION_DRAGONS_BREATH:
             {
-                if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, uint32(0), SELECT_FLAG_PLAYER))
+                if (Unit* target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, uint32(0), (SELECT_FLAG_PLAYER | SELECT_FLAG_IN_MELEE_RANGE)))
                 {
                     DoCastSpellIfCan(target, SPELL_DRAGONS_BREATH, CAST_TRIGGERED);
                     DisableCombatAction(action);
@@ -383,7 +383,9 @@ struct boss_aranAI : public RangedCombatAI
                         if (DoCastSpellIfCan(m_creature, SPELL_FLAME_WREATH) == CAST_OK)
                         {
                             DoScriptText(urand(0, 1) ? SAY_FLAMEWREATH1 : SAY_FLAMEWREATH2, m_creature);
+#ifdef PRENERF_2_0_3
                             ResetCombatAction(ARAN_ACTION_DRAGONS_BREATH, 27000);
+#endif
                         }
                         break;
                     case SUPER_BLIZZARD:
@@ -487,4 +489,8 @@ void AddSC_boss_shade_of_aran()
     RegisterSpellScript<DispelBlizzard>("spell_dispel_blizzard");
     RegisterSpellScript<MassiveMagneticPull>("spell_massive_magnetic_pull");
     RegisterSpellScript<FlameWreath>("spell_flame_wreath");
+
+    sObjectMgr.AddCreatureCooldown(NPC_SHADOW_OF_ARAN, SPELL_FROSTBOLT, boss_aranAI::GetNormalSpellCooldown(SPELL_FROSTBOLT), boss_aranAI::GetNormalSpellCooldown(SPELL_FROSTBOLT));
+    sObjectMgr.AddCreatureCooldown(NPC_SHADOW_OF_ARAN, SPELL_FIREBALL, boss_aranAI::GetNormalSpellCooldown(SPELL_FIREBALL), boss_aranAI::GetNormalSpellCooldown(SPELL_FIREBALL));
+    sObjectMgr.AddCreatureCooldown(NPC_SHADOW_OF_ARAN, SPELL_ARCANE_MISSILES, boss_aranAI::GetNormalSpellCooldown(SPELL_ARCANE_MISSILES), boss_aranAI::GetNormalSpellCooldown(SPELL_ARCANE_MISSILES));
 }
