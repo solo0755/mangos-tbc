@@ -118,6 +118,21 @@ void Map::RemoveTransport(Transport* transport)
         m_transports.erase(transport);
 }
 
+bool Map::CanSpawn(TypeID typeId, uint32 dbGuid)
+{
+    if (typeId == TYPEID_UNIT)
+        return GetCreatureLinkingHolder()->CanSpawn(dbGuid, this, nullptr, 0.f, 0.f);
+    else if (TYPEID_GAMEOBJECT)
+    {
+        GameObjectData const* data = sObjectMgr.GetGOData(dbGuid);
+        if (data)
+            if ((data->spawnMask & (1 << GetDifficulty())) == 0)
+                return false;
+        return true;
+    }
+    return false;
+}
+
 void Map::LoadMapAndVMap(int gx, int gy)
 {
     if (m_bLoadedGrids[gx][gy])
@@ -1265,7 +1280,7 @@ uint32 Map::GetPlayersCountExceptGMs() const
 {
     uint32 count = 0;
     for (const auto& itr : m_mapRefManager)
-        if (!itr.getSource()->isGameMaster())
+        if (!itr.getSource()->IsGameMaster())
             ++count;
     return count;
 }

@@ -2039,12 +2039,12 @@ SpellAuraProcResult Unit::HandleProcTriggerSpellAuraProc(ProcExecutionData& data
     // Get triggered aura spell info
     SpellEntry const* auraSpellInfo = triggeredByAura->GetSpellProto();
 
-    // Basepoints of trigger aura
+      // Basepoints of trigger aura
     int32 triggerAmount = triggeredByAura->GetModifier()->m_amount;
 
     // Set trigger spell id, target, custom basepoints
 
-    uint32 trigger_spell_id = data.triggeredSpellId;
+    uint32 trigger_spell_id = data.triggeredSpellId;//正义之手修复位置
     Unit* target = trigger_spell_id ? data.triggerTarget : nullptr;
     if (!trigger_spell_id)
         trigger_spell_id = auraSpellInfo->EffectTriggerSpell[triggeredByAura->GetEffIndex()];

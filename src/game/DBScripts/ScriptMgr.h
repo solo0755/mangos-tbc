@@ -52,7 +52,7 @@ enum ScriptCommand                                          // resSource, resTar
     // dataint = (bool) setRun; 0 = off (default), 1 = on
     SCRIPT_COMMAND_OPEN_DOOR                = 11,           // datalong=db_guid (or not provided), datalong2=reset_delay
     SCRIPT_COMMAND_CLOSE_DOOR               = 12,           // datalong=db_guid (or not provided), datalong2=reset_delay
-    SCRIPT_COMMAND_ACTIVATE_OBJECT          = 13,           // source = unit, target=GO
+    SCRIPT_COMMAND_ACTIVATE_OBJECT          = 13,           // source = unit, target=GO; data_flags & SCRIPT_FLAG_COMMAND_ADDITIONAL send gameobject custom anim, datalong = animId
     SCRIPT_COMMAND_REMOVE_AURA              = 14,           // resSource = Unit, datalong = spell_id
     SCRIPT_COMMAND_CAST_SPELL               = 15,           // resSource = Unit, cast spell at resTarget = Unit
     // datalong=spellid
@@ -127,6 +127,9 @@ enum ScriptCommand                                          // resSource, resTar
     // datalong2=castFlags, enum TriggerCastFlags
     // dataint1-3 define the &bp value for the spell. At least one field is required.
     SCRIPT_COMMAND_INTERRUPT_SPELL          = 47,           // datalong = SpellType enum CurrentSpellTypes
+    SCRIPT_COMMAND_MODIFY_UNIT_FLAGS        = 48,           // resSource = Creature
+    // datalong=UnitFlags
+    // datalong2:0x00=toggle, 0x01=add, 0x02=remove
 };
 
 #define MAX_TEXT_ID 4                                       // used for SCRIPT_COMMAND_TALK, SCRIPT_COMMAND_EMOTE, SCRIPT_COMMAND_CAST_SPELL, SCRIPT_COMMAND_TERMINATE_SCRIPT
@@ -230,7 +233,7 @@ struct ScriptInfo
 
         struct                                              // SCRIPT_COMMAND_ACTIVATE_OBJECT (13)
         {
-            uint32 empty1;                                  // datalong
+            uint32 animId;                                  // datalong
             uint32 empty2;                                  // datalong;
         } activateObject;
 
@@ -417,6 +420,12 @@ struct ScriptInfo
             uint32 currentSpellType;                        // datalong
         } interruptSpell;
 
+        struct                                              // SCRIPT_COMMAND_MODIFY_UNIT_FLAGS (48)
+        {
+            uint32 flag;                                    // datalong
+            uint32 change_flag;                             // datalong2
+        } unitFlag;
+
         struct
         {
             uint32 data[3];
@@ -485,6 +494,7 @@ struct ScriptInfo
         {
             case SCRIPT_COMMAND_MOVE_TO:
             case SCRIPT_COMMAND_TEMP_SPAWN_CREATURE:
+            case SCRIPT_COMMAND_ACTIVATE_OBJECT:
             case SCRIPT_COMMAND_CAST_SPELL:
             case SCRIPT_COMMAND_PLAY_SOUND:
             case SCRIPT_COMMAND_CREATE_ITEM:

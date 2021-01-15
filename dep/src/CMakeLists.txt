@@ -20,9 +20,9 @@ if(BUILD_EXTRACTORS AND NOT (BZip2_FOUND OR BZIP2_FOUND))
   add_subdirectory(bzip2)
 endif()
 
-if (NOT ZLIB_FOUND)
+#if (NOT ZLIB_FOUND)
   add_subdirectory(zlib)
-endif()
+#endif()
 
 if (BUILD_GAME_SERVER OR BUILD_LOGIN_SERVER)
   add_subdirectory(gsoap)

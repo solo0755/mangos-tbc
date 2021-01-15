@@ -670,11 +670,13 @@ void AreaAura::Update(uint32 diff)
                                 apply = false;
                             break;
                         case AREA_AURA_PARTY:
-                            // do not stack the same aura from the same caster
-                            // allows stack party-wide auras from totems/pets matching stacking rules
-                            // TODO: Find a better condition (Blizzlike Moonkin aura tricky case)
-                            if (aur == this || aur->GetCaster() == caster || caster->GetTypeId() == TYPEID_PLAYER || !actualSpellInfo->SpellFamilyName ||
-                                !IsStackableSpell(actualSpellInfo, i->second->GetSpellProto(), target))
+                            // non caster self-casted auras (stacked from diff. casters)
+                            if (aur->GetModifier()->m_auraname != SPELL_AURA_NONE && i->second->GetCasterGuid() != GetCasterGuid())
+                            {
+                                apply = IsStackableSpell(actualSpellInfo, i->second->GetSpellProto(), target);
+                                break;
+                            }
+                            if (aur->GetModifier()->m_auraname != SPELL_AURA_NONE || i->second->GetCasterGuid() == GetCasterGuid())
                                 apply = false;
                             break;
                         default:
@@ -830,8 +832,12 @@ void Aura::ApplyModifier(bool apply, bool Real)
 
     if (apply)
         OnApply(apply);
+    if (!apply)
+        OnAfterApply(apply);
     if (aura < TOTAL_AURAS)
         (*this.*AuraHandler [aura])(apply, Real);
+    if (apply)
+        OnAfterApply(apply);
     if (!apply)
         OnApply(apply);
 
@@ -8943,6 +8949,12 @@ void Aura::OnApply(bool apply)
 {
     if (AuraScript* script = GetAuraScript())
         script->OnApply(this, apply);
+}
+
+void Aura::OnAfterApply(bool apply)
+{
+    if (AuraScript* script = GetAuraScript())
+        script->OnAfterApply(this, apply);
 }
 
 bool Aura::OnCheckProc(ProcExecutionData& data)

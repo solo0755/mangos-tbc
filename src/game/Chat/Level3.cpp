@@ -64,7 +64,6 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
-
 #include "Arena/ArenaTeam.h"
 
 #ifdef BUILD_AHBOT

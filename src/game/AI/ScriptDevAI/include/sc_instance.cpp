@@ -81,16 +81,17 @@ void ScriptedInstance::DoRespawnGameObject(ObjectGuid guid, uint32 timeToDespawn
 
     if (GameObject* pGo = instance->GetGameObject(guid))
     {
-        // not expect any of these should ever be handled
-        if (pGo->GetGoType() == GAMEOBJECT_TYPE_FISHINGNODE || pGo->GetGoType() == GAMEOBJECT_TYPE_DOOR ||
-                pGo->GetGoType() == GAMEOBJECT_TYPE_BUTTON)
-            return;
-
         if (pGo->IsSpawned())
             return;
 
-        pGo->SetRespawnTime(timeToDespawn);
-        pGo->Refresh();
+        // static spawned go - can only respawn
+        if (pGo->IsSpawnedByDefault())
+            pGo->Respawn();
+        else
+        {
+            pGo->SetRespawnTime(timeToDespawn);
+            pGo->Refresh();
+        }
     }
 }
 
@@ -167,7 +168,7 @@ Player* ScriptedInstance::GetPlayerInMap(bool bOnlyAlive /*=false*/, bool bCanBe
     for (const auto& lPlayer : lPlayers)
     {
         Player* pPlayer = lPlayer.getSource();
-        if (pPlayer && (!bOnlyAlive || pPlayer->IsAlive()) && (bCanBeGamemaster || !pPlayer->isGameMaster()))
+        if (pPlayer && (!bOnlyAlive || pPlayer->IsAlive()) && (bCanBeGamemaster || !pPlayer->IsGameMaster()))
             return pPlayer;
     }
 
