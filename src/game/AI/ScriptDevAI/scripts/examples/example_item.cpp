@@ -1,4 +1,4 @@
-/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
+ï»¿/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; either version 2 of the License, or
@@ -26,48 +26,48 @@ EndScriptData */
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"ÌáÉıµ½70¼¶+³õÊ¼Ì××°+ÎäÆ÷ÊìÁ·¶È", GOSSIP_SENDER_MAIN, 122);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"æå‡åˆ°70çº§+åˆå§‹å¥—è£…+æ­¦å™¨ç†Ÿç»ƒåº¦", GOSSIP_SENDER_MAIN, 122);
 	if (pPlayer->getLevel() >= 60) {
 		if (!addRep(pPlayer, false)) {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"ÌáÉıÎå´óÇøÓò¸±±¾ÉùÍûÖµ³ç°İ ", GOSSIP_SENDER_MAIN, 206);
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"æå‡äº”å¤§åŒºåŸŸå‰¯æœ¬å£°æœ›å€¼å´‡æ‹œ ", GOSSIP_SENDER_MAIN, 206);
 		}
 		else {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"ÇĞ»» [Õ¼ĞÇÕß/°Â¶û¶à] ÉùÍûÖµ³ç°İ", GOSSIP_SENDER_MAIN, 206);
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"åˆ‡æ¢ [å æ˜Ÿè€…/å¥¥å°”å¤š] å£°æœ›å€¼å´‡æ‹œ", GOSSIP_SENDER_MAIN, 206);
 		}
-		if (!check(pPlayer, false)) {//Ôİ¶¨60¼¶²ÅÄÜÑ§Ï°
+		if (!check(pPlayer, false)) {//æš‚å®š60çº§æ‰èƒ½å­¦ä¹ 
 			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
-			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  Ö°Òµ²Ëµ¥
+			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  èŒä¸šèœå•
 		}
 	}
 	if (sPzxConfig.GetIntDefault("openT", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"ÇëËÍÎÒÒ»×é|cff6247c8Ö°ÒµÌ××°|h|r", GOSSIP_SENDER_MAIN, 107);
+		pPlayer->ADD_GOSSIP_ITEM(7, u8"è¯·é€æˆ‘ä¸€ç»„|cff6247c8èŒä¸šå¥—è£…|h|r", GOSSIP_SENDER_MAIN, 107);
 	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"Ñ§Ï°-|cff6247c8ÉÌÒµ¼¼ÄÜ|h|r", GOSSIP_SENDER_MAIN, 301);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"å­¦ä¹ -|cff6247c8å•†ä¸šæŠ€èƒ½|h|r", GOSSIP_SENDER_MAIN, 301);
 
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> É³ËşË¹³Ç£¨ĞÂÊÖ½Ó´ı£©", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ¿¨À­ÔŞ ÍÅ¶Ó¸±±¾", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> æ²™å¡”æ–¯åŸï¼ˆæ–°æ‰‹æ¥å¾…ï¼‰", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> å¡æ‹‰èµ å›¢é˜Ÿå‰¯æœ¬", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	if (pPlayer->GetTeam() == HORDE) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> °Â¸ñÈğÂê", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ÓÄ°µ³Ç", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> À×öªÑÂ", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ÒøÔÂ³Ç", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> å¥¥æ ¼ç‘ç›", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> å¹½æš—åŸ", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> é›·éœ†å´–", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> é“¶æœˆåŸ", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
 	}
 	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ÌúÂ¯±¤", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ±©·ç³Ç", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> ´ïÄÉËÕË¹", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"´«ËÍ--> °£Ë÷´ï", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> é“ç‚‰å ¡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> æš´é£åŸ", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> è¾¾çº³è‹æ–¯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"ä¼ é€--> åŸƒç´¢è¾¾", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
 	}
 
 	if (pPlayer->getClass() == CLASS_HUNTER) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"ÌáÉı ÎÒµÄ³èÎï|cff6247c8ÖÒ³Ï¶ÈºÍµÈ¼¶|h|r ", GOSSIP_SENDER_MAIN, 205);
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"æå‡ æˆ‘çš„å® ç‰©|cff6247c8å¿ è¯šåº¦å’Œç­‰çº§|h|r ", GOSSIP_SENDER_MAIN, 205);
 	}
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Achievement_PVP_G_12.blp:20|t|rÊäÈëID|cff0070dd»ñÈ¡ÎïÆ·|r,½öÏŞ²¿·ÖÎïÆ·", GOSSIP_SENDER_MAIN, 777, u8"ÔÚµ¯¿òÖĞÊäÈëÎïÆ·ID±àºÅ ÊıÁ¿\n Àı:|cFF00F0ffĞèÒª4¸öÎŞµ×°ü|r£¬ÇëÊäÈë:|cFFF0FF0014156 4|r", 0, true);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Achievement_PVP_G_12.blp:20|t|rè¾“å…¥ID|cff0070ddè·å–ç‰©å“|r,ä»…é™éƒ¨åˆ†ç‰©å“", GOSSIP_SENDER_MAIN, 777, u8"åœ¨å¼¹æ¡†ä¸­è¾“å…¥ç‰©å“IDç¼–å· æ•°é‡\n ä¾‹:|cFF00F0fféœ€è¦4ä¸ªæ— åº•åŒ…|rï¼Œè¯·è¾“å…¥:|cFFF0FF0014156 4|r", 0, true);
 	}
 	if (pPlayer->IsGameMaster()) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"ÖØĞÂ¼ÓÔØÏµÍ³²ÎÊı", GOSSIP_SENDER_MAIN, 778);
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"é‡æ–°åŠ è½½ç³»ç»Ÿå‚æ•°", GOSSIP_SENDER_MAIN, 778);
 	}
 	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
@@ -79,13 +79,13 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 
 	if (uiAction == 107) {
 		if (sPzxConfig.GetIntDefault("openT3", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"ÇëËÍÎÒ|cffe31bd2T4Ì××°|h|r", GOSSIP_SENDER_MAIN, 109);
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"è¯·é€æˆ‘|cffe31bd2T4å¥—è£…|h|r", GOSSIP_SENDER_MAIN, 109);
 		}
 		if (sPzxConfig.GetIntDefault("openT4", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"ÇëËÍÎÒ|cffe31bd2T5Ì××°|h|r", GOSSIP_SENDER_MAIN, 110);
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"è¯·é€æˆ‘|cffe31bd2T5å¥—è£…|h|r", GOSSIP_SENDER_MAIN, 110);
 		}
 		if (sPzxConfig.GetIntDefault("openT5", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"ÇëËÍÎÒ|cffe31bd2T6Ì××°|h|r", GOSSIP_SENDER_MAIN, 111);
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"è¯·é€æˆ‘|cffe31bd2T6å¥—è£…|h|r", GOSSIP_SENDER_MAIN, 111);
 		}
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
@@ -108,18 +108,18 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->GiveLevel(70);
 			pPlayer->InitTalentForLevel();
 		}
-		//pPlayer->learnSpell(33392, false);//ÖĞ¼¶ÆïÊõ
-		pPlayer->learnSpell(34093, false);//×¨¼Ò¼¶¼¶ÆïÊõ
+		//pPlayer->learnSpell(33392, false);//ä¸­çº§éª‘æœ¯
+		pPlayer->learnSpell(34093, false);//ä¸“å®¶çº§çº§éª‘æœ¯
 
 		pPlayer->SetUInt32Value(PLAYER_XP, 0);
 		pPlayer->UpdateSkillsForLevel(true);
 		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
-			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//Ôö¼ÓT1Ì××°
+			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//å¢åŠ T1å¥—è£…
 		}
 	}
 
 	if (uiAction == 201) {
-		check(pPlayer, true); //Ñ§Ï°Ö°Òµ¼¼ÄÜ
+		check(pPlayer, true); //å­¦ä¹ èŒä¸šæŠ€èƒ½
 	}
 
 	if (uiAction == 205) {
@@ -129,47 +129,47 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			Pet* HunterPet = pPlayer->GetPet();
 			if (HunterPet->getLevel() < maxlevel || HunterPet->GetLoyaltyLevel() < LoyaltyLevel(BEST_FRIEND)) {
 
-				//player->ADD_GOSSIP_ITEM(3, u8"ÌáÉı ÎÒµÄ³èÎïÖÒ³Ï¶ÈºÍµÈ¼¶ ", GOSSIP_SENDER_MAIN, 205);
+				//player->ADD_GOSSIP_ITEM(3, u8"æå‡ æˆ‘çš„å® ç‰©å¿ è¯šåº¦å’Œç­‰çº§ ", GOSSIP_SENDER_MAIN, 205);
 				pPlayer->GetPet()->GivePetXP(99999999);
 				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:|cff0000ff ÄúµÄ³èÎïÒÑ¾­Ç¿»¯Íê³É!|h|r");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:|cff0000ff æ‚¨çš„å® ç‰©å·²ç»å¼ºåŒ–å®Œæˆ!|h|r");
 			}
 		}
 		else {
-			ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:ÇëÏÈ|cffff0000 Ñ±·ş»òÕßÕÙ»½³ö|h|rÒ»Ö»ÒªÇ¿»¯µÄ³èÎï");
+			ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·å…ˆ|cffff0000 é©¯æœæˆ–è€…å¬å”¤å‡º|h|rä¸€åªè¦å¼ºåŒ–çš„å® ç‰©");
 		}
 	}
 	if (uiAction == 206) {
 		addRep(pPlayer, true);
-		FactionEntry const* factionEntry1 = sFactionStore.LookupEntry<FactionEntry>(932);//°Â¶û¶à
-		FactionEntry const* factionEntry2 = sFactionStore.LookupEntry<FactionEntry>(934);//Õ¼ĞÇÕß
+		FactionEntry const* factionEntry1 = sFactionStore.LookupEntry<FactionEntry>(932);//å¥¥å°”å¤š
+		FactionEntry const* factionEntry2 = sFactionStore.LookupEntry<FactionEntry>(934);//å æ˜Ÿè€…
 		if (pPlayer->GetReputationMgr().GetReputation(factionEntry1) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
-			pPlayer->GetReputationMgr().SetReputation(factionEntry1, sPzxConfig.GetIntDefault("rep.init", 42001));//ÉùÍûÖµ
-																												  //pPlayer->GetReputationMgr().SetReputation(factionEntry2, 0);//ÉùÍûÖµ
+			pPlayer->GetReputationMgr().SetReputation(factionEntry1, sPzxConfig.GetIntDefault("rep.init", 42001));//å£°æœ›å€¼
+																												  //pPlayer->GetReputationMgr().SetReputation(factionEntry2, 0);//å£°æœ›å€¼
 		}
 		else {
-			//pPlayer->GetReputationMgr().SetReputation(factionEntry1, 0);//ÉùÍûÖµ
-			pPlayer->GetReputationMgr().SetReputation(factionEntry2, sPzxConfig.GetIntDefault("rep.init", 42001));//ÉùÍûÖµ
+			//pPlayer->GetReputationMgr().SetReputation(factionEntry1, 0);//å£°æœ›å€¼
+			pPlayer->GetReputationMgr().SetReputation(factionEntry2, sPzxConfig.GetIntDefault("rep.init", 42001));//å£°æœ›å€¼
 		}
 
 	}
 	if (uiAction == 301) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"Á¶½ğÊõ", GOSSIP_SENDER_MAIN, 301 + 1);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:20|t|r ¶ÍÔì", GOSSIP_SENDER_MAIN, 301 + 2);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"ÖÆÆ¤", GOSSIP_SENDER_MAIN, 301 + 3);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"²Ã·ì", GOSSIP_SENDER_MAIN, 301 + 4);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engineering.blp:20|t|r ¹¤³Ì", GOSSIP_SENDER_MAIN, 301 + 5);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engraving.blp:20|t|r ¸½Ä§", GOSSIP_SENDER_MAIN, 301 + 6);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gem_02.blp:20|t|r Öé±¦", GOSSIP_SENDER_MAIN, 301 + 7);
-		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"ÃúÎÄ",        GOSSIP_SENDER_MAIN, 301+8);773
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"²İÒ©", GOSSIP_SENDER_MAIN, 301 + 9);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"°şÆ¤", GOSSIP_SENDER_MAIN, 301 + 10);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"²É¿ó", GOSSIP_SENDER_MAIN, 301 + 11);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"¼±¾È", GOSSIP_SENDER_MAIN, 301 + 12);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"µöÓã", GOSSIP_SENDER_MAIN, 301 + 13);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"Åëâ¿", GOSSIP_SENDER_MAIN, 301 + 14);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"ç‚¼é‡‘æœ¯", GOSSIP_SENDER_MAIN, 301 + 1);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:20|t|r é”»é€ ", GOSSIP_SENDER_MAIN, 301 + 2);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"åˆ¶çš®", GOSSIP_SENDER_MAIN, 301 + 3);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"è£ç¼", GOSSIP_SENDER_MAIN, 301 + 4);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engineering.blp:20|t|r å·¥ç¨‹", GOSSIP_SENDER_MAIN, 301 + 5);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engraving.blp:20|t|r é™„é­”", GOSSIP_SENDER_MAIN, 301 + 6);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gem_02.blp:20|t|r ç å®", GOSSIP_SENDER_MAIN, 301 + 7);
+		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"é“­æ–‡",        GOSSIP_SENDER_MAIN, 301+8);773
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"è‰è¯", GOSSIP_SENDER_MAIN, 301 + 9);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"å‰¥çš®", GOSSIP_SENDER_MAIN, 301 + 10);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"é‡‡çŸ¿", GOSSIP_SENDER_MAIN, 301 + 11);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"æ€¥æ•‘", GOSSIP_SENDER_MAIN, 301 + 12);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"é’“é±¼", GOSSIP_SENDER_MAIN, 301 + 13);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"çƒ¹é¥ª", GOSSIP_SENDER_MAIN, 301 + 14);
 
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
@@ -195,16 +195,16 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(1, 1541.0f, -4426.0f, 11.24f, 0.85f);
 			break;
-		case 5://ÓÄ°µ
+		case 5://å¹½æš—
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(0, 1633.75f, 240.167f, -43.1034f, 6.26128f);
 			break;
-		case 7://À×öªÑÂ
+		case 7://é›·éœ†å´–
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(1, -1274.45f, 71.8601f, 128.159f, 2.80623f);
 			break;
 
-		case 9://ÒøÔÂ³Ç
+		case 9://é“¶æœˆåŸ
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(530, 9738.28f, -7454.19f, 13.5605f, 0.043914f);
 			break;
@@ -214,16 +214,16 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->TeleportTo(0, -4917.0f, -955.0f, 502.0f, 0.0f);
 			break;
 
-		case 6://±©·ç³Ç
+		case 6://æš´é£åŸ
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(0, -8842.09f, 626.358f, 94.0867f, 3.61363f);
 			break;
-		case 8://´ïÄÉËÕË¹
+		case 8://è¾¾çº³è‹æ–¯
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(1, 9869.91f, 2493.58f, 1315.88f, 2.78897f);
 			break;
 
-		case 10://°£Ë÷´ï
+		case 10://åŸƒç´¢è¾¾
 			pPlayer->CLOSE_GOSSIP_MENU();
 			pPlayer->TeleportTo(530, -3864.92f, -11643.7f, -137.644f, 5.50862f);
 			break;
@@ -240,7 +240,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 
 	if (uiAction == 777) {
 		/*	if (!player->HasItemCount(sPzxConfig.GetIntDefault("vipItemID", 40003), 1, true)) {
-		ChatHandler(pPlayer).PSendSysMessage( u8"[ÏµÍ³ÏûÏ¢]:ĞèÒªVIPÈÏÖ¤¿¨²Å¿ÉÒÔÊ¹ÓÃ±¾¹¦ÄÜ£¬ÇëÁªÏµGM»ñÈ¡");
+		ChatHandler(pPlayer).PSendSysMessage( u8"[ç³»ç»Ÿæ¶ˆæ¯]:éœ€è¦VIPè®¤è¯å¡æ‰å¯ä»¥ä½¿ç”¨æœ¬åŠŸèƒ½ï¼Œè¯·è”ç³»GMè·å–");
 		player->CLOSE_GOSSIP_MENU();
 		return false;
 		}*/
@@ -264,14 +264,14 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			delete[] b;
 			//getItemID = std::stoi(reStr);
 			if (ssitem[0] <= 0) {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:ÇëÊäÈëÕıÈ·µÄÎïÆ·ID");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·è¾“å…¥æ­£ç¡®çš„ç‰©å“ID");
 				pPlayer->CLOSE_GOSSIP_MENU();
 
 				return false;
 			}
 		}
 		catch (...) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:ÇëÊäÈëÕıÈ·µÄÎïÆ·ID");
+			ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·è¾“å…¥æ­£ç¡®çš„ç‰©å“ID");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
@@ -282,8 +282,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 
 			if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 155))
 			{
-				if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//ÒÑ¾­ÓĞÒ»¼şÁË
-					ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:¸ÃÎïÆ·Î¨Ò»");
+				if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//å·²ç»æœ‰ä¸€ä»¶äº†
+					ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯¥ç‰©å“å”¯ä¸€");
 				}
 				ItemPosCountVec dest;
 				InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, ssitem[1]);
@@ -291,20 +291,20 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				{
 					Item* item = pPlayer->StoreNewItem(dest, pProto->ItemId, true);
 					pPlayer->SendNewItem(item, ssitem[1], true, false);
-					ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖĞ", item->GetProto()->Name1);
+					ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 				}
 				else
 				{
 					pPlayer->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
-					ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:Çë±£³Ö°ü°üÓĞ×ã¹»¿Õ¼ä");
+					ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·ä¿æŒåŒ…åŒ…æœ‰è¶³å¤Ÿç©ºé—´");
 				}
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:»ñÈ¡ÎïÆ·µÈ¼¶¹ı¸ß,ĞèĞ¡ÓÚ[%d]£¬ÇëÁªÏµ¹ÜÀíÔ±", sPzxConfig.GetIntDefault("item.level", 155));
+				ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è·å–ç‰©å“ç­‰çº§è¿‡é«˜,éœ€å°äº[%d]ï¼Œè¯·è”ç³»ç®¡ç†å‘˜", sPzxConfig.GetIntDefault("item.level", 155));
 			}
 		}
 		else
-			ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:ÎïÆ·Î´ÕÒµ½");
+			ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:ç‰©å“æœªæ‰¾åˆ°");
 
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return false;
@@ -312,7 +312,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	if (uiAction == 778) {
 		sPzxConfig.Reload();
-		ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:configÎÄ¼ş¼ÓÔØ³É¹¦");
+		ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:configæ–‡ä»¶åŠ è½½æˆåŠŸ");
 		pPlayer->CLOSE_GOSSIP_MENU();
 	}
 	pPlayer->CLOSE_GOSSIP_MENU();
