@@ -607,7 +607,7 @@ bool GossipSelect_example_creature_code(Player* pPlayer, Creature* pCreature, ui
 				}
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%s]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
 			}
 		}
 		else
