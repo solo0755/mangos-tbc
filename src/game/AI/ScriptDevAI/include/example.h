@@ -1,4 +1,4 @@
-﻿#include "AI/ScriptDevAI/include/sc_common.h"
+#include "AI/ScriptDevAI/include/sc_common.h"
 #include "Config/PzxConfig.h"
 const uint32 factionID[2][53] =
 {
