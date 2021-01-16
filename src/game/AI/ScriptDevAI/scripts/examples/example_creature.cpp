@@ -260,42 +260,6 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
 	pPlayer->PrepareGossipMenu(pCreature, pPlayer->GetDefaultGossipMenuForSource(pCreature));
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
-	if (pPlayer->getLevel() >= 60) {
-		if (!addRep(pPlayer, false)) {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升五大区域副本声望值崇拜 ", GOSSIP_SENDER_MAIN, 206);
-		}
-		else {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
-		}
-		if (!check(pPlayer, false)) {//暂定60级才能学习
-			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
-			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
-		}
-	}
-	if (sPzxConfig.GetIntDefault("openT", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"请送我一组|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
-	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
-
-
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-	if (pPlayer->GetTeam() == HORDE) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-	}else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-	}
-
-	if (pPlayer->getClass() == CLASS_HUNTER) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
-	}
-	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入物品ID获取物品   **使用说明**|h|r:在弹出框中输入|cff6247c8物品ID 数量|h|r", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
-	}
-	if (pPlayer->IsGameMaster()) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
-	}
 	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
 
