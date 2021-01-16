@@ -1,4 +1,4 @@
-/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
+ï»¿/* This file is part of the ScriptDev2 Project. See AUTHORS file for Copyright information
 * This program is free software licensed under GPL version 2
 * Please see the included DOCS/LICENSE.TXT for more information */
 
@@ -153,7 +153,7 @@ bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, Creature* pCreature)
 bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, Item* item)
 {
 	std::ostringstream oss;
-	oss << item->GetEntry();//Í¨¹ıIDÈ¥»ñÈ¡½Å±¾
+	oss << item->GetEntry();//é€šè¿‡IDå»è·å–è„šæœ¬
 	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
 	if (itemScriptName.length() <= 1)
 		return false;
@@ -210,7 +210,7 @@ bool ScriptDevAIMgr::OnGossipSelect(Player* pPlayer, Item* item, uint32 sender, 
 
 
 	std::ostringstream oss;
-	oss << item->GetEntry();//Í¨¹ıIDÈ¥»ñÈ¡½Å±¾
+	oss << item->GetEntry();//é€šè¿‡IDå»è·å–è„šæœ¬
 	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
 	if (itemScriptName.length() <= 1)
 		return false;
@@ -587,7 +587,7 @@ void ScriptDevAIMgr::LoadScriptNames()
     while (result->NextRow());
     delete result;
 
-	//¼ÓÔØ×Ô¶¨Òåitem½Å±¾
+	//åŠ è½½è‡ªå®šä¹‰itemè„šæœ¬
 	Tokens tokens = StrSplit(sConfig.GetStringDefault("pzxItemScripts", ""), ";");
 	for (auto& token : tokens)
 	{
@@ -598,7 +598,7 @@ void ScriptDevAIMgr::LoadScriptNames()
 			sLog.outString(">> Loaded  PZX Script Names %s", token);
 		}
 	}
-	//¼ÓÔØ×Ô¶¨Òåitem½Å±¾½áÊø
+	//åŠ è½½è‡ªå®šä¹‰itemè„šæœ¬ç»“æŸ
 
     std::sort(m_scriptNames.begin(), m_scriptNames.end());
 

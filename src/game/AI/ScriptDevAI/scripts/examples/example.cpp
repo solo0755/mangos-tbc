@@ -1,4 +1,4 @@
-#include "AI/ScriptDevAI/include/example.h"
+ï»¿#include "AI/ScriptDevAI/include/example.h"
 
 
 bool check(Player *player, bool modify) {
@@ -7,7 +7,7 @@ bool check(Player *player, bool modify) {
 	for (uint32 id = 0; id < NUM_BREATHS; id++) {
 		const initClazz clzz = all[id];
 		if (clzz.clazz > 0 && player->getClass() == clzz.clazz) {
-			//¼ì²é¼¼ÄÜ
+			//æ£€æŸ¥æŠ€èƒ½
 			const uint32* spells = clzz.checkSpells;
 			while (spells != nullptr&&*spells > 0) {
 				if (!player->HasSpell(*spells)) {
@@ -21,7 +21,7 @@ bool check(Player *player, bool modify) {
 				spells++;
 			}
 
-			//¼ì²éÎïÆ·
+			//æ£€æŸ¥ç‰©å“
 			const uint32* items = clzz.checkItems;
 			while (items != nullptr&&*items > 0) {
 				if (!player->HasItemCount(*items, 1, true)) {
@@ -34,17 +34,17 @@ bool check(Player *player, bool modify) {
 							Item* item = player->StoreNewItem(dest, *items, true);
 							//player->SendNewItem(item, 1, false, true);
 							player->SendNewItem(item, 1, true, false);
-							ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖĞ", item->GetProto()->Name1);
+							ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 						}
 						else
 						{
 							player->SendEquipError(msg, nullptr, nullptr, *items);
-							ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:Çë±£³Ö°ü°üÓĞ×ã¹»¿Õ¼ä");
+							ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·ä¿æŒåŒ…åŒ…æœ‰è¶³å¤Ÿç©ºé—´");
 							isok = false;
 						}
 					}
 					else
-						break;//¼ì²éÄ£Ê½¾ÍÍ£Ö¹
+						break;//æ£€æŸ¥æ¨¡å¼å°±åœæ­¢
 				}
 				items++;
 			}
@@ -58,14 +58,14 @@ bool check(Player *player, bool modify) {
 
 }
 void addOneItemToPlayer(uint32 itemid, Player* player) {
-	if (!player->HasItemCount(itemid, 1, true)) {//ÒÑ¾­ÓĞÒ»¼şÁË
+	if (!player->HasItemCount(itemid, 1, true)) {//å·²ç»æœ‰ä¸€ä»¶äº†
 		ItemPosCountVec dest;
 		InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemid, 1);
 		if (msg == EQUIP_ERR_OK)
 		{
 			Item* item = player->StoreNewItem(dest, itemid, true);
 			player->SendNewItem(item, 1, true, false);
-			ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖĞ", item->GetProto()->Name1);
+			ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 		}
 	}
 }
@@ -77,23 +77,23 @@ bool addRep(Player *player, bool modify) {
 
 	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
 	for (uint32 id = 0; id < 5; id++) {
-		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID ²Î¿¼DPS
+		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID å‚è€ƒDPS
 		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
 		if (player->GetReputationMgr().GetReputation(factionEntry) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
 			if (modify) {
-				player->GetReputationMgr().SetReputation(factionEntry, sPzxConfig.GetIntDefault("rep.init", 42001));//ÉùÍûÖµ
+				player->GetReputationMgr().SetReputation(factionEntry, sPzxConfig.GetIntDefault("rep.init", 42001));//å£°æœ›å€¼
 
 			}
 			isok = false;
 		}
 	}
 	if (modify) {
-		addOneItemToPlayer(31704, player);//·ç±©Ô¿³×
-		addOneItemToPlayer(24490, player);//¿¨À­ÔŞÔ¿³×
-		addOneItemToPlayer(31084, player);//½ûÄ§¼àÓü
-		addOneItemToPlayer(30634, player);//Æ½Ãñ¿ßÇøÓò
-		addOneItemToPlayer(30637, player);//ÆÆËğ´óÌü
-		addOneItemToPlayer(27991, player);//°²ÒİÃÔ¹¬
+		addOneItemToPlayer(31704, player);//é£æš´é’¥åŒ™
+		addOneItemToPlayer(24490, player);//å¡æ‹‰èµé’¥åŒ™
+		addOneItemToPlayer(31084, player);//ç¦é­”ç›‘ç‹±
+		addOneItemToPlayer(30634, player);//å¹³æ°‘çªŸåŒºåŸŸ
+		addOneItemToPlayer(30637, player);//ç ´æŸå¤§å…
+		addOneItemToPlayer(27991, player);//å®‰é€¸è¿·å®«
 	}
 
 	return isok;
@@ -110,7 +110,7 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 			if (pProto->ItemSet == itemsetid)
 			{
-				if (player->HasItemCount(pProto->ItemId, 1, true)) {//ÒÑ¾­ÓĞÒ»¼şÁË
+				if (player->HasItemCount(pProto->ItemId, 1, true)) {//å·²ç»æœ‰ä¸€ä»¶äº†
 					continue;
 				}
 				ItemPosCountVec dest;
@@ -123,12 +123,12 @@ void addItemSet(Player *player, uint8 itemindex) {
 
 					//player->SendNewItem(item, 1, false, true);
 					player->SendNewItem(item, 1, true, false);
-					ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:%s ÒÑ¾­Ìí¼Óµ½Äã°üÖĞ", item->GetProto()->Name1);
+					ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:%s å·²ç»æ·»åŠ åˆ°ä½ åŒ…ä¸­", item->GetProto()->Name1);
 				}
 				else
 				{
 					player->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
-					ChatHandler(player).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:Çë±£³Ö°ü°üÓĞ×ã¹»¿Õ¼ä");
+					ChatHandler(player).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯·ä¿æŒåŒ…åŒ…æœ‰è¶³å¤Ÿç©ºé—´");
 					//PSendSysMessage(LANG_ITEM_CANNOT_CREATE, pProto->ItemId, 1);
 				}
 			}
@@ -185,7 +185,7 @@ bool LearnAllRecipesInProfession(Player *pPlayer, SkillType skill)
 	}
 	pPlayer->SetSkill(SkillInfo->id, 350, 350);
 	LearnSkillRecipesHelper(pPlayer, SkillInfo->id);
-	ChatHandler(pPlayer).PSendSysMessage(u8"ËùÓĞ %s Åä·½ÒÑ¾­Ñ§Ï°Íê³É", skill_name);
+	ChatHandler(pPlayer).PSendSysMessage(u8"æ‰€æœ‰ %s é…æ–¹å·²ç»å­¦ä¹ å®Œæˆ", skill_name);
 	return true;
 }
 
@@ -193,12 +193,12 @@ void CompleteLearnProfession(Player *pPlayer,  SkillType skill)
 {
 	if (pPlayer->GetFreePrimaryProfessionPoints() == 0 && !(skill == SKILL_COOKING || skill == SKILL_FIRST_AID || skill == SKILL_FISHING))
 	{
-		ChatHandler(pPlayer).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:ÄãÒÑ¾­Ñ§Ï°ÁË2Ïî×¨Òµ¼¼ÄÜÁË.");
+		ChatHandler(pPlayer).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:ä½ å·²ç»å­¦ä¹ äº†2é¡¹ä¸“ä¸šæŠ€èƒ½äº†.");
 	}
 	else
 	{
 		if (!LearnAllRecipesInProfession(pPlayer, skill))
-			ChatHandler(pPlayer).PSendSysMessage(u8"ÏµÍ³´íÎó.");
+			ChatHandler(pPlayer).PSendSysMessage(u8"ç³»ç»Ÿé”™è¯¯.");
 	}
 }
 bool GossipSelect_ProfessionNPC(Player* player,  uint32 sender, const uint32 action)

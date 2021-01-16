@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify
@@ -110,9 +110,9 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         return;
     }
 	std::ostringstream oss;
-	oss << pItem->GetEntry();//Í¨¹ýIDÈ¥»ñÈ¡½Å±¾
+	oss << pItem->GetEntry();//é€šè¿‡IDåŽ»èŽ·å–è„šæœ¬
 	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
-	if (itemScriptName.length()>1) {//ÔÞÖú¿¨ÎïÆ·ÌØÊâ´¦Àí,ÎïÆ·ID±ØÐë´óÓÚ2Î»Êý
+	if (itemScriptName.length()>1) {//èµžåŠ©å¡ç‰©å“ç‰¹æ®Šå¤„ç†,ç‰©å“IDå¿…é¡»å¤§äºŽ2ä½æ•°
 		if (pUser->IsInCombat()) {
 			pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, pItem, nullptr);
 		}
