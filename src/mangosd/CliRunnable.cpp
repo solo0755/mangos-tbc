@@ -484,7 +484,7 @@ bool ChatHandler::HandleAccountOnlineListCommand(char* args)
 
 bool ChatHandler::HandleAccountLoadAllCommand(char* args) {
 
-	sAccountMgr.LoadOldToNeW("test", "test");
+	sAccountMgr.LoadOldToNeW("test", "test");//加载account_old表数据到新表中去
 	PSendSysMessage(LANG_ACCOUNT_CREATED, "loadTest");
 	return true;
 }
