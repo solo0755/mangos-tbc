@@ -341,6 +341,9 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
 	}
+	if (sPzxConfig.GetIntDefault("openT", 1)) {
+		pPlayer->ADD_GOSSIP_ITEM(7, u8"请送我一组|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
+	}
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 	if (pPlayer->GetTeam() == HORDE) {
@@ -351,6 +354,12 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 
 	if (pPlayer->getClass() == CLASS_HUNTER) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
+	}
+	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入物品ID获取物品   **使用说明**|h|r:在弹出框中输入|cff6247c8物品ID 数量|h|r", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
+	}
+	if (pPlayer->IsGameMaster()) {
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
 	}
 	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
@@ -438,13 +447,36 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 
 		pPlayer->SetUInt32Value(PLAYER_XP, 0);
 		pPlayer->UpdateSkillsForLevel(true);
-		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 6) {
-			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 6));//增加T1套装
+		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
+			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
 		}
 	}
 	if (uiAction == 201) {
 
 		check(pPlayer, true); //学习职业技能
+	}
+
+	if (uiAction == 107) {
+		if (sPzxConfig.GetIntDefault("openT3", 1)) {
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T4套装|h|r", GOSSIP_SENDER_MAIN, 109);
+		}
+		if (sPzxConfig.GetIntDefault("openT4", 1)) {
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T5套装|h|r", GOSSIP_SENDER_MAIN, 110);
+		}
+		if (sPzxConfig.GetIntDefault("openT5", 1)) {
+			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T6套装|h|r", GOSSIP_SENDER_MAIN, 111);
+		}
+		pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
+		return true;
+	}
+	if (uiAction == 109) {
+		addItemSet(pPlayer, 0);
+	}
+	if (uiAction == 110) {
+		addItemSet(pPlayer, 1);
+	}
+	if (uiAction == 111) {
+		addItemSet(pPlayer, 2);
 	}
 	if (uiAction == 205) {
 
@@ -498,10 +530,96 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		}
 		return true;
 	}
+
+	if (uiAction == 778) {
+		sPzxConfig.Reload();
+		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:config文件加载成功");
+		pPlayer->CLOSE_GOSSIP_MENU();
+	}
+
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 }
 
+
+bool GossipSelect_example_creature_code(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction, const char* reStr) {
+
+	if (uiAction == 777) {
+		/*	if (!player->HasItemCount(sPzxConfig.GetIntDefault("vipItemID", 40003), 1, true)) {
+		ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:需要VIP认证卡才可以使用本功能，请联系GM获取");
+		player->CLOSE_GOSSIP_MENU();
+
+		return false;
+		}*/
+		sLog.outString("[pzx] get Input str =%s", reStr);
+		std::string a(reStr);
+		char * b = new char[a.length() + 1];
+		uint32 ssitem[2] = { 0, 1 };
+		try {
+			std::strcpy(b, a.c_str());
+			int index = 0;
+			char *ptr;
+			ptr = strtok(b, " ");
+			while (ptr != NULL)
+			{
+				if (index == 2)
+					break;
+				ssitem[index] = std::stoi(ptr);
+				ptr = strtok(NULL, " ");
+				index++;
+			}
+			delete[] b;
+			//getItemID = std::stoi(reStr);
+			if (ssitem[0] <= 0) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID");
+				pPlayer->CLOSE_GOSSIP_MENU();
+
+				return false;
+			}
+		}
+		catch (...) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+
+
+		ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(ssitem[0]);
+		if (pProto) {
+
+			if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 155))
+			{
+				if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:该物品唯一");
+				}
+				ItemPosCountVec dest;
+				InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, ssitem[1]);
+				if (msg == EQUIP_ERR_OK)
+				{
+					Item* item = pPlayer->StoreNewItem(dest, pProto->ItemId, true);
+					pPlayer->SendNewItem(item, ssitem[1], true, false);
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+				}
+				else
+				{
+					pPlayer->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
+				}
+			}
+			else {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%s]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
+			}
+		}
+		else
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
+
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
+
+	}
+	pPlayer->CLOSE_GOSSIP_MENU();
+	return true;
+}
 // This is the actual function called only once durring InitScripts()
 // It must define all handled functions that are to be run in this script
 void AddSC_example_creature()
@@ -514,5 +632,6 @@ void AddSC_example_creature()
 	// pNewScript->GetAI = &GetAI_example_creature;
 	pNewScript->pGossipHello = &GossipHello_example_creature;
 	pNewScript->pGossipSelect = &GossipSelect_example_creature;
+	pNewScript->pGossipSelectWithCode = &GossipSelect_example_creature_code;
 	pNewScript->RegisterSelf(false);
 }
