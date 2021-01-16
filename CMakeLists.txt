@@ -278,11 +278,11 @@ if(UNIX AND (BUILD_GAME_SERVER OR BUILD_LOGIN_SERVER OR BUILD_EXTRACTORS))
 endif()
 
 find_package(ZLIB QUIET)
-#if(NOT ZLIB_FOUND)
+if(NOT ZLIB_FOUND)
   # use internal source code
   set(ZLIB_LIBRARIES "zlib")
   message(STATUS "Could not find ZLIB on your system. The provided sources will be used.")
-#endif()
+endif()
 if(BUILD_EXTRACTORS)
   find_package(BZip2 QUIET)
   if(NOT (BZip2_FOUND OR BZIP2_FOUND))

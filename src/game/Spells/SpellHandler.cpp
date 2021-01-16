@@ -113,7 +113,12 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 	oss << pItem->GetEntry();//通过ID去获取脚本
 	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
 	if (itemScriptName.length()>1) {//赞助卡物品特殊处理,物品ID必须大于2位数
-		sScriptDevAIMgr.OnGossipHello(pUser, pItem);
+		if (pUser->IsInCombat()) {
+			pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT, pItem, nullptr);
+		}
+		else {
+			sScriptDevAIMgr.OnGossipHello(pUser, pItem);
+		}
 		return;
 	}
     if (pUser->IsInCombat())
