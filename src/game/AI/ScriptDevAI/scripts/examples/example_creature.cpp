@@ -529,6 +529,9 @@ bool GossipSelect_ProfessionNPC(Player* player, Creature* creature, uint32 sende
 			CompleteLearnProfession(player, creature, SKILL_ENCHANTING);
 		break;
 	case 7:
+		if (!player->HasSkill(SKILL_JEWELCRAFTING))
+			CompleteLearnProfession(player, creature, SKILL_JEWELCRAFTING);
+		break;
 	case 8:
 		break;
 	case 9:
@@ -676,8 +679,8 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"裁缝", GOSSIP_SENDER_MAIN, 301 + 4);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"工程学", GOSSIP_SENDER_MAIN, 301 + 5);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"附魔", GOSSIP_SENDER_MAIN, 301 + 6);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, "珠宝",      GOSSIP_SENDER_MAIN, 301+7);
-		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, "Inscription",        GOSSIP_SENDER_MAIN, 301+8);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"珠宝",      GOSSIP_SENDER_MAIN, 301+7);
+		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"铭文",        GOSSIP_SENDER_MAIN, 301+8);773
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"草药", GOSSIP_SENDER_MAIN, 301 + 9);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"剥皮", GOSSIP_SENDER_MAIN, 301 + 10);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"采矿", GOSSIP_SENDER_MAIN, 301 + 11);
