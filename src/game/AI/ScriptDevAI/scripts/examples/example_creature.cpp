@@ -307,7 +307,22 @@ bool check(Player *player, bool modify) {
 		}
 	}
 	return isok;
+
 }
+void addOneItemToPlayer(uint32 itemid, Player* player) {
+	if (!player->HasItemCount(itemid, 1, true)) {//已经有一件了
+		ItemPosCountVec dest;
+		InventoryResult msg = player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, itemid, 1);
+		if (msg == EQUIP_ERR_OK)
+		{
+			Item* item = player->StoreNewItem(dest, itemid, true);
+			player->SendNewItem(item, 1, true, false);
+			ChatHandler(player).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+		}
+	}
+}
+
+
 bool addRep(Player *player, bool modify) {
 	bool isok = true;
 	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
@@ -316,13 +331,23 @@ bool addRep(Player *player, bool modify) {
 	for (uint32 id = 0; id < 5; id++) {
 		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
 		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
-		if (player->GetReputationMgr().GetReputation(factionEntry) < 36000) {
+		if (player->GetReputationMgr().GetReputation(factionEntry) < sPzxConfig.GetIntDefault("item.level", 42500)) {
 			if (modify) {
-				player->GetReputationMgr().SetReputation(factionEntry, 36001);//声望值
-			}
+				player->GetReputationMgr().SetReputation(factionEntry, sPzxConfig.GetIntDefault("item.level", 42500));//声望值
+				
+				}
 			isok = false;
 		}
+	} 
+	if (modify) {
+		addOneItemToPlayer(31704,player);//风暴钥匙
+		addOneItemToPlayer(24490,player);//卡拉赞钥匙
+		addOneItemToPlayer(31084,player);//禁魔监狱
+		addOneItemToPlayer(30634,player);//平民窟区域
+		addOneItemToPlayer(30637,player);//破损大厅
+		addOneItemToPlayer(27991, player);//安逸迷宫
 	}
+
 	return isok;
 }
 // This function is called when the player opens the gossip menu
@@ -334,7 +359,10 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
 	if (pPlayer->getLevel() >= 60) {
 		if (!addRep(pPlayer, false)) {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升TBC5人副本声望至崇敬 ", GOSSIP_SENDER_MAIN, 206);
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升五大区域副本声望值崇拜 ", GOSSIP_SENDER_MAIN, 206);
+		}
+		else {
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
 		}
 		if (!check(pPlayer, false)) {//暂定60级才能学习
 			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
@@ -433,28 +461,6 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 	}
 
 
-	if (uiAction == 122)
-	{
-		pPlayer->CLOSE_GOSSIP_MENU();
-		//player->LearnSpell(33389, false);
-		ObjectGuid target_guid;
-		if (pPlayer->getLevel() < 70) {
-			pPlayer->GiveLevel(70);
-			pPlayer->InitTalentForLevel();
-		}
-		//pPlayer->learnSpell(33392, false);//中级骑术
-		pPlayer->learnSpell(34093, false);//专家级级骑术
-
-		pPlayer->SetUInt32Value(PLAYER_XP, 0);
-		pPlayer->UpdateSkillsForLevel(true);
-		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
-			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
-		}
-	}
-	if (uiAction == 201) {
-
-		check(pPlayer, true); //学习职业技能
-	}
 
 	if (uiAction == 107) {
 		if (sPzxConfig.GetIntDefault("openT3", 1)) {
@@ -478,6 +484,30 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 	if (uiAction == 111) {
 		addItemSet(pPlayer, 2);
 	}
+
+	if (uiAction == 122)
+	{
+		pPlayer->CLOSE_GOSSIP_MENU();
+		//player->LearnSpell(33389, false);
+		ObjectGuid target_guid;
+		if (pPlayer->getLevel() < 70) {
+			pPlayer->GiveLevel(70);
+			pPlayer->InitTalentForLevel();
+		}
+		//pPlayer->learnSpell(33392, false);//中级骑术
+		pPlayer->learnSpell(34093, false);//专家级级骑术
+
+		pPlayer->SetUInt32Value(PLAYER_XP, 0);
+		pPlayer->UpdateSkillsForLevel(true);
+		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
+			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
+		}
+	}
+
+	if (uiAction == 201) {
+		check(pPlayer, true); //学习职业技能
+	}
+
 	if (uiAction == 205) {
 
 		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
@@ -499,6 +529,17 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 	}
 	if (uiAction == 206) {
 		addRep(pPlayer, true);
+		FactionEntry const* factionEntry1 = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+		FactionEntry const* factionEntry2 = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
+		if (pPlayer->GetReputationMgr().GetReputation(factionEntry1) < sPzxConfig.GetIntDefault("item.level", 42500)) {
+			pPlayer->GetReputationMgr().SetReputation(factionEntry1, sPzxConfig.GetIntDefault("item.level", 42500));//声望值
+			//pPlayer->GetReputationMgr().SetReputation(factionEntry2, 0);//声望值
+		}
+		else {
+			//pPlayer->GetReputationMgr().SetReputation(factionEntry1, 0);//声望值
+			pPlayer->GetReputationMgr().SetReputation(factionEntry2, sPzxConfig.GetIntDefault("item.level", 42500));//声望值
+		}
+
 	}
 
 	int index = uiAction - GOSSIP_ACTION_INFO_DEF;
@@ -607,7 +648,7 @@ bool GossipSelect_example_creature_code(Player* pPlayer, Creature* pCreature, ui
 				}
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%s]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
 			}
 		}
 		else
