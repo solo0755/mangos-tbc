@@ -25,6 +25,8 @@
 #include "Log.h"
 #include "Server/Opcodes.h"
 #include "Spells/Spell.h"
+#include "Config/Config.h"
+#include "Config/PzxConfig.h"
 #include "DBScripts/ScriptMgr.h"
 #include "Entities/Totem.h"
 #include "Spells/SpellAuras.h"
@@ -107,7 +109,13 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         pUser->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, pItem, nullptr);
         return;
     }
-
+	std::ostringstream oss;
+	oss << pItem->GetEntry();//通过ID去获取脚本
+	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
+	if (itemScriptName.length()>1) {//赞助卡物品特殊处理,物品ID必须大于2位数
+		sScriptDevAIMgr.OnGossipHello(pUser, pItem);
+		return;
+	}
     if (pUser->IsInCombat())
     {
         for (const auto& Spell : proto->Spells)

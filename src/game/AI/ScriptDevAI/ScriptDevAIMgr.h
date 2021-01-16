@@ -98,6 +98,8 @@ struct Script
     std::string Name;
 
     bool (*pGossipHello)(Player*, Creature*);
+	bool (*pGossipHelloPzx)(Player*, Item*);
+	bool (*pGossipSelectPzx)(Player*, Item*, uint32, uint32, char const*);
     bool (*pGossipHelloGO)(Player*, GameObject*);
     bool (*pGossipSelect)(Player*, Creature*, uint32, uint32);
     bool (*pGossipSelectGO)(Player*, GameObject*, uint32, uint32);
@@ -141,9 +143,11 @@ class ScriptDevAIMgr
         void LoadEventIdScripts();
 
         bool OnGossipHello(Player* pPlayer, Creature* pCreature);
+		bool OnGossipHello(Player* pPlayer, Item* item);
         bool OnGossipHello(Player* pPlayer, GameObject* pGo);
         bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction, const char* code);
         bool OnGossipSelect(Player* pPlayer, GameObject* pGo, uint32 uiSender, uint32 uiAction, const char* code);
+		bool OnGossipSelect(Player* pPlayer, Item* item, uint32 uiSender, uint32 uiAction, const char* code);
         bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest);
         bool OnQuestAccept(Player* pPlayer, GameObject* pGo, Quest const* pQuest);
         bool OnQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest);

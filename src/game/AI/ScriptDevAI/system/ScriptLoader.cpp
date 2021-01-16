@@ -14,6 +14,7 @@ extern void AddSC_example_creature();
 extern void AddSC_example_escort();
 extern void AddSC_example_gossip_codebox();
 extern void AddSC_example_misc();
+extern void AddSC_example_item();
 
 // world
 extern void AddSC_areatrigger_scripts();
@@ -372,6 +373,7 @@ void AddScripts()
     AddSC_example_escort();
     AddSC_example_gossip_codebox();
     AddSC_example_misc();
+	AddSC_example_item();
 
     // world
     AddSC_areatrigger_scripts();

@@ -150,6 +150,23 @@ bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, Creature* pCreature)
     return pTempScript->pGossipHello(pPlayer, pCreature);
 }
 
+bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, Item* item)
+{
+	std::ostringstream oss;
+	oss << item->GetEntry();//通过ID去获取脚本
+	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
+	if (itemScriptName.length() <= 1)
+		return false;
+	Script* pTempScript = m_scripts[GetScriptId(itemScriptName.c_str())];
+
+	if (!pTempScript || !pTempScript->pGossipHelloPzx)
+		return false;
+
+	pPlayer->PlayerTalkClass->ClearMenus();
+
+	return pTempScript->pGossipHelloPzx(pPlayer, item);
+}
+
 bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, GameObject* pGo)
 {
     Script* pTempScript = GetScript(pGo->GetGOInfo()->ScriptId);
@@ -187,6 +204,27 @@ bool ScriptDevAIMgr::OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32
     return pTempScript->pGossipSelect(pPlayer, pCreature, uiSender, uiAction);
 }
 
+bool ScriptDevAIMgr::OnGossipSelect(Player* pPlayer, Item* item, uint32 sender, uint32 action, char const* code)
+{
+	sLog.outDebug("Gossip selection%s, sender: %d, action: %d", code ? " with code" : "", sender, action);
+
+
+	std::ostringstream oss;
+	oss << item->GetEntry();//通过ID去获取脚本
+	std::string itemScriptName = sPzxConfig.GetStringDefault(oss.str().c_str(), "");
+	if (itemScriptName.length() <= 1)
+		return false;
+	Script* pTempScript = m_scripts[GetScriptId(itemScriptName.c_str())];
+
+	if (pTempScript && pTempScript->pGossipSelectPzx)
+	{
+		pPlayer->PlayerTalkClass->ClearMenus();
+		return pTempScript->pGossipSelectPzx(pPlayer, item, sender, action, code);
+	}
+
+
+	return false;
+}
 bool ScriptDevAIMgr::OnGossipSelect(Player* pPlayer, GameObject* pGo, uint32 uiSender, uint32 uiAction, const char* code)
 {
     debug_log("SD2: GO Gossip selection, sender: %u, action: %u", uiSender, uiAction);
@@ -548,6 +586,19 @@ void ScriptDevAIMgr::LoadScriptNames()
     }
     while (result->NextRow());
     delete result;
+
+	//加载自定义item脚本
+	Tokens tokens = StrSplit(sConfig.GetStringDefault("pzxItemScripts", ""), ";");
+	for (auto& token : tokens)
+	{
+		if (token.length() > 5) {
+			m_scriptNames.push_back(token);
+			++count;
+			sLog.outString();
+			sLog.outString(">> Loaded  PZX Script Names %s", token);
+		}
+	}
+	//加载自定义item脚本结束
 
     std::sort(m_scriptNames.begin(), m_scriptNames.end());
 
