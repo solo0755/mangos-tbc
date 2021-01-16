@@ -13,6 +13,7 @@
 #include "system/system.h"
 #include "ScriptDevAIMgr.h"
 #include "include/sc_creature.h"
+#include "Config/PzxConfig.h"
 
 #ifdef BUILD_SCRIPTDEV
 #include "system/ScriptLoader.h"
@@ -161,9 +162,7 @@ bool ScriptDevAIMgr::OnGossipHello(Player* pPlayer, Item* item)
 
 	if (!pTempScript || !pTempScript->pGossipHelloPzx)
 		return false;
-
 	pPlayer->PlayerTalkClass->ClearMenus();
-
 	return pTempScript->pGossipHelloPzx(pPlayer, item);
 }
 
