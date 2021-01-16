@@ -31,6 +31,7 @@ struct initClazz
 	uint32 checkItems[5];
 	std::string talenNames[3];
 };
+
 const initClazz all[] = {
 	{ 0, u8"未定义",{},{} ,{} },
 	{ CLASS_WARRIOR,u8"学习 |cff6247c8狂暴姿态、防御姿态|h|r",{ 2458, 71, 355, 7386, 20617 },{},{ u8"武器",u8"狂怒",u8"防护" } },
