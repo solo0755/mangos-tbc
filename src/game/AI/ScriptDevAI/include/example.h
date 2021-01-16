@@ -1,7 +1,4 @@
-﻿#include "AI/ScriptDevAI/include/sc_creature.h"
-#include "AI/ScriptDevAI/include/sc_gossip.h"
-#include "AI/ScriptDevAI/include/sc_grid_searchers.h"
-#include "AI/ScriptDevAI/include/sc_instance.h"
+﻿#include "AI/ScriptDevAI/include/sc_common.h"
 #include "Config/PzxConfig.h"
 const uint32 factionID[2][53] =
 {

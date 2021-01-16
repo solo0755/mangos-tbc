@@ -5,6 +5,10 @@
 #ifndef SC_COMMON_H
 #define SC_COMMON_H
 
+#include "AI/ScriptDevAI/include/sc_creature.h"
+#include "AI/ScriptDevAI/include/sc_gossip.h"
+#include "AI/ScriptDevAI/include/sc_grid_searchers.h"
+#include "AI/ScriptDevAI/include/sc_instance.h"
 
 //#define PRENERF_2_0_3       // Pre 2.1
 //#define PRENERF_2_1         // Pre 2.2
