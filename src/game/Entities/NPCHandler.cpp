@@ -368,6 +368,23 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
         if (!sScriptDevAIMgr.OnGossipSelect(_player, pGo, sender, action, code.empty() ? nullptr : code.c_str()))
             _player->OnGossipSelect(pGo, gossipListId, menuId);
     }
+	else if (guid.IsItem()) {//通过item触发的
+		try
+		{
+			Item* it = GetPlayer()->GetItemByGuid(guid);
+			if (!it) {
+				DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %s not found or you Item.", guid.GetString().c_str());
+				return;
+			}
+			sScriptDevAIMgr.OnGossipSelect(_player, it, sender, action, code.empty() ? nullptr : code.c_str());
+
+		}
+		catch (...)//do PZX action 抓取SEH;
+		{
+			sLog.outError("[pzx-exception-SEH-item] %s use %s exception eccor", GetPlayer()->GetName(), guid.GetString().c_str());
+		}
+
+	}
 }
 
 void WorldSession::HandleSpiritHealerActivateOpcode(WorldPacket& recv_data)
