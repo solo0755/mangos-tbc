@@ -1,5 +1,9 @@
 ﻿#include "AI/ScriptDevAI/include/sc_common.h"
 #include "Config/PzxConfig.h"
+
+
+
+#define MYMAXSKILL 375
 const uint32 factionID[2][53] =
 {
 
@@ -53,3 +57,4 @@ bool addRep(Player *player, bool modify);
 void addOneItemToPlayer(uint32 itemid, Player* player);
 void addItemSet(Player *player, uint8 itemindex);
 bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 action);
+void CompleteLearnProfession(Player *pPlayer, SkillType skill);

@@ -1,6 +1,6 @@
 ﻿#include "AI/ScriptDevAI/include/example.h"
 
-#define MYMAXSKILL 375
+
 bool check(Player *player, bool modify) {
 	bool isok = true;
 	const static uint32 NUM_BREATHS = sizeof(all) / sizeof(all[0]);
@@ -193,12 +193,12 @@ void CompleteLearnProfession(Player *pPlayer,  SkillType skill)
 {
 	if (pPlayer->GetFreePrimaryProfessionPoints() == 0 && !(skill == SKILL_COOKING || skill == SKILL_FIRST_AID || skill == SKILL_FISHING))
 	{
-		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:你已经学习了2项专业技能了.");
+		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:你已经拥有了|cffff00002项专业技能|h|r了.");
 	}
 	else
 	{
 		if (!LearnAllRecipesInProfession(pPlayer, skill))
-			ChatHandler(pPlayer).PSendSysMessage(u8"系统错误.");
+			ChatHandler(pPlayer).PSendSysMessage(u8"系统错误.练习管理人员");
 	}
 }
 bool GossipSelect_ProfessionNPC(Player* player,  uint32 sender, const uint32 action)
@@ -206,59 +206,47 @@ bool GossipSelect_ProfessionNPC(Player* player,  uint32 sender, const uint32 act
 	switch (action)
 	{
 	case 1:
-		if (!player->HasSkill(SKILL_ALCHEMY))
+		if (player->GetSkillValue(SKILL_ALCHEMY)<MYMAXSKILL)
 			CompleteLearnProfession(player, SKILL_ALCHEMY);
 		break;
 	case 2:
-		if (!player->HasSkill(SKILL_BLACKSMITHING))
+		if (player->GetSkillValue(SKILL_BLACKSMITHING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_BLACKSMITHING);
 		break;
 	case 3:
-		if (!player->HasSkill(SKILL_LEATHERWORKING))
+		if (player->GetSkillValue(SKILL_LEATHERWORKING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_LEATHERWORKING);
 		break;
 	case 4:
-		if (!player->HasSkill(SKILL_TAILORING))
+		if (player->GetSkillValue(SKILL_TAILORING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_TAILORING);
 		break;
 	case 5:
-		if (!player->HasSkill(SKILL_ENGINEERING))
+		if (player->GetSkillValue(SKILL_ENGINEERING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_ENGINEERING);
 		break;
 	case 6:
-		if (!player->HasSkill(SKILL_ENCHANTING))
+		if (player->GetSkillValue(SKILL_ENCHANTING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_ENCHANTING);
 		break;
 	case 7:
-		if (!player->HasSkill(SKILL_JEWELCRAFTING))
+		if (player->GetSkillValue(SKILL_JEWELCRAFTING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_JEWELCRAFTING);
 		break;
-	case 8:
-		break;
+
 	case 9:
-		if (!player->HasSkill(SKILL_HERBALISM))
+		if (player->GetSkillValue(SKILL_HERBALISM)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_HERBALISM);
 		break;
 	case 10:
-		if (!player->HasSkill(SKILL_SKINNING))
+		if (player->GetSkillValue(SKILL_SKINNING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_SKINNING);
 		break;
 	case 11:
-		if (!player->HasSkill(SKILL_MINING))
+		if (player->GetSkillValue(SKILL_MINING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_MINING);
 		break;
-	case 12:
-		if (!player->HasSkill(SKILL_FIRST_AID)||player->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_FIRST_AID);
-		break;
-	case 13:
-		if (!player->HasSkill(SKILL_FISHING) || player->GetSkillValue(SKILL_FISHING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_FISHING);
-		break;
-	case 14:
-		if (!player->HasSkill(SKILL_COOKING) || player->GetSkillValue(SKILL_COOKING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_COOKING);
-		break;
+
 	}
 
 	player->CLOSE_GOSSIP_MENU();

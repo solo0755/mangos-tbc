@@ -45,7 +45,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
 	}
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Achievement_PVP_G_12.blp:20|t|r输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, true);
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, true);
@@ -112,11 +112,21 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			//const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
 			//pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
+
+
 		//学习骑术
 		//pPlayer->learnSpell(33392, false);//中级骑术
 		pPlayer->learnSpell(34093, false);//专家级级骑术
 		pPlayer->SetUInt32Value(PLAYER_XP, 0);
 		pPlayer->UpdateSkillsForLevel(true);
+
+		if (pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL)
+			CompleteLearnProfession(pPlayer, SKILL_FIRST_AID);
+		if (pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL)
+			CompleteLearnProfession(pPlayer, SKILL_FISHING);
+		if (pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL)
+			CompleteLearnProfession(pPlayer, SKILL_COOKING);
+
 		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
 			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
 		}
@@ -173,21 +183,21 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
 	}else if (uiAction == 301) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"炼金术", GOSSIP_SENDER_MAIN, 301 + 1);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:20|t|r 锻造", GOSSIP_SENDER_MAIN, 301 + 2);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"制皮", GOSSIP_SENDER_MAIN, 301 + 3);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"裁缝", GOSSIP_SENDER_MAIN, 301 + 4);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engineering.blp:20|t|r 工程", GOSSIP_SENDER_MAIN, 301 + 5);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engraving.blp:20|t|r 附魔", GOSSIP_SENDER_MAIN, 301 + 6);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gem_02.blp:20|t|r 珠宝", GOSSIP_SENDER_MAIN, 301 + 7);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Alchemy.blp:30|t|r炼金术", GOSSIP_SENDER_MAIN, 301 + 1);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:30|t|r 锻造", GOSSIP_SENDER_MAIN, 301 + 2);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_LeatherWorking.blp:30|t|r制皮", GOSSIP_SENDER_MAIN, 301 + 3); 
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Tailoring.blp:30|t|r裁缝", GOSSIP_SENDER_MAIN, 301 + 4);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engineering.blp:30|t|r 工程", GOSSIP_SENDER_MAIN, 301 + 5);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engraving.blp:30|t|r 附魔", GOSSIP_SENDER_MAIN, 301 + 6);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gem_02.blp:30|t|r 珠宝", GOSSIP_SENDER_MAIN, 301 + 7);
 		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"铭文",        GOSSIP_SENDER_MAIN, 301+8);773
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"草药", GOSSIP_SENDER_MAIN, 301 + 9);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"剥皮", GOSSIP_SENDER_MAIN, 301 + 10);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"采矿", GOSSIP_SENDER_MAIN, 301 + 11);
 
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"急救", GOSSIP_SENDER_MAIN, 301 + 12);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"钓鱼", GOSSIP_SENDER_MAIN, 301 + 13);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"烹饪", GOSSIP_SENDER_MAIN, 301 + 14);
+		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"急救", GOSSIP_SENDER_MAIN, 301 + 12);
+		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"钓鱼", GOSSIP_SENDER_MAIN, 301 + 13);
+		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"烹饪", GOSSIP_SENDER_MAIN, 301 + 14);
 
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
