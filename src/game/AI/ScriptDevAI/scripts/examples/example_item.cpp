@@ -27,8 +27,9 @@ EndScriptData */
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
+
 	
-	if (pPlayer->getLevel() == 70&& !addRep(pPlayer, false)) {
+	if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 	}
 	else {

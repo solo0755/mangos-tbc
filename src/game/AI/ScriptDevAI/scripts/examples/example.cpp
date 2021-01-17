@@ -54,6 +54,8 @@ bool check(Player *player, bool modify) {
 			break;
 		}
 	}
+
+
 	return isok;
 
 }
