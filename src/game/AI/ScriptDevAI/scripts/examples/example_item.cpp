@@ -23,17 +23,16 @@ EndScriptData */
 
 #include "AI/ScriptDevAI/include/example.h"
 
-FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
-FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
+
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
 	
-	if (pPlayer->getLevel() == 70&& addRep(pPlayer, false)) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
+	if (pPlayer->getLevel() == 70&& !addRep(pPlayer, false)) {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 	}
 	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
 	}
 	if (sPzxConfig.GetIntDefault("openT", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
@@ -71,17 +70,14 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
-	}
-	if (uiAction == 109) {
+	}else if (uiAction == 109) {
 		addItemSet(pPlayer, 0);
 	}
-	if (uiAction == 110) {
+	else if (uiAction == 110) {
 		addItemSet(pPlayer, 1);
-	}
-	if (uiAction == 111) {
+	}else if (uiAction == 111) {
 		addItemSet(pPlayer, 2);
-	}
-	if (uiAction == 101)
+	}else if (uiAction == 101)
 	{
 		pPlayer->CLOSE_GOSSIP_MENU();
 		//player->LearnSpell(33389, false);
@@ -92,6 +88,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 		//添加声望和钥匙
 		addRep(pPlayer, true);
+		FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+		FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
 		if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
 			pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
@@ -112,10 +110,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
 			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
 		}
-	}
-
-
-	if (uiAction == 205) {
+	}else if (uiAction == 205) {
 		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
 			uint32 maxlevel = 70;
 			Pet* HunterPet = pPlayer->GetPet();
@@ -131,16 +126,16 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		else {
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
 		}
-	}
-	if (uiAction == 206) {
+	}else if (uiAction == 206) {
+		FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+		FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
 		if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
 			pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
 		else {
 			pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
-	}
-	if (uiAction == 300) {
+	}else if (uiAction == 300) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 		if (pPlayer->GetTeam() == HORDE) {
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
@@ -156,8 +151,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
-	}
-	if (uiAction == 301) {
+	}else if (uiAction == 301) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"炼金术", GOSSIP_SENDER_MAIN, 301 + 1);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:20|t|r 锻造", GOSSIP_SENDER_MAIN, 301 + 2);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"制皮", GOSSIP_SENDER_MAIN, 301 + 3);
@@ -176,147 +170,139 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
 	}
-
-
-	int index = uiAction - GOSSIP_ACTION_INFO_DEF;
-	if (index > 0) {
-
-		switch (index)
-		{
-		case 1://KLZ
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(0, -11120.2f, -2015.27f, 47.1869f, 1.91823f);
-			break;
-
-		case 2://STS
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(530, -1863.0f, 5430.1f, -9.70549f, 3.7f);
-			break;
-
-		case 3://ogrimmar
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(1, 1541.0f, -4426.0f, 11.24f, 0.85f);
-			break;
-		case 5://幽暗
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(0, 1633.75f, 240.167f, -43.1034f, 6.26128f);
-			break;
-		case 7://雷霆崖
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(1, -1274.45f, 71.8601f, 128.159f, 2.80623f);
-			break;
-
-		case 9://银月城
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(530, 9738.28f, -7454.19f, 13.5605f, 0.043914f);
-			break;
-
-		case 4://IRONforge
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(0, -4917.0f, -955.0f, 502.0f, 0.0f);
-			break;
-
-		case 6://暴风城
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(0, -8842.09f, 626.358f, 94.0867f, 3.61363f);
-			break;
-		case 8://达纳苏斯
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(1, 9869.91f, 2493.58f, 1315.88f, 2.78897f);
-			break;
-
-		case 10://埃索达
-			pPlayer->CLOSE_GOSSIP_MENU();
-			pPlayer->TeleportTo(530, -3864.92f, -11643.7f, -137.644f, 5.50862f);
-			break;
-
-
-		default:
-			break;
-		}
-		return true;
-	}
 	else if (uiAction - 301 <= 14 && uiAction - 301 >= 1) {
 		return GossipSelect_ProfessionNPC(pPlayer, sender, uiAction - 301);
 	}
-
-	if (uiAction == 777) {
-		/*	if (!player->HasItemCount(sPzxConfig.GetIntDefault("vipItemID", 40003), 1, true)) {
-		ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:需要VIP认证卡才可以使用本功能，请联系GM获取");
-		player->CLOSE_GOSSIP_MENU();
-		return false;
-		}*/
-		sLog.outString("[pzx] get Input str =%s", reStr);
-		std::string a(reStr);
-		char * b = new char[a.length() + 1];
-		uint32 ssitem[2] = { 0, 1 };
-		try {
-			std::strcpy(b, a.c_str());
-			int index = 0;
-			char *ptr;
-			ptr = strtok(b, " ");
-			while (ptr != NULL)
+	else if (uiAction> GOSSIP_ACTION_INFO_DEF) {
+		int index = uiAction - GOSSIP_ACTION_INFO_DEF;
+			switch (index)
 			{
-				if (index == 2)
-					break;
-				ssitem[index] = std::stoi(ptr);
-				ptr = strtok(NULL, " ");
-				index++;
-			}
-			delete[] b;
-			//getItemID = std::stoi(reStr);
-			if (ssitem[0] <= 0) {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID");
+			case 1://KLZ
 				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -11120.2f, -2015.27f, 47.1869f, 1.91823f);
+				break;
 
+			case 2://STS
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -1863.0f, 5430.1f, -9.70549f, 3.7f);
+				break;
+
+			case 3://ogrimmar
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, 1541.0f, -4426.0f, 11.24f, 0.85f);
+				break;
+			case 5://幽暗
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, 1633.75f, 240.167f, -43.1034f, 6.26128f);
+				break;
+			case 7://雷霆崖
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, -1274.45f, 71.8601f, 128.159f, 2.80623f);
+				break;
+
+			case 9://银月城
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 9738.28f, -7454.19f, 13.5605f, 0.043914f);
+				break;
+
+			case 4://IRONforge
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -4917.0f, -955.0f, 502.0f, 0.0f);
+				break;
+
+			case 6://暴风城
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -8842.09f, 626.358f, 94.0867f, 3.61363f);
+				break;
+			case 8://达纳苏斯
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, 9869.91f, 2493.58f, 1315.88f, 2.78897f);
+				break;
+
+			case 10://埃索达
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -3864.92f, -11643.7f, -137.644f, 5.50862f);
+				break;
+			default:
+				break;
+			}
+			return true;
+		}else if(uiAction == 777) {
+			/*	if (!player->HasItemCount(sPzxConfig.GetIntDefault("vipItemID", 40003), 1, true)) {
+			ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:需要VIP认证卡才可以使用本功能，请联系GM获取");
+			player->CLOSE_GOSSIP_MENU();
+			return false;
+			}*/
+			sLog.outString("[pzx] get Input str =%s", reStr);
+			std::string a(reStr);
+			char * b = new char[a.length() + 1];
+			uint32 ssitem[2] = { 0, 1 };
+			try {
+				std::strcpy(b, a.c_str());
+				int index = 0;
+				char *ptr;
+				ptr = strtok(b, " ");
+				while (ptr != NULL)
+				{
+					if (index == 2)
+						break;
+					ssitem[index] = std::stoi(ptr);
+					ptr = strtok(NULL, " ");
+					index++;
+				}
+				delete[] b;
+				//getItemID = std::stoi(reStr);
+				if (ssitem[0] <= 0) {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID或数量ID");
+					pPlayer->CLOSE_GOSSIP_MENU();
+					return false;
+				}
+			}
+			catch (...) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID或数量ID");
+				pPlayer->CLOSE_GOSSIP_MENU();
 				return false;
 			}
-		}
-		catch (...) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID");
+
+
+			ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(ssitem[0]);
+			if (pProto) {
+
+				if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 155))
+				{
+					if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:该物品唯一");
+					}
+					ItemPosCountVec dest;
+					InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, ssitem[1]);
+					if (msg == EQUIP_ERR_OK)
+					{
+						Item* item = pPlayer->StoreNewItem(dest, pProto->ItemId, true);
+						pPlayer->SendNewItem(item, ssitem[1], true, false);
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+					}
+					else
+					{
+						pPlayer->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
+					}
+				}
+				else {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
+				}
+			}
+			else
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
-		}
 
-
-		ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(ssitem[0]);
-		if (pProto) {
-
-			if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 155))
-			{
-				if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
-					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:该物品唯一");
-				}
-				ItemPosCountVec dest;
-				InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, ssitem[1]);
-				if (msg == EQUIP_ERR_OK)
-				{
-					Item* item = pPlayer->StoreNewItem(dest, pProto->ItemId, true);
-					pPlayer->SendNewItem(item, ssitem[1], true, false);
-					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
-				}
-				else
-				{
-					pPlayer->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
-					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
-				}
-			}
-			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]，请联系管理员", sPzxConfig.GetIntDefault("item.level", 155));
-			}
-		}
-		else
-			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
-
-		pPlayer->CLOSE_GOSSIP_MENU();
-		return false;
-
-	}
-	if (uiAction == 778) {
+	}else if (uiAction == 778) {
 		sPzxConfig.Reload();
 		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:config文件加载成功");
 		pPlayer->CLOSE_GOSSIP_MENU();
+		return true;
 	}
+
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 
@@ -324,7 +310,6 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 void AddSC_example_item()
 {
 	Script* pNewScript = new Script;
-
 	pNewScript->Name = "example_item_pzx";
 	pNewScript->pGossipHelloPzx = &GossipHello_ItemPzx;
 	pNewScript->pGossipSelectPzx = &GossipSelect_ItemPzx;
