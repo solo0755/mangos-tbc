@@ -47,8 +47,8 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Achievement_PVP_G_12.blp:20|t|r输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, true);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, true);
 	
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
@@ -62,6 +62,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 {
 	if (uiAction == 105) {
 		pPlayer->resetTalents(true);
+		pPlayer->CastSpell(pPlayer, 14867, TRIGGERED_OLD_TRIGGERED);
 		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff00ff00 天赋已经重置.|h|r");
 	}else if (uiAction == 106) {
 		pPlayer->SetAtLoginFlag(AT_LOGIN_RENAME);
@@ -121,15 +122,26 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 	}else if (uiAction == 205) {
 		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
+
+
 			uint32 maxlevel = 70;
 			Pet* HunterPet = pPlayer->GetPet();
-			if (HunterPet->getLevel() < maxlevel || HunterPet->GetLoyaltyLevel() < LoyaltyLevel(BEST_FRIEND)) {
-				//player->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物忠诚度和等级 ", GOSSIP_SENDER_MAIN, 205);
-				pPlayer->GetPet()->GivePetXP(99999999);
-				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
+			if (HunterPet->getLevel() < maxlevel) {
+				HunterPet->GivePetLevel(70);
+			}
+			uint32 loyaltyLevel = HunterPet->GetLoyaltyLevel();
+			uint32 levelupCount = 7;
+			for (; loyaltyLevel < BEST_FRIEND && levelupCount > 0; levelupCount--)
+			{
+				HunterPet->UpdateRequireXpForNextLoyaltyLevel(214748364);
+				HunterPet->ModifyLoyalty(HunterPet->GetStartLoyaltyPoints(loyaltyLevel + 1));
+				++loyaltyLevel;
+			}
+			if (loyaltyLevel == BEST_FRIEND) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
 			}
 			else {
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cffff0000 您的宠物还需要继续训练!|h|r");
 			}
 		}
 		else {
