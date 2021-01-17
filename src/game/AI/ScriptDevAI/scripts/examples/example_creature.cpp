@@ -306,6 +306,106 @@ bool GossipSelect_example_creature_code(Player* pPlayer, Creature* pCreature, ui
 	
 	return true;
 }
+
+/*
+* Custom training dummy script
+*/
+
+struct npc_training_dummyAI : ScriptedAI
+{
+	explicit npc_training_dummyAI(Creature* pCreature) : ScriptedAI(pCreature)
+	{
+		npc_training_dummyAI::Reset();
+	}
+
+	uint32 m_uiCombatTimer;
+	std::unordered_map<ObjectGuid, time_t> attackers;
+
+	void Reset() override
+	{
+		m_uiCombatTimer = 10000;
+		attackers.clear();
+	}
+
+	void AttackStart(Unit* /*pWho*/) override {}
+
+	void Aggro(Unit* pWho) override
+	{
+		SetCombatMovement(false);
+	}
+
+	void AddAttackerToList(Unit* pWho)
+	{
+		auto itr = attackers.find(pWho->GetObjectGuid());
+		if (itr != attackers.end())
+		{
+			itr->second = std::time(nullptr);
+		}
+		else
+		{
+			attackers.emplace(pWho->GetObjectGuid(), std::time(nullptr));
+		}
+	}
+
+	void DamageTaken(Unit* dealer, uint32& damage, DamageEffectType damageType, SpellEntry const* spellInfo) override
+	{
+		if (dealer)
+			AddAttackerToList(dealer);
+	}
+
+	void SpellHit(Unit* pWho, SpellEntry const* /*pSpell*/) override
+	{
+		if (pWho)
+			AddAttackerToList(pWho);
+	}
+
+	void UpdateAI(uint32 const diff) override
+	{
+		if (m_creature->IsInCombat())
+		{
+			if (m_uiCombatTimer <= diff)
+			{
+				for (auto itr = attackers.begin(); itr != attackers.end();)
+				{
+					Unit* pAttacker = m_creature->GetMap()->GetUnit(itr->first);
+
+					if (!pAttacker || !pAttacker->IsInWorld()|| !pAttacker->IsWithinLOSInMap(m_creature))//TODO 或者距离大于50码
+					{
+						itr = attackers.erase(itr);
+						continue;
+					}
+					if (pAttacker->GetDistance(m_creature) > 40.0f) {//如果目标大于50码
+						m_creature->_removeAttacker(pAttacker);
+						m_creature->getThreatManager() .modifyThreatPercent(pAttacker, -101.0f);
+						itr = attackers.erase(itr);
+						continue;
+					}
+
+					if (itr->second + 9 < std::time(nullptr))//自己9秒钟未攻击，但是别人还在继续攻击，就清空自己的仇恨值为负数，脱离战斗
+					{
+						m_creature->_removeAttacker(pAttacker);
+						m_creature->getThreatManager().modifyThreatPercent(pAttacker, -101.0f);
+						itr = attackers.erase(itr);
+						continue;
+					}
+					++itr;
+				}
+
+				if (m_creature->getThreatManager().isThreatListEmpty())
+					EnterEvadeMode();
+
+				m_uiCombatTimer = 10000;
+			}
+			else
+				m_uiCombatTimer -= diff;
+		}
+	}
+};
+
+UnitAI* GetAI_npc_training_dummy(Creature* pCreature)
+{
+	return new npc_training_dummyAI(pCreature);
+}
 // This is the actual function called only once durring InitScripts()
 // It must define all handled functions that are to be run in this script
 void AddSC_example_creature()
@@ -319,5 +419,10 @@ void AddSC_example_creature()
 	pNewScript->pGossipHello = &GossipHello_example_creature;
 	pNewScript->pGossipSelect = &GossipSelect_example_creature;
 	pNewScript->pGossipSelectWithCode = &GossipSelect_example_creature_code;
+	pNewScript->RegisterSelf(false);
+
+	pNewScript = new Script;
+	pNewScript->Name = "custom_npc_training_dummy";
+	pNewScript->GetAI = &GetAI_npc_training_dummy;
 	pNewScript->RegisterSelf(false);
 }
