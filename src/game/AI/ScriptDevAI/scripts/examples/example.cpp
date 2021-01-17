@@ -1,6 +1,6 @@
 ﻿#include "AI/ScriptDevAI/include/example.h"
 
-
+#define MYMAXSKILL 375
 bool check(Player *player, bool modify) {
 	bool isok = true;
 	const static uint32 NUM_BREATHS = sizeof(all) / sizeof(all[0]);
@@ -183,7 +183,7 @@ bool LearnAllRecipesInProfession(Player *pPlayer, SkillType skill)
 		sLog.outError("Profession NPC: received non-valid skill ID");
 		return false;
 	}
-	pPlayer->SetSkill(SkillInfo->id, 350, 350);
+	pPlayer->SetSkill(SkillInfo->id, MYMAXSKILL, MYMAXSKILL);
 	LearnSkillRecipesHelper(pPlayer, SkillInfo->id);
 	ChatHandler(pPlayer).PSendSysMessage(u8"所有 %s 配方已经学习完成", skill_name);
 	return true;
@@ -248,15 +248,15 @@ bool GossipSelect_ProfessionNPC(Player* player,  uint32 sender, const uint32 act
 			CompleteLearnProfession(player,  SKILL_MINING);
 		break;
 	case 12:
-		if (!player->HasSkill(SKILL_FIRST_AID))
+		if (!player->HasSkill(SKILL_FIRST_AID)||player->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_FIRST_AID);
 		break;
 	case 13:
-		if (!player->HasSkill(SKILL_FISHING))
+		if (!player->HasSkill(SKILL_FISHING) || player->GetSkillValue(SKILL_FISHING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_FISHING);
 		break;
 	case 14:
-		if (!player->HasSkill(SKILL_COOKING))
+		if (!player->HasSkill(SKILL_COOKING) || player->GetSkillValue(SKILL_COOKING)<MYMAXSKILL)
 			CompleteLearnProfession(player,  SKILL_COOKING);
 		break;
 	}
