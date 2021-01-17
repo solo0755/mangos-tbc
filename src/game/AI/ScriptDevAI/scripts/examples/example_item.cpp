@@ -47,6 +47,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Achievement_PVP_G_12.blp:20|t|r输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"角色重命名", GOSSIP_SENDER_MAIN, 106);
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
 	}
@@ -57,8 +58,11 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 
 bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uint32 uiAction, char const* reStr)
 {
-
-	if (uiAction == 107) {
+	if (uiAction == 106) {
+		pPlayer->SetAtLoginFlag(AT_LOGIN_RENAME);
+		CharacterDatabase.PExecute("UPDATE characters SET at_login = at_login | '1' WHERE guid = '%u'", pPlayer->GetGUIDLow());
+		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff0000ff 请返回到人物界面后更改您的新角色名.|h|r");
+	}else if (uiAction == 107) {
 		if (sPzxConfig.GetIntDefault("openT3", 1)) {
 			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T4套装|h|r", GOSSIP_SENDER_MAIN, 109);
 		}
@@ -163,6 +167,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"草药", GOSSIP_SENDER_MAIN, 301 + 9);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"剥皮", GOSSIP_SENDER_MAIN, 301 + 10);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"采矿", GOSSIP_SENDER_MAIN, 301 + 11);
+
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"急救", GOSSIP_SENDER_MAIN, 301 + 12);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"钓鱼", GOSSIP_SENDER_MAIN, 301 + 13);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"烹饪", GOSSIP_SENDER_MAIN, 301 + 14);
