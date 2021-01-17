@@ -23,42 +23,24 @@ EndScriptData */
 
 #include "AI/ScriptDevAI/include/example.h"
 
+FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"提升到70级+初始套装+武器熟练度", GOSSIP_SENDER_MAIN, 122);
-	if (pPlayer->getLevel() >= 60) {
-		if (!addRep(pPlayer, false)) {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升五大区域副本声望值崇拜 ", GOSSIP_SENDER_MAIN, 206);
-		}
-		else {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
-		}
-		if (!check(pPlayer, false)) {//暂定60级才能学习
-			const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
-			pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
-		}
-	}
-	if (sPzxConfig.GetIntDefault("openT", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"请送我一组|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
-	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
-
-
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（新手接待）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-	if (pPlayer->GetTeam() == HORDE) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+	
+	if (pPlayer->getLevel() == 70&& addRep(pPlayer, false)) {
+		pPlayer->ADD_GOSSIP_ITEM(3, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
 	}
 	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 	}
+	if (sPzxConfig.GetIntDefault("openT", 1)) {
+		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
+	}
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（新手接待）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"-->其他位传送", GOSSIP_SENDER_MAIN, 300);
 
 	if (pPlayer->getClass() == CLASS_HUNTER) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
@@ -99,7 +81,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	if (uiAction == 111) {
 		addItemSet(pPlayer, 2);
 	}
-	if (uiAction == 122)
+	if (uiAction == 101)
 	{
 		pPlayer->CLOSE_GOSSIP_MENU();
 		//player->LearnSpell(33389, false);
@@ -108,9 +90,23 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->GiveLevel(70);
 			pPlayer->InitTalentForLevel();
 		}
+		//添加声望和钥匙
+		addRep(pPlayer, true);
+		if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
+			pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+		}
+		else {
+			pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+		}
+		//职业菜单
+		if (!check(pPlayer, false)) {//暂定60级才能学习
+			check(pPlayer, true); //学习职业技能
+			//const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
+			//pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
+		}
+		//学习骑术
 		//pPlayer->learnSpell(33392, false);//中级骑术
 		pPlayer->learnSpell(34093, false);//专家级级骑术
-
 		pPlayer->SetUInt32Value(PLAYER_XP, 0);
 		pPlayer->UpdateSkillsForLevel(true);
 		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
@@ -118,17 +114,12 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 	}
 
-	if (uiAction == 201) {
-		check(pPlayer, true); //学习职业技能
-	}
 
 	if (uiAction == 205) {
-
 		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
 			uint32 maxlevel = 70;
 			Pet* HunterPet = pPlayer->GetPet();
 			if (HunterPet->getLevel() < maxlevel || HunterPet->GetLoyaltyLevel() < LoyaltyLevel(BEST_FRIEND)) {
-
 				//player->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物忠诚度和等级 ", GOSSIP_SENDER_MAIN, 205);
 				pPlayer->GetPet()->GivePetXP(99999999);
 				pPlayer->GetPet()->ModifyLoyalty(1000000.0);
@@ -142,18 +133,29 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 	}
 	if (uiAction == 206) {
-		addRep(pPlayer, true);
-		FactionEntry const* factionEntry1 = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
-		FactionEntry const* factionEntry2 = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
-		if (pPlayer->GetReputationMgr().GetReputation(factionEntry1) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
-			pPlayer->GetReputationMgr().SetReputation(factionEntry1, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
-																												  //pPlayer->GetReputationMgr().SetReputation(factionEntry2, 0);//声望值
+		if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
+			pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
 		else {
-			//pPlayer->GetReputationMgr().SetReputation(factionEntry1, 0);//声望值
-			pPlayer->GetReputationMgr().SetReputation(factionEntry2, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+			pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
-
+	}
+	if (uiAction == 300) {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+		if (pPlayer->GetTeam() == HORDE) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+		}
+		else {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+		}
+		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
+		return true;
 	}
 	if (uiAction == 301) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"炼金术", GOSSIP_SENDER_MAIN, 301 + 1);
