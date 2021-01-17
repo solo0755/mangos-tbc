@@ -48,8 +48,8 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, true);
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, true);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
 	
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
