@@ -61,7 +61,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 
 bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uint32 uiAction, char const* reStr)
 {
-	sLog.outString("[pzx-select] (%s)-(%s) Select action   [%d]", pPlayer->GetName(), pPlayer->GetGuidStr(), uiAction);
+	sLog.outString(u8"[pzx-select] (%s)-(%s) Select action   [%d]", pPlayer->GetName(), pPlayer->GetGuidStr(), uiAction);
 	if (uiAction == 105) {
 		pPlayer->resetTalents(true);
 		pPlayer->CastSpell(pPlayer, 14867, TRIGGERED_OLD_TRIGGERED);
@@ -267,7 +267,12 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			player->CLOSE_GOSSIP_MENU();
 			return false;
 			}*/
-			sLog.outString("[pzx] (%s)-(%s) Input str [%s]", pPlayer->GetName(),pPlayer->GetGuidStr() ,reStr );
+			sLog.outString(u8"[pzx] (%s)-(%s) Input str: [%s]", pPlayer->GetName(),pPlayer->GetGuidStr() ,reStr );
+			if (!reStr||strlen(reStr)>12) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
+				pPlayer->CLOSE_GOSSIP_MENU();
+				return false;
+			}
 			std::string a(reStr);
 			char * b = new char[a.length() + 1];
 			uint32 ssitem[2] = { 0, 1 };
