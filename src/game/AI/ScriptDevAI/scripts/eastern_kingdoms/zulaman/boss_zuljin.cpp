@@ -211,8 +211,11 @@ struct boss_zuljinAI : public CombatAI
 
         // Reset all spirits
         for (const auto& aZuljinPhase : aZuljinPhases)
-            if (Creature* spirit = m_instance->GetSingleCreatureFromStorage(aZuljinPhase.spiritId))
+			if (Creature* spirit = m_instance->GetSingleCreatureFromStorage(aZuljinPhase.spiritId)) {
                 spirit->RemoveAurasDueToSpell(SPELL_SPIRIT_DRAINED);
+				spirit->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+				spirit->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+			}
     }
 
     void KilledUnit(Unit* /*victim*/) override
