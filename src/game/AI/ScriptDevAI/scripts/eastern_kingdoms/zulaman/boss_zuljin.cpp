@@ -244,6 +244,8 @@ struct boss_zuljinAI : public CombatAI
         {
             case NPC_FEATHER_VORTEX:
                 m_summons.push_back(summoned->GetObjectGuid());
+				summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);//设置不可选中
+				summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);//设置不可攻击
                 summoned->CastSpell(nullptr, SPELL_DREAM_FOG, TRIGGERED_OLD_TRIGGERED);
                 break;
             case NPC_COLUMN_OF_FIRE:
