@@ -50,7 +50,7 @@
 
 #include "Entities/ItemEnchantmentMgr.h"
 #include "Loot/LootMgr.h"
-
+#include "Config/PzxConfig.h"
 #include <limits>
 #include <cstdarg>
 
@@ -9418,6 +9418,16 @@ bool ObjectMgr::IsVendorItemValid(bool isTemplate, char const* tableName, uint32
     if (!isTemplate)
     {
         cInfo = GetCreatureTemplate(vendor_entry);
+		if (!cInfo){//自定义的多功能NPC
+			if (vendor_entry >= sPzxConfig.GetIntDefault("vendor.minMenu1", 198201) && vendor_entry <= sPzxConfig.GetIntDefault("vendor.minMenu1", 198205)) {
+				cInfo = GetCreatureTemplate(sPzxConfig.GetIntDefault("vendor.MenuNpc1", 198601));
+			}
+			else if (vendor_entry >= sPzxConfig.GetIntDefault("vendor.minMenu2", 198206) && vendor_entry <= sPzxConfig.GetIntDefault("vendor.minMenu2", 198209)){
+				cInfo = GetCreatureTemplate(sPzxConfig.GetIntDefault("vendor.MenuNpc2", 198605));
+			}
+		}
+
+
         if (!cInfo)
         {
             if (pl)

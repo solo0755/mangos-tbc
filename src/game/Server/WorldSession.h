@@ -293,6 +293,7 @@ class WorldSession
         void SendTrainerList(ObjectGuid guid) const;
 
         void SendListInventory(ObjectGuid guid) const;
+		void SendListInventory(ObjectGuid guid,uint32 menuid) const;
         bool CheckBanker(ObjectGuid guid) const;
         void SendShowBank(ObjectGuid guid) const;
         bool CheckMailBox(ObjectGuid guid) const;

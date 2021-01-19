@@ -258,9 +258,11 @@ UnitAI* GetAI_example_creature(Creature* pCreature)
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
-	pPlayer->PrepareGossipMenu(pCreature, pPlayer->GetDefaultGossipMenuForSource(pCreature));
-
-	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+	//pPlayer->PrepareGossipMenu(pCreature, 20001);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习技能和法术", GOSSIP_SENDER_MAIN, 200);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"装备护甲、武器、坐骑、容器", GOSSIP_SENDER_MAIN, 203);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"药品和食物", GOSSIP_SENDER_MAIN, 201);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"附魔和宝石", GOSSIP_SENDER_MAIN, 202);
 	pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
 
 	return true;
@@ -294,7 +296,24 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		return true;
 
 	}
-	
+	else {
+		switch (uiAction)
+		{
+		case 201:
+			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid(),198201);
+			break;
+		case 202:
+			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid(), 198202);
+			break;
+		case 203:
+			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid(), 198203);
+			break;
+		case 200:
+			pPlayer->GetSession()->SendTrainerList(pCreature->GetObjectGuid());
+			break;
+		}
+		return true;
+	}
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 }
