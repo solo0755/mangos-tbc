@@ -1,4 +1,6 @@
 ﻿#include "AI/ScriptDevAI/include/sc_common.h"
+#include "Maps/MapPersistentStateMgr.h"
+#include "Maps/InstanceData.h"
 #include "Config/PzxConfig.h"
 
 
