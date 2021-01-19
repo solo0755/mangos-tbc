@@ -58,3 +58,4 @@ void addOneItemToPlayer(uint32 itemid, Player* player);
 void addItemSet(Player *player, uint8 itemindex);
 bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 action);
 void CompleteLearnProfession(Player *pPlayer, SkillType skill);
+bool resetIntance(Player *player, const uint32 instanceID, bool modify);

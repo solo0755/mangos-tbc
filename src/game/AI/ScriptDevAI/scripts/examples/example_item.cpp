@@ -23,7 +23,7 @@ EndScriptData */
 
 #include "AI/ScriptDevAI/include/example.h"
 
-
+//1.猎人稳固射击受益问题，稳固只有一级
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
@@ -50,6 +50,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	}
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
 	
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
@@ -61,8 +62,11 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 
 bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uint32 uiAction, char const* reStr)
 {
-	sLog.outString(u8"[pzx-select] (%s)-(%s) Select action   [%d]", pPlayer->GetName(), pPlayer->GetGuidStr(), uiAction);
-	if (uiAction == 105) {
+	sLog.outString("[pzx-select] (%s)-(%s) Select action   [%d]", pPlayer->GetName(), pPlayer->GetGuidStr(), uiAction);
+	if (uiAction == 108) {
+		resetIntance(pPlayer, 0, false);
+	}
+	else if (uiAction == 105) {
 		pPlayer->resetTalents(true);
 		pPlayer->CastSpell(pPlayer, 14867, TRIGGERED_OLD_TRIGGERED);
 		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff00ff00 天赋已经重置.|h|r");
@@ -346,6 +350,45 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 
+}
+bool resetIntance(Player *player, const uint32 got_map, bool modify) {
+	ChatHandler session(player);
+	if (player->GetGroup() || player->GetMapRef()->IsDungeon()) {
+		session.PSendSysMessage(u8"[系统消息]:|cffff0000您已经在队伍或者副本中|h|r，请先脱离队伍或离开副本区域.");
+		return false;
+	}
+	uint32 counter = 0;
+	uint32 mapid = 0;
+	for (uint8 i = 0; i < MAX_DIFFICULTY; ++i)
+	{
+		Player::BoundInstancesMap& binds = player->GetBoundInstances(Difficulty(i));
+		for (Player::BoundInstancesMap::iterator itr = binds.begin(); itr != binds.end();)
+		{
+
+			if (itr->first != player->GetMapId())
+			{
+				DungeonPersistentState* save = itr->second.state;
+				std::string timeleft = secsToTimeString(save->GetResetTime() - time(nullptr), true);
+
+				if (const MapEntry* entry = sMapStore.LookupEntry(itr->first))
+				{
+					ChatHandler(player).PSendSysMessage(u8"副本重置: %d (%s) inst: %d perm: %s diff: %s canReset: %s TTR: %s",
+						itr->first, entry->name[4], save->GetInstanceId(), itr->second.perm ? "yes" : "no",
+						save->GetDifficulty() == DUNGEON_DIFFICULTY_NORMAL ? "normal" : "heroic", save->CanReset() ? "yes" : "no", timeleft.c_str());
+				}
+				else
+					session.PSendSysMessage("bound for a nonexistent map %u", itr->first);
+				player->UnbindInstance(itr, Difficulty(i));
+				++counter;
+			}
+			else
+				++itr;
+		}
+	}
+	session.PSendSysMessage("instances unbound: %d", counter);
+
+	session.PSendSysMessage(u8"[系统消息]:您暂时还没有 副本进度. ");
+	return true;
 }
 void AddSC_example_item()
 {
