@@ -301,7 +301,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (msg.empty())
                 break;
-
+			if (GetPlayer()->IsDead() && msg.compare("up") == 0) {
+				GetPlayer()->ResurrectPlayer(0.5f);
+				GetPlayer()->SpawnCorpseBones();
+				break;
+			}
             if (ChatHandler(this).ParseCommands(msg.c_str()))
                 break;
 
