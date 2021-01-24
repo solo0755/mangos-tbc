@@ -5336,9 +5336,9 @@ SpellCastResult Spell::CheckCast(bool strict)
                 const MapEntry* map = sMapStore.LookupEntry(mapId);
                 if (map->IsDungeon())
                 {
-                    // pre 2.4 - could not summon to instance
-                    if (target->GetMapId() != mapId)
-                        return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
+                    // pre 2.4 - could not summon to instance  去掉拉人限制
+             /*       if (target->GetMapId() != mapId)
+                        return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;*/
                 }
                 break;
             }
@@ -5359,9 +5359,9 @@ SpellCastResult Spell::CheckCast(bool strict)
                 const MapEntry* map = sMapStore.LookupEntry(mapId);
                 if (map->IsDungeon())
                 {
-                    // pre 2.4 - could not summon to instance
-                    if (target->GetMapId() != mapId)
-                        return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;
+                    // pre 2.4 - could not summon to instance 去掉拉人限制
+                   /* if (target->GetMapId() != mapId)
+                        return SPELL_FAILED_TARGET_NOT_IN_INSTANCE;*/
 
                     InstanceTemplate const* instance = ObjectMgr::GetInstanceTemplate(mapId);
                     if (!instance)
