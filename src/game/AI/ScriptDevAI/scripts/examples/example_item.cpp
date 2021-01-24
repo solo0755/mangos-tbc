@@ -432,6 +432,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			}
 			else
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
+			//继续显示这个页面
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return GossipHello_ItemPzx(pPlayer, _item);
 
