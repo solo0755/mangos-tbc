@@ -33,7 +33,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 	}
 	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换 [占星者/奥尔多] 声望值崇拜", GOSSIP_SENDER_MAIN, 206);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望+提升武器熟练度", GOSSIP_SENDER_MAIN, 206);
 	}
 	if (sPzxConfig.GetIntDefault("openT", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
@@ -48,9 +48,17 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
+
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"满血满蓝,修理,移除DEBUFF",  GOSSIP_SENDER_MAIN, 207);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键加满BUFF", GOSSIP_SENDER_MAIN, 208);
+	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键复活拉人", GOSSIP_SENDER_MAIN, 209);
+	}
+
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
+	
 	
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
@@ -93,9 +101,9 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		addItemSet(pPlayer, 1);
 	}else if (uiAction == 111) {
 		addItemSet(pPlayer, 2);
+
 	}else if (uiAction == 101)
 	{
-		pPlayer->CLOSE_GOSSIP_MENU();
 		//player->LearnSpell(33389, false);
 		ObjectGuid target_guid;
 		if (pPlayer->getLevel() < 70) {
@@ -136,6 +144,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
 			addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
 		}
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return GossipHello_ItemPzx(pPlayer, _item);
 	}else if (uiAction == 205) {
 		if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
 
@@ -158,10 +168,14 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			}
 			else {
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cffff0000 您的宠物还需要继续训练!|h|r");
+				pPlayer->CLOSE_GOSSIP_MENU();
+				return GossipHello_ItemPzx(pPlayer, _item);
 			}
 		}
 		else {
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return GossipHello_ItemPzx(pPlayer, _item);
 		}
 	}else if (uiAction == 206) {
 		FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
@@ -173,8 +187,61 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
 		}
 		pPlayer->UpdateSkillsForLevel(true);
-	}else if (uiAction == 300) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return GossipHello_ItemPzx(pPlayer, _item);
+	}
+	else if (uiAction == 207) {
+		pPlayer->DurabilityRepairAll(false, 0, false);//修理
+		pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
+		if (pPlayer->HasAura(15007))
+			pPlayer->RemoveAurasDueToSpell(15007);	//移除复活虚弱
+
+		pPlayer->SetHealth(pPlayer->GetMaxHealth());
+		if (pPlayer->GetPowerType() == POWER_RAGE) {
+			pPlayer->SetPower(POWER_RAGE, 100000);
+		}
+		else if (pPlayer->GetPowerType() == POWER_MANA) {
+			pPlayer->SetPower(POWER_MANA, 100000);
+		}
+		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您的所有物品已经修复，负面状态已经移除");
+	}
+	else if (uiAction == 208) {
+		if (sPzxConfig.GetIntDefault("show.morebuff", 1) || pPlayer->IsGameMaster()) {
+			if (!pPlayer->HasAura(35076))//阿达尔的祝福
+				pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(25898))//王者
+				pPlayer->CastSpell(pPlayer, 25898, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(21564))
+				pPlayer->CastSpell(pPlayer, 21564, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(27683))
+				pPlayer->CastSpell(pPlayer, 27683, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(21850))
+				pPlayer->CastSpell(pPlayer, 21850, TRIGGERED_FULL_MASK);
+			//player->CastSpell(player, 16877, true);
+			if (pPlayer->GetPowerType() == POWER_MANA) {//蓝条职业
+				if (!pPlayer->HasAura(23028))
+					pPlayer->CastSpell(pPlayer, 23028, TRIGGERED_FULL_MASK);//奥术光辉
+				if (!pPlayer->HasAura(27681))
+					pPlayer->CastSpell(pPlayer, 27681, TRIGGERED_FULL_MASK);//精神
+				if (!pPlayer->HasAura(25918))
+					pPlayer->CastSpell(pPlayer, 25918, TRIGGERED_FULL_MASK);//智慧祝福
+			}
+			else {
+				if (!pPlayer->HasAura(25916))
+						pPlayer->CastSpell(pPlayer, 25916, TRIGGERED_FULL_MASK);//力量祝福
+				if (!pPlayer->HasAura(25289))
+					pPlayer->CastSpell(pPlayer, 25289, TRIGGERED_FULL_MASK);//战斗怒吼
+			}
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
+		}
+	}
+	else if (uiAction == 209) {
+		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:功能开放中....");
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return GossipHello_ItemPzx(pPlayer, _item);
+	}
+	else if (uiAction == 300) {
+		
 		if (pPlayer->GetTeam() == HORDE) {
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
@@ -187,6 +254,14 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
 		}
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+		//5个区域本
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 风暴要塞", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 盘牙水库", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 奥金顿", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 地狱火堡垒", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 时光之穴", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
+
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
 	}else if (uiAction == 301) {
@@ -238,7 +313,6 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(1, -1274.45f, 71.8601f, 128.159f, 2.80623f);
 				break;
-
 			case 9://银月城
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(530, 9738.28f, -7454.19f, 13.5605f, 0.043914f);
@@ -257,10 +331,31 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(1, 9869.91f, 2493.58f, 1315.88f, 2.78897f);
 				break;
-
 			case 10://埃索达
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(530, -3864.92f, -11643.7f, -137.644f, 5.50862f);
+				break;
+			case 11://风暴要塞
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 3100.48, 1536.49, 190.3, 4.62226);
+				break;
+
+			case 12://盘牙水库
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 738.865, 6865.77, -69.4659, 6.27655);
+				break;
+
+			case 13://奥金顿60级"
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -3324.49, 4943.45, -101.239, 4.63901);
+				break;
+			case 14://地狱火堡垒60级
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -347.29, 3089.82, 21.394, 5.68114);
+				break;
+			case 15://时光之穴65级
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, -8369.65, -4253.11, -204.272, -2.70526);
 				break;
 			default:
 				break;
@@ -338,7 +433,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			else
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
 			pPlayer->CLOSE_GOSSIP_MENU();
-			return false;
+			return GossipHello_ItemPzx(pPlayer, _item);
 
 	}else if (uiAction == 778) {
 		sPzxConfig.Reload();
