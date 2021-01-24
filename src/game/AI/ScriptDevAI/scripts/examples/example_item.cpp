@@ -49,7 +49,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"满血满蓝,修理,移除DEBUFF",  GOSSIP_SENDER_MAIN, 207);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"满血满蓝,修理,移除虚弱",  GOSSIP_SENDER_MAIN, 207);
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键加满BUFF", GOSSIP_SENDER_MAIN, 208);
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键复活拉人", GOSSIP_SENDER_MAIN, 209);
