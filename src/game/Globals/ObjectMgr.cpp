@@ -9418,13 +9418,50 @@ bool ObjectMgr::IsVendorItemValid(bool isTemplate, char const* tableName, uint32
     if (!isTemplate)
     {
         cInfo = GetCreatureTemplate(vendor_entry);
+		
+
 		if (!cInfo){//自定义的多功能NPC
-			if (vendor_entry >= sPzxConfig.GetIntDefault("vendor.minMenu1", 198201) && vendor_entry <= sPzxConfig.GetIntDefault("vendor.minMenu1", 198205)) {
-				cInfo = GetCreatureTemplate(sPzxConfig.GetIntDefault("vendor.MenuNpc1", 198601));
+			//判断是否为虚拟菜单
+			const std::string mmmmmm = sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", "");
+			Tokens tokensNames = StrSplit(mmmmmm, ",");
+			for (auto& tokenName : tokensNames)
+			{
+					std::string name(tokenName.c_str());
+					if (name.length() > 0) {
+						Tokens tokensA = StrSplit(sPzxConfig.GetStringDefault(name, ""), ";");
+						std::vector<int> ids;
+						bool checkin = false;
+						int index = 0;
+						for (auto& token : tokensA)
+						{
+							if (token.length() == 6) {
+								try
+								{
+									uint32 vid = atoi(token.c_str());
+									if (vid == vendor_entry) {
+										checkin = true;
+									}
+									ids.push_back(vid);
+									index++;
+								}
+								catch (const std::exception&)
+								{
+									sLog.outError("[pzx startB error]:%s", token);
+									break;
+								}
+							}
+						}
+						if (index == (ids.size() - 1)) {
+							sLog.outError("配置异常%s", sPzxConfig.GetStringDefault("pzx.vendor.MenuIds", ""));
+							return false;
+						}
+						if (checkin) {
+							cInfo = GetCreatureTemplate(ids[ids.size() - 1]);//取最后一个实际NPC
+							break;
+						}
+					}
 			}
-			else if (vendor_entry >= sPzxConfig.GetIntDefault("vendor.minMenu2", 198206) && vendor_entry <= sPzxConfig.GetIntDefault("vendor.minMenu2", 198209)){
-				cInfo = GetCreatureTemplate(sPzxConfig.GetIntDefault("vendor.MenuNpc2", 198605));
-			}
+
 		}
 
 

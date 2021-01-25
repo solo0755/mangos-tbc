@@ -258,11 +258,54 @@ UnitAI* GetAI_example_creature(Creature* pCreature)
 // In this case as there is nothing special about this gossip dialogue, it should be moved to world-DB
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
+
+
+	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", ""), ",");
+	for (auto& tokenName : tokensNames)
+	{
+		std::string name(tokenName.c_str());
+		if (name.length() > 0) {
+			Tokens tokensA = StrSplit(sPzxConfig.GetStringDefault(name, ""), ";");
+			std::vector<int> ids;
+			for (auto& token : tokensA)
+			{
+				if (token.length() == 6) {//6位数NPC
+					try
+					{
+						uint32 vid = atoi(token.c_str());
+						ids.push_back(vid);
+					}
+					catch (const std::exception&)
+					{
+						sLog.outError("[pzx startB error]:%s", token);
+						break;
+					}
+				}
+			}
+			if (pCreature->GetEntry() == ids[(ids.size() - 1)]) {
+				std::string tiltle(name+"_");
+				Tokens tokensTitles = StrSplit(sPzxConfig.GetStringDefault(tiltle, ""), ";");
+				std::vector<std::string> titles;
+				for (auto& tokenTi : tokensTitles)
+				{
+					titles.push_back(tokenTi.c_str());
+				}
+				if (titles.size() == ids.size()) {
+
+					for (int i = 0; i<ids.size(); i++)
+					{
+						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
+					}
+				}
+				break;
+			}
+		}
+	}
 	//pPlayer->PrepareGossipMenu(pCreature, 20001);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习技能和法术", GOSSIP_SENDER_MAIN, 200);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"装备护甲、武器、坐骑、容器", GOSSIP_SENDER_MAIN, 203);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"药品和食物", GOSSIP_SENDER_MAIN, 201);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"附魔和宝石", GOSSIP_SENDER_MAIN, 202);
+	//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习技能和法术", GOSSIP_SENDER_MAIN, 200);
+	//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"装备护甲、武器、坐骑、容器", GOSSIP_SENDER_MAIN, 203);
+	//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"药品和食物", GOSSIP_SENDER_MAIN, 201);
+	//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, u8"附魔和宝石", GOSSIP_SENDER_MAIN, 202);
 	pPlayer->SEND_GOSSIP_MENU(TEXT_ID_GREET, pCreature->GetObjectGuid());
 
 	return true;
@@ -297,7 +340,9 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 
 	}
 	else {
-		switch (uiAction)
+		pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid(), uiAction);
+		return true;
+		/*switch (uiAction)
 		{
 		case 201:
 			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid(),198201);
@@ -312,7 +357,7 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 			pPlayer->GetSession()->SendTrainerList(pCreature->GetObjectGuid());
 			break;
 		}
-		return true;
+		return true;*/
 	}
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
