@@ -290,9 +290,9 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 				{
 					titles.push_back(tokenTi.c_str());
 				}
-				if (titles.size() == ids.size()) {
+				if (titles.size() == ids.size()-1) {
 
-					for (int i = 0; i<ids.size(); i++)
+					for (int i = 0; i<ids.size()-1; i++)
 					{
 						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
 					}

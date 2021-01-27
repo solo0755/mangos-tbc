@@ -28,7 +28,6 @@
 #include <iostream>
 #include <thread>
 #include <cstdarg>
-
 #include <boost/stacktrace.hpp>
 
 INSTANTIATE_SINGLETON_1(Log);
@@ -68,7 +67,7 @@ enum LogType
 const int LogType_count = int(LogError) + 1;
 
 Log::Log() :
-    raLogfile(nullptr), logfile(nullptr), gmLogfile(nullptr), charLogfile(nullptr), dberLogfile(nullptr),
+    raLogfile(nullptr), logfile(nullptr), gmLogfile(nullptr), charLogfile(nullptr), chatLogfile(nullptr), dberLogfile(nullptr),
     eventAiErLogfile(nullptr), scriptErrLogFile(nullptr), worldLogfile(nullptr), customLogFile(nullptr), m_colored(false), m_includeTime(false), m_gmlog_per_account(false), m_scriptLibName(nullptr)
 {
     Initialize();
@@ -264,6 +263,7 @@ void Log::Initialize()
     }
 
     charLogfile = openLogFile("CharLogFile", "CharLogTimestamp", "a");
+	chatLogfile = openLogFile("ChatLogFile", "ChatLogTimestamp", "a");
     dberLogfile = openLogFile("DBErrorLogFile", nullptr, "a");
     eventAiErLogfile = openLogFile("EventAIErrorLogFile", nullptr, "a");
     raLogfile = openLogFile("RaLogFile", nullptr, "a");
@@ -806,6 +806,37 @@ void Log::outChar(const char* str, ...)
         va_end(ap);
         fflush(charLogfile);
     }
+}
+void Log::vChatLog(WorldSession* sess, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr) {
+	//ASSERT(sess);增加聊天日志监控
+	Player* plr = sess->GetPlayer();
+	//ASSERT(plr);
+	if (target)
+		outChat( "[%s] %s:%u -> %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), target->GetName(), target->GetObjectGuid().GetCounter(), msg.c_str());
+	else if (chanId)
+		outChat( "[%s:%u] %s:%u : %s", type, chanId, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+	else if (chanStr)
+		outChat("[%s:%s] %s:%u : %s", type, chanStr, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+	else
+		outChat( "[%s] %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+}
+
+void Log::outChat(const char* str, ...)
+{
+	if (!str)
+		return;
+
+	std::lock_guard<std::mutex> guard(m_worldLogMtx);
+	if (chatLogfile)
+	{
+		va_list ap;
+		outTimestamp(chatLogfile);
+		va_start(ap, str);
+		vfprintf(chatLogfile, str, ap);
+		fprintf(chatLogfile, "\n");
+		va_end(ap);
+		fflush(chatLogfile);
+	}
 }
 
 void Log::outErrorScriptLib()

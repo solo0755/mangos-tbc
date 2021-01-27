@@ -21,7 +21,8 @@
 
 #include "Common.h"
 #include "Policies/Singleton.h"
-
+#include <Entities/Player.h>
+#include "Server/WorldSession.h"
 #include <mutex>
 
 class Config;
@@ -111,6 +112,10 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::m
                 fclose(charLogfile);
             charLogfile = nullptr;
 
+			if (chatLogfile != nullptr)
+				fclose(chatLogfile);
+			chatLogfile = nullptr;
+
             if (dberLogfile != nullptr)
                 fclose(dberLogfile);
             dberLogfile = nullptr;
@@ -157,6 +162,7 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::m
         void outErrorDb(const char* err, ...)     ATTR_PRINTF(2, 3);
         // any log level
         void outChar(const char* str, ...)        ATTR_PRINTF(2, 3);
+		void outChat(const char* str, ...)        ATTR_PRINTF(2, 3);
 
         void outErrorEventAI();                             // any log level
         // any log level
@@ -192,7 +198,7 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::m
         void setScriptLibraryErrorFile(char const* fname, char const* libName);
 
         void traceLog();
-
+		void vChatLog(WorldSession* sess, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr);
     private:
         FILE* openLogFile(char const* configFileName, char const* configTimeStampFlag, char const* mode);
         FILE* openGmlogPerAccount(uint32 account);
@@ -201,6 +207,7 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::m
         FILE* logfile;
         FILE* gmLogfile;
         FILE* charLogfile;
+		FILE* chatLogfile;
         FILE* dberLogfile;
         FILE* eventAiErLogfile;
         FILE* scriptErrLogFile;
