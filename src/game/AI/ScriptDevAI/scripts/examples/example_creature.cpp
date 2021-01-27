@@ -259,7 +259,7 @@ UnitAI* GetAI_example_creature(Creature* pCreature)
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
 
-	pPlayer->PrepareGossipMenu(pCreature, 0);
+	pPlayer->PrepareGossipMenu(pCreature, 20001);
 	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", ""), ",");
 	for (auto& tokenName : tokensNames)
 	{
