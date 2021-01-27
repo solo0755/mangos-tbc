@@ -74,6 +74,21 @@ bool WorldSession::CheckChatMessage(std::string& msg, bool addon/* = false*/)
     return true;
 }
 
+
+void vChatLog(Player* plr, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr) {
+	//ASSERT(sess);增加聊天日志监控
+	//Player* plr = sess->GetPlayer();
+	//ASSERT(plr);
+	if (target)
+		sLog.outChat("[%s] %s:%u -> %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), target->GetName(), target->GetObjectGuid().GetCounter(), msg.c_str());
+	else if (chanId)
+		sLog.outChat("[%s:%u] %s:%u : %s", type, chanId, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+	else if (chanStr)
+		sLog.outChat("[%s:%s] %s:%u : %s", type, chanStr, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+	else
+		sLog.outChat("[%s] %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
+}
+
 void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 {
     uint32 type;
@@ -192,12 +207,20 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (!CheckChatMessage(msg))
                 return;
 
-            if (type == CHAT_MSG_SAY)
+			if (type == CHAT_MSG_SAY) {
                 GetPlayer()->Say(msg, lang);
-            else if (type == CHAT_MSG_EMOTE)
-                GetPlayer()->TextEmote(msg);
-            else if (type == CHAT_MSG_YELL)
+				if (lang != LANG_ADDON)
+					vChatLog(GetPlayer(), "Say", msg, nullptr, 0, "");
+			}
+			else if (type == CHAT_MSG_EMOTE) {
+				GetPlayer()->TextEmote(msg);
+			}
+			else if (type == CHAT_MSG_YELL) {
                 GetPlayer()->Yell(msg, lang);
+				if (lang != LANG_ADDON)
+					vChatLog(GetPlayer(), "Yell", msg, nullptr, 0, "");
+			}
+
         } break;
 
         case CHAT_MSG_WHISPER:
@@ -255,6 +278,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             }
 
             GetPlayer()->Whisper(msg, lang, player->GetObjectGuid());
+			if (lang != LANG_ADDON)
+				vChatLog(GetPlayer(), "Whisp", msg, player,0,"");
         } break;
 
         case CHAT_MSG_PARTY:
@@ -288,7 +313,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             WorldPacket data;
             ChatHandler::BuildChatPacket(data, ChatMsg(type), msg.c_str(), Language(lang), _player->GetChatTag(), _player->GetObjectGuid(), _player->GetName());
             group->BroadcastPacket(data, false, group->GetMemberGroup(GetPlayer()->GetObjectGuid()));
-
+			if (lang != LANG_ADDON)
+				vChatLog(GetPlayer(), "Group", msg, nullptr, group->GetId(),"");
             break;
         }
         case CHAT_MSG_GUILD:
@@ -320,7 +346,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (GetPlayer()->GetGuildId())
                 if (Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId()))
                     guild->BroadcastToGuild(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
-
+			if (lang != LANG_ADDON)
+				vChatLog(GetPlayer(), "Guild", msg, nullptr, 0, "");
             break;
         }
         case CHAT_MSG_OFFICER:
@@ -381,6 +408,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             WorldPacket data;
             ChatHandler::BuildChatPacket(data, CHAT_MSG_RAID, msg.c_str(), Language(lang), _player->GetChatTag(), _player->GetObjectGuid(), _player->GetName());
             group->BroadcastPacket(data, false);
+			if (lang != LANG_ADDON) 
+				vChatLog(GetPlayer(), "Raid", msg, nullptr, group->GetId(),"");
         } break;
         case CHAT_MSG_RAID_LEADER:
         {
@@ -412,6 +441,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             WorldPacket data;
             ChatHandler::BuildChatPacket(data, CHAT_MSG_RAID_LEADER, msg.c_str(), Language(lang), _player->GetChatTag(), _player->GetObjectGuid(), _player->GetName());
             group->BroadcastPacket(data, false);
+			if (lang != LANG_ADDON)
+			vChatLog(GetPlayer(), "RaidLeader", msg, nullptr, group->GetId(), "");
         } break;
 
         case CHAT_MSG_RAID_WARNING:
@@ -442,6 +473,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             WorldPacket data;
             ChatHandler::BuildChatPacket(data, CHAT_MSG_RAID_WARNING, msg.c_str(), Language(lang), _player->GetChatTag(), _player->GetObjectGuid(), _player->GetName());
             group->BroadcastPacket(data, true);
+			if (lang != LANG_ADDON)
+			vChatLog(GetPlayer(), "Raid", msg, nullptr, group->GetId(), "");
         } break;
 
         case CHAT_MSG_BATTLEGROUND:
@@ -507,8 +540,14 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
 
             if (ChannelMgr* cMgr = channelMgr(_player->GetTeam()))
-                if (Channel* chn = cMgr->GetChannel(channel, _player))
+				if (Channel* chn = cMgr->GetChannel(channel, _player)) {
+
                     chn->Say(_player, msg.c_str(), lang);
+					if (lang != LANG_ADDON) {
+						normalizePlayerName(channel);
+						vChatLog(GetPlayer(), "Chan", msg, nullptr, 0, channel.c_str());
+					}
+				}
         } break;
 
         case CHAT_MSG_AFK:

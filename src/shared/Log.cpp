@@ -18,8 +18,7 @@
 
 #include "Common.h"
 #include "Log.h"
-#include <Entities/Player.h>
-#include "Server/WorldSession.h"
+
 #include "Policies/Singleton.h"
 #include "Config/Config.h"
 #include "Util.h"
@@ -809,19 +808,7 @@ void Log::outChar(const char* str, ...)
         fflush(charLogfile);
     }
 }
-void Log::vChatLog(WorldSession* sess, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr) {
-	//ASSERT(sess);增加聊天日志监控
-	Player* plr = sess->GetPlayer();
-	//ASSERT(plr);
-	if (target)
-		outChat( "[%s] %s:%u -> %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), target->GetName(), target->GetObjectGuid().GetCounter(), msg.c_str());
-	else if (chanId)
-		outChat( "[%s:%u] %s:%u : %s", type, chanId, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
-	else if (chanStr)
-		outChat("[%s:%s] %s:%u : %s", type, chanStr, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
-	else
-		outChat( "[%s] %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), msg.c_str());
-}
+
 
 void Log::outChat(const char* str, ...)
 {

@@ -196,7 +196,7 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::m
         void setScriptLibraryErrorFile(char const* fname, char const* libName);
 
         void traceLog();
-		void vChatLog(WorldSession* sess, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr);
+
     private:
         FILE* openLogFile(char const* configFileName, char const* configTimeStampFlag, char const* mode);
         FILE* openGmlogPerAccount(uint32 account);
