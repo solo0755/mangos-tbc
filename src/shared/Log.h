@@ -21,8 +21,6 @@
 
 #include "Common.h"
 #include "Policies/Singleton.h"
-#include <Entities/Player.h>
-#include "Server/WorldSession.h"
 #include <mutex>
 
 class Config;

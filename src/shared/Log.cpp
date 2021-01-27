@@ -18,6 +18,8 @@
 
 #include "Common.h"
 #include "Log.h"
+#include <Entities/Player.h>
+#include "Server/WorldSession.h"
 #include "Policies/Singleton.h"
 #include "Config/Config.h"
 #include "Util.h"
