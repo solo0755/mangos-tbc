@@ -259,7 +259,7 @@ UnitAI* GetAI_example_creature(Creature* pCreature)
 bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 {
 
-
+	pPlayer->PrepareGossipMenu(pCreature, 0);
 	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", ""), ",");
 	for (auto& tokenName : tokensNames)
 	{
@@ -294,7 +294,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 
 					for (int i = 0; i<ids.size()-1; i++)
 					{
-						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
+						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
 					}
 				}
 				break;
@@ -330,7 +330,7 @@ bool GossipSelect_example_creature(Player* pPlayer, Creature* pCreature, uint32 
 		{
 		case GOSSIP_OPTION_VENDOR:
 		case GOSSIP_OPTION_ARMORER:
-			pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid());
+				pPlayer->GetSession()->SendListInventory(pCreature->GetObjectGuid());
 			break;
 		case GOSSIP_OPTION_TRAINER:
 			pPlayer->GetSession()->SendTrainerList(pCreature->GetObjectGuid());

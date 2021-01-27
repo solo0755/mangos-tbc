@@ -23,6 +23,7 @@
 #include "Common.h"
 #include "Database/DatabaseEnv.h"
 #include "Config/Config.h"
+#include "Config/PzxConfig.h"
 #include "ProgressBar.h"
 #include "Log.h"
 #include "Master.h"
@@ -155,6 +156,12 @@ int main(int argc, char* argv[])
         Log::WaitBeforeContinueIfNeed();
         return 1;
     }
+	if (!sPzxConfig.SetSource("pzx.conf"))
+	{
+		sLog.outError("Could not find configuration file %s.", configFile.c_str());
+		Log::WaitBeforeContinueIfNeed();
+		return 1;
+	}
 
 #ifndef _WIN32                                               // posix daemon commands need apply after config read
     if (vm.count("s"))

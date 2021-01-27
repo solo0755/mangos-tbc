@@ -23,6 +23,7 @@
 #include "World/World.h"
 #include "Database/DatabaseEnv.h"
 #include "Config/Config.h"
+#include "Config/PzxConfig.h"
 #include "Platform/Define.h"
 #include "SystemConfig.h"
 #include "Log.h"
@@ -343,6 +344,11 @@ void World::LoadConfigSettings(bool reload)
             sLog.outError("World settings reload fail: can't read settings from %s.", sConfig.GetFilename().c_str());
             return;
         }
+		if (!sPzxConfig.Reload())
+		{
+			sLog.outError("Custom PZX settings reload fail: can't read settings from %s.", sPzxConfig.GetFilename().c_str());
+			return;
+		}
     }
 
     ///- Read the version of the configuration file and warn the user in case of emptiness or mismatch
