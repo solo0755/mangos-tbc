@@ -79,6 +79,10 @@ void vChatLog(Player* plr, char const* type, std::string const& msg, Player* tar
 	//ASSERT(sess);增加聊天日志监控
 	//Player* plr = sess->GetPlayer();
 	//ASSERT(plr);
+	if (!plr) {
+		sLog.outChat("[ERROR] [%s] [%s]", type, msg.c_str());
+		return;
+	}
 	if (target)
 		sLog.outChat("[%s] %s:%u -> %s:%u : %s", type, plr->GetName(), plr->GetObjectGuid().GetCounter(), target->GetName(), target->GetObjectGuid().GetCounter(), msg.c_str());
 	else if (chanId)
