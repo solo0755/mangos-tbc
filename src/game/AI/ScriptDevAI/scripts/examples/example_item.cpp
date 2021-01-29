@@ -49,8 +49,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"满血满蓝,修理,移除虚弱",  GOSSIP_SENDER_MAIN, 207);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键加满BUFF", GOSSIP_SENDER_MAIN, 208);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"BUFF|满血、蓝、怒|修理|冷却", GOSSIP_SENDER_MAIN, 208);
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键复活拉人", GOSSIP_SENDER_MAIN, 209);
 	}
@@ -190,47 +189,43 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return GossipHello_ItemPzx(pPlayer, _item);
 	}
-	else if (uiAction == 207) {
-		pPlayer->DurabilityRepairAll(false, 0, false);//修理
-		pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
-		if (pPlayer->HasAura(15007))
-			pPlayer->RemoveAurasDueToSpell(15007);	//移除复活虚弱
-
-		pPlayer->SetHealth(pPlayer->GetMaxHealth());
-		if (pPlayer->GetPowerType() == POWER_RAGE) {
-			pPlayer->SetPower(POWER_RAGE, 100000);
-		}
-		else if (pPlayer->GetPowerType() == POWER_MANA) {
-			pPlayer->SetPower(POWER_MANA, 100000);
-		}
-		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您的所有物品已经修复，负面状态已经移除");
-	}
 	else if (uiAction == 208) {
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1) || pPlayer->IsGameMaster()) {
 			if (!pPlayer->HasAura(35076))//阿达尔的祝福
 				pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
 			if (!pPlayer->HasAura(25898))//王者
 				pPlayer->CastSpell(pPlayer, 25898, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(21564))
-				pPlayer->CastSpell(pPlayer, 21564, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(27683))
-				pPlayer->CastSpell(pPlayer, 27683, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(21850))
-				pPlayer->CastSpell(pPlayer, 21850, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(25392))
+				pPlayer->CastSpell(pPlayer, 25392, TRIGGERED_FULL_MASK);
+			if (!pPlayer->HasAura(26991))
+				pPlayer->CastSpell(pPlayer, 26991, TRIGGERED_FULL_MASK);
 			//player->CastSpell(player, 16877, true);
 			if (pPlayer->GetPowerType() == POWER_MANA) {//蓝条职业
-				if (!pPlayer->HasAura(23028))
-					pPlayer->CastSpell(pPlayer, 23028, TRIGGERED_FULL_MASK);//奥术光辉
-				if (!pPlayer->HasAura(27681))
-					pPlayer->CastSpell(pPlayer, 27681, TRIGGERED_FULL_MASK);//精神
-				if (!pPlayer->HasAura(25918))
-					pPlayer->CastSpell(pPlayer, 25918, TRIGGERED_FULL_MASK);//智慧祝福
+				if (!pPlayer->HasAura(27127))
+					pPlayer->CastSpell(pPlayer, 27127, TRIGGERED_FULL_MASK);//奥术光辉
+				if (!pPlayer->HasAura(32999))
+					pPlayer->CastSpell(pPlayer, 32999, TRIGGERED_FULL_MASK);//精神
+				if (!pPlayer->HasAura(27143))
+					pPlayer->CastSpell(pPlayer, 27143, TRIGGERED_FULL_MASK);//智慧祝福
 			}
 			else {
-				if (!pPlayer->HasAura(25916))
-						pPlayer->CastSpell(pPlayer, 25916, TRIGGERED_FULL_MASK);//力量祝福
+				if (!pPlayer->HasAura(27141))
+						pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
 				if (!pPlayer->HasAura(25289))
 					pPlayer->CastSpell(pPlayer, 25289, TRIGGERED_FULL_MASK);//战斗怒吼
+			}
+
+			pPlayer->DurabilityRepairAll(false, 0, false);//修理
+			pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
+			pPlayer->RemoveAllCooldowns();//冷却所有技能
+			if (pPlayer->HasAura(15007))
+				pPlayer->RemoveAurasDueToSpell(15007);	//移除复活虚弱
+			pPlayer->SetHealth(pPlayer->GetMaxHealth());
+			if (pPlayer->GetPowerType() == POWER_RAGE) {
+				pPlayer->SetPower(POWER_RAGE, 100000);
+			}
+			else if (pPlayer->GetPowerType() == POWER_MANA) {
+				pPlayer->SetPower(POWER_MANA, 100000);
 			}
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
 		}

@@ -1,3 +1,4 @@
+delete from `tbcmangos`.`npc_vendor` where entry BETWEEN '198971' AND '198973' ;
 INSERT INTO `tbcmangos`.`npc_vendor` (`entry`, `item`) VALUES ('198973', 30047 );-- 	黑暗深渊作战护腕
 INSERT INTO `tbcmangos`.`npc_vendor` (`entry`, `item`) VALUES ('198973', 30048 );-- 	正义之明亮头盔
 INSERT INTO `tbcmangos`.`npc_vendor` (`entry`, `item`) VALUES ('198973', 30054 );-- 	游侠将军的胸甲
