@@ -4,7 +4,6 @@
 #include "Config/PzxConfig.h"
 
 
-
 #define MYMAXSKILL 375
 const uint32 factionID[2][53] =
 {

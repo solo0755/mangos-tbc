@@ -22,7 +22,6 @@ SDCategory: Script Examples
 EndScriptData */
 
 #include "AI/ScriptDevAI/include/example.h"
-
 //1.猎人稳固射击受益问题，稳固只有一级
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
@@ -49,8 +48,9 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	}
 
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
-	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键复活拉人", GOSSIP_SENDER_MAIN, 209);
+	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)|| pPlayer->IsGameMaster()) {
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	}
 
 	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
@@ -198,34 +198,35 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1) || pPlayer->IsGameMaster()) {
 			if (!pPlayer->HasAura(35076))//阿达尔的祝福
 				pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(25898))//王者
-				pPlayer->CastSpell(pPlayer, 25898, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(25392))
+			if (!pPlayer->HasAura(25392))//耐力
 				pPlayer->CastSpell(pPlayer, 25392, TRIGGERED_FULL_MASK);
-			if (!pPlayer->HasAura(26991))
+			if (!pPlayer->HasAura(26991))//爪子
 				pPlayer->CastSpell(pPlayer, 26991, TRIGGERED_FULL_MASK);
-			//player->CastSpell(player, 16877, true);
-			if (pPlayer->GetPowerType() == POWER_MANA) {//蓝条职业
-				if (!pPlayer->HasAura(27127))
-					pPlayer->CastSpell(pPlayer, 27127, TRIGGERED_FULL_MASK);//奥术光辉
-				if (!pPlayer->HasAura(32999))
-					pPlayer->CastSpell(pPlayer, 32999, TRIGGERED_FULL_MASK);//精神
+			if (!pPlayer->HasAura(27127))
+				pPlayer->CastSpell(pPlayer, 27127, TRIGGERED_FULL_MASK);//奥术光辉
+			if (!pPlayer->HasAura(32999))
+				pPlayer->CastSpell(pPlayer, 32999, TRIGGERED_FULL_MASK);//精神
+			if (!pPlayer->HasAura(25289))
+				pPlayer->CastSpell(pPlayer, 25289, TRIGGERED_FULL_MASK);//战斗怒吼
+
+			if (pPlayer->GetPowerType() == POWER_MANA) {
 				if (!pPlayer->HasAura(27143))
 					pPlayer->CastSpell(pPlayer, 27143, TRIGGERED_FULL_MASK);//智慧祝福
 			}
 			else {
-				if (!pPlayer->HasAura(27141))
-						pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
-				if (!pPlayer->HasAura(25289))
-					pPlayer->CastSpell(pPlayer, 25289, TRIGGERED_FULL_MASK);//战斗怒吼
+				if (!pPlayer->HasAura(20217))//王者
+					pPlayer->CastSpell(pPlayer, 20217, TRIGGERED_FULL_MASK);
 			}
+			//if (!pPlayer->HasAura(27141))
+			//		pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
 
 			pPlayer->DurabilityRepairAll(false, 0, false);//修理
 			pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
 			pPlayer->RemoveAllCooldowns();//冷却所有技能
-			if (pPlayer->HasAura(15007))
-				pPlayer->RemoveAurasDueToSpell(15007);	//移除复活虚弱
-			pPlayer->SetHealth(pPlayer->GetMaxHealth());
+			if (pPlayer->HasAura(15007))//移除复活虚弱
+				pPlayer->RemoveAurasDueToSpell(15007);	
+
+			pPlayer->SetHealth(pPlayer->GetMaxHealth());//满血满蓝满怒
 			if (pPlayer->GetPowerType() == POWER_RAGE) {
 				pPlayer->SetPower(POWER_RAGE, 100000);
 			}
@@ -235,8 +236,150 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
 		}
 	}
-	else if (uiAction == 209) {
-		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:功能开放中....");
+	else if (uiAction == 501) {
+		if (!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+		Player * _player = pPlayer;
+		for (GroupReference* itr = pPlayer->GetGroup()->GetFirstMember(); itr != nullptr; itr = itr->next())
+		{
+			Player* target = itr->getSource();
+			// check online security
+			/*if (ChatHandler(pPlayer).HasLowerSecurity(target))
+				return false;
+				
+			std::string chrNameLink = playerLink(target_name);*/
+
+			if (!target || !target->GetSession())
+				continue;
+
+			// check online security
+			if (target->IsInCombat() || target->IsBeingTeleported() || target->IsTaxiFlying()) {//战斗中正在传送中不可再次使用
+				ChatHandler(pPlayer).PSendSysMessage(u8"团队成员[|cffff0000%s|h|r]正在战斗中", target->GetName());
+				continue;
+			}
+
+			Map* cMap = target->GetMap();
+			if (cMap->IsDungeon())
+			{
+				// we have to go to instance, and can go to player only if:
+				//   1) we are in his group (either as leader or as member)
+				//   2) we are not bound to any group and have GM mode on
+				if (_player->GetGroup() && _player->GetGroup() != target->GetGroup()) {
+					sLog.outError("[系统错误] (%d)-[%s]", target->GetGUIDLow(), target->GetName());
+					_player->CLOSE_GOSSIP_MENU();
+					return false;
+				}
+
+				// if the player or the player's group is bound to another instance
+				// the player will not be bound to another one
+				InstancePlayerBind* pBind = _player->GetBoundInstance(target->GetMapId(), target->GetDifficulty());
+				if (!pBind)
+				{
+					Group* group = _player->GetGroup();
+					// if no bind exists, create a solo bind
+					InstanceGroupBind* gBind = group ? group->GetBoundInstance(target->GetMapId()) : nullptr;
+					// if no bind exists, create a solo bind
+					if (!gBind)
+					{
+						DungeonPersistentState* save = ((DungeonMap*)target->GetMap())->GetPersistanceState();
+
+						// if player is group leader then we need add group bind
+						if (group && group->IsLeader(_player->GetObjectGuid()))
+							group->BindToInstance(save, !save->CanReset());
+						else
+							_player->BindToInstance(save, !save->CanReset());
+					}
+				}
+
+				_player->SetDifficulty(target->GetDifficulty());
+			}
+
+
+			if (_player != target && _player->IsVisibleGloballyFor(target)) {
+				ChatHandler(target).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:团长正在召唤你%s", target->GetName());
+			}
+			// stop flight if need
+			if (!_player->TaxiFlightInterrupt())
+				_player->SaveRecallPosition(); 
+
+			if (target->IsAlive() && target->GetDistance(_player,false, DIST_CALC_BOUNDING_RADIUS) < sPzxConfig.GetIntDefault("raidTool.instance", 50)) {
+				//小于50码而且在同一地图，不召唤
+				continue;
+			}
+			if (target->IsAlive()) {
+				_player->SetTarget(target);
+				_player->SetSelectionGuid(target->GetObjectGuid());
+				SpellCastResult rlt=_player->CastSpell(target, 7720, TRIGGERED_OLD_TRIGGERED);
+				ChatHandler(target).PSendSysMessage(u8"call %s->(%d)", target->GetName(),rlt);
+			}
+			else {
+				//开始拉人代码
+				try
+				{
+					float x, y, z;
+					//_player->GetPosition(x, y, z);
+					_player->GetContactPoint(_player, x, y, z);
+					Corpse* pcor = target->GetCorpse();
+					if (!pcor) {//没释放，还没有尸体
+						if (_player->IsWithinLOSInMap(target)) {
+							_player->SetTarget(target);
+							_player->SetSelectionGuid(target->GetObjectGuid());
+							_player->CastSpell(target, 20770, TRIGGERED_OLD_TRIGGERED);
+						}
+						else {//不在视野的直接拉过来
+							target->TeleportTo(_player->GetMapId(), x, y, z + 2.0f, target->GetAngle(_player));
+						}
+						continue;
+					}
+					//释放了,直接复活再拉人
+
+					target->ResurrectPlayer(0.99f);
+					target->SpawnCorpseBones();
+	/*				if (target->IsAlive()) {
+						SpellCastResult rlt = _player->CastSpell(target, 7720, TRIGGERED_OLD_TRIGGERED);
+						ChatHandler(target).PSendSysMessage(u8"call %s->(%d)", target->GetName(), rlt);
+					}*/
+				}
+				catch (const std::exception&)
+				{
+					//PSendSysMessage(player, u8"召唤玩家 |cffff0000[%s]|h|r 失败", pl->GetName());
+					sLog.outError("[pzx-exception-call] (%d)-[%s]", target->GetGUIDLow(), target->GetName());
+				}
+			}
+			// to point to see at target with same orientation
+			/*float x, y, z;
+			target->GetContactPoint(target, x, y, z);
+			if (GenericTransport* transport = target->GetTransport())
+				transport->CalculatePassengerOffset(x, y, z);
+			_player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target), TELE_TO_GM_MODE, nullptr, target->GetTransport());*/
+		}
+		ChatHandler(_player).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:您的队伍已经|cff00ff00集合完毕|h|r");
+		_player->CLOSE_GOSSIP_MENU();
+
+		return GossipHello_ItemPzx(pPlayer, _item);
+	}
+	else if (uiAction == 502) {
+		if (!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+		for (GroupReference* itr = pPlayer->GetGroup()->GetFirstMember(); itr != nullptr; itr = itr->next())
+		{
+			Player* pl = itr->getSource();
+			if (!pl || !pl->GetSession())
+				continue;
+			if (pl->IsAlive() &&  pl->GetMap() && pl->GetMap()->IsDungeon()&& pl->GetMap()== pPlayer->GetMap()) {
+				//杀死副本内所有玩家
+				pPlayer->DealDamage(pl, pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+				//pPlayer->DealDamage(pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+				//PSendSysMessage(player, u8"团队成员[|cff00ff00%s|h|r]已经被杀死",pl->GetName());
+			}
+		}
+		//
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return GossipHello_ItemPzx(pPlayer, _item);
 	}

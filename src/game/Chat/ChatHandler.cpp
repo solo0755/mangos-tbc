@@ -332,9 +332,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (msg.empty())
                 break;
-			if (GetPlayer()->IsDead() && msg.compare("up") == 0) {//自我复活
+			if (GetPlayer()->IsDead() && msg.compare("up") == 0) {//自我复活,组长或者没有组
 
-				if (sPzxConfig.GetIntDefault("pzx.revive.flag", 1)) {
+				if (sPzxConfig.GetIntDefault("pzx.revive.flag", 0)) {
+					if (GetPlayer()->GetGroup() && GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER) || !GetPlayer()->GetGroup()) {
+						GetPlayer()->ResurrectPlayer(0.5f);
+						GetPlayer()->SpawnCorpseBones();
+					}
+					
+				}else{
 					GetPlayer()->ResurrectPlayer(0.5f);
 					GetPlayer()->SpawnCorpseBones();
 				}
