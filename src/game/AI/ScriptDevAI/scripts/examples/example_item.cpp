@@ -418,7 +418,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(ssitem[0]);
 			if (pProto) {
 
-				if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 155))
+				if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 151))
 				{
 					if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
 						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:该物品唯一");
