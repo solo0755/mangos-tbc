@@ -26,6 +26,7 @@
 #include "Entities/Item.h"
 #include "Entities/UpdateData.h"
 #include "Chat/Chat.h"
+#include "Config/PzxConfig.h"
 
 void WorldSession::HandleSplitItemOpcode(WorldPacket& recv_data)
 {
@@ -1165,6 +1166,54 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         return;
     }
 
+	if (gift->GetEntry() == sPzxConfig.GetIntDefault("huanhua.id", 21831)) {//幻化物品区间  硬编码
+		Item* item = _player->GetItemByPos(item_bag, item_slot);
+
+		if (!item)
+		{
+			_player->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, item, nullptr);
+			return;
+		}
+
+		if (item == gift)                                       // not possible with packet from real client
+		{
+			_player->SendEquipError(EQUIP_ERR_WRAPPED_CANT_BE_WRAPPED, item, nullptr);
+			return;
+		}
+		uint32 _itemID = item->GetEntry();
+		uint8 eSolt = _player->FindEquipSlot(item->GetProto(), NULL_SLOT, true);
+		if (eSolt == EQUIPMENT_SLOT_MAINHAND || eSolt == EQUIPMENT_SLOT_OFFHAND) {
+
+			if (_player->IsTwoHandUsed()) {
+				_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + EQUIPMENT_SLOT_MAINHAND * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 附魔双手
+			}
+			else {
+				if (_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) && !_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
+					_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + EQUIPMENT_SLOT_MAINHAND * MAX_VISIBLE_ITEM_OFFSET, _itemID);
+				if (_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) && !_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND))
+					_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + EQUIPMENT_SLOT_OFFHAND * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 随机释放
+				if (_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) && _player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)) {
+					_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + eSolt * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 随机释放
+				}
+				if (!_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND) && !_player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND)) {
+					return;//两只手都没武器，直接返回
+				}
+			}
+		}
+		else {
+			//uint32 equpSlot = item->GetProto()->InventoryType;
+			if (eSolt != NULL_SLOT) {
+				_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + eSolt * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 随机释放
+
+			}
+
+		}
+		_player->SaveToDB();
+		//PSendSysMessage(player, u8"您的武器幻化完成");
+		return;
+	}
+
+
     // cheating: non-wrapper wrapper (all empty wrappers is stackable)
     if (!(gift->GetProto()->Flags & ITEM_FLAG_IS_WRAPPER) || gift->GetMaxStackCount() == 1)
     {
@@ -1185,6 +1234,8 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         _player->SendEquipError(EQUIP_ERR_WRAPPED_CANT_BE_WRAPPED, item, nullptr);
         return;
     }
+
+
 
     if (item->IsEquipped())
     {
@@ -1242,7 +1293,7 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
         case 17303: item->SetEntry(17302); break;
         case 17304: item->SetEntry(17305); break;
         case 17307: item->SetEntry(17308); break;
-        case 21830: item->SetEntry(21831); break;
+       // case 21830: item->SetEntry(21831); break;
     }
     item->SetGuidValue(ITEM_FIELD_GIFTCREATOR, _player->GetObjectGuid());
     item->SetUInt32Value(ITEM_FIELD_FLAGS, ITEM_DYNFLAG_WRAPPED);

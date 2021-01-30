@@ -7996,6 +7996,46 @@ void Player::_ApplyAllItemMods()
         }
     }
 
+	std::ostringstream ss;
+
+	//读取数据库记录
+	QueryResult* result = CharacterDatabase.PQuery("select huanhua from _character_hh where guid='%u'", GetGUIDLow());
+	if (!result)
+	{
+		BarGoLink bar(1);
+		bar.step();
+
+		sLog.outString(">> Loaded huanhua");
+		return;
+	}
+
+	BarGoLink bar(result->GetRowCount());
+	//CharaPointMap unMap;
+	do
+	{
+		bar.step();
+		Field* fields = result->Fetch();
+
+		const char * huanhua = fields[0].GetString();
+
+		if (strlen(huanhua) > 0) {
+			Tokens data = StrSplit(huanhua, " ");
+			for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; slot++)
+			{
+				uint32 visualbase = slot * 2;                       // entry, perm ench., temp ench.
+				uint32 item_id = GetUInt32ValueFromArray(data, visualbase);
+				if (item_id > 0) {
+					SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + slot * MAX_VISIBLE_ITEM_OFFSET, item_id);// 随机释放
+				}
+			}
+		}
+
+	} while (result->NextRow());
+
+	delete result;
+
+
+
     DEBUG_LOG("_ApplyAllItemMods complete.");
 }
 
@@ -16597,7 +16637,8 @@ void Player::SaveToDB()
 
     static SqlStatementID delChar ;
     static SqlStatementID insChar ;
-
+	static SqlStatementID insChar2;
+	SqlStatement uberInsert2 = CharacterDatabase.CreateStatement(insChar2, "REPLACE INTO _character_hh (guid,huanhua) values(?,?)");
     SqlStatement stmt = CharacterDatabase.CreateStatement(delChar, "DELETE FROM characters WHERE guid = ?");
     stmt.PExecute(GetGUIDLow());
 
@@ -16725,14 +16766,19 @@ void Player::SaveToDB()
     }
     uberInsert.addString(ss);
 
-    for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)         // string: item id, ench (perm/temp)
+	//幻化存档-start
+	std::ostringstream ss_copy;
+	for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)         // string: item id, ench (perm/temp)
     {
         ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
-
+		ss_copy << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";	//幻化存档-start
         uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
         uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
         ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
+		ss_copy << uint32(MAKE_PAIR32(ench1, ench2)) << " ";//幻化存档-end
     }
+	uberInsert2.addUInt32(GetGUIDLow());
+	uberInsert2.addString(ss_copy);
     // 1 in tbc - 4 in wotlk
     for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_START + 1; ++i) // string: item id, ench (perm/temp)
     {
@@ -16752,7 +16798,7 @@ void Player::SaveToDB()
     uberInsert.addUInt32(uint32(GetByteValue(PLAYER_FIELD_BYTES, 2)));
 
     uberInsert.Execute();
-
+	uberInsert2.Execute();//幻化保存
     if (m_mailsUpdated)                                     // save mails only when needed
         _SaveMail();
 
