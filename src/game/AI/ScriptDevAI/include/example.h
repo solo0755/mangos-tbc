@@ -57,7 +57,8 @@ const initClazz all[] = {
 bool check(Player *player, bool modify);
 bool addRep(Player *player, bool modify);
 void addOneItemToPlayer(uint32 itemid, Player* player);
-void addItemSet(Player *player, uint8 itemindex);
+void addItemSet(Player *player, uint32 itemindex);
 bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 action);
 void CompleteLearnProfession(Player *pPlayer, SkillType skill);
 bool resetIntance(Player *player, const uint32 instanceID, bool modify);
+std::vector<uint32> itemset(Player *player);

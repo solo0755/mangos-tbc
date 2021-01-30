@@ -36,7 +36,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望+提升武器熟练度", GOSSIP_SENDER_MAIN, 206);
 	}
 	if (sPzxConfig.GetIntDefault("openT", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 107);
+		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 	}
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
 	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（新手接待）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
@@ -81,26 +81,32 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		pPlayer->SetAtLoginFlag(AT_LOGIN_RENAME);
 		CharacterDatabase.PExecute("UPDATE characters SET at_login = at_login | '1' WHERE guid = '%u'", pPlayer->GetGUIDLow());
 		ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff00ff00 请返回到人物界面后更改您的新角色名.|h|r");
-	}else if (uiAction == 107) {
-		if (sPzxConfig.GetIntDefault("openT3", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T4套装|h|r", GOSSIP_SENDER_MAIN, 109);
+	}else if (uiAction == 400) {
+		std::vector<uint32> ids = itemset(pPlayer);
+		for (uint32 i = 0; i<ids.size(); i++)
+		{
+			//获取套装中文名
+			ItemSetEntry const* set = sItemSetStore.LookupEntry(ids[i]);
+			if (set)
+			{
+				int loc = pPlayer->GetSession()->GetSessionDbcLocale();
+				std::string name = set->name[loc];
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, name.c_str(), GOSSIP_SENDER_MAIN, 400+i);
+			}
+			// Search in ItemSet.dbc
+			
 		}
-		if (sPzxConfig.GetIntDefault("openT4", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T5套装|h|r", GOSSIP_SENDER_MAIN, 110);
-		}
-		if (sPzxConfig.GetIntDefault("openT5", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T6套装|h|r", GOSSIP_SENDER_MAIN, 111);
-		}
+		//if (sPzxConfig.GetIntDefault("openT3", 1)) {
+		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T4套装|h|r", GOSSIP_SENDER_MAIN, 109);
+		//}
+		//if (sPzxConfig.GetIntDefault("openT4", 1)) {
+		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T5套装|h|r", GOSSIP_SENDER_MAIN, 110);
+		//}
+		//if (sPzxConfig.GetIntDefault("openT5", 1)) {
+		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T6套装|h|r", GOSSIP_SENDER_MAIN, 111);
+		//}
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
-	}else if (uiAction == 109) {
-		addItemSet(pPlayer, 0);
-	}
-	else if (uiAction == 110) {
-		addItemSet(pPlayer, 1);
-	}else if (uiAction == 111) {
-		addItemSet(pPlayer, 2);
-
 	}else if (uiAction == 101)
 	{
 		//player->LearnSpell(33389, false);
@@ -281,6 +287,16 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction - 301 <= 14 && uiAction - 301 >= 1) {
 		return GossipSelect_ProfessionNPC(pPlayer, sender, uiAction - 301);
+	}
+	else if (uiAction - 400 <= 15 && uiAction - 400 >= 0) {
+		uint32 index = uiAction - 400;
+		std::vector<uint32> ids = itemset(pPlayer);
+		if (index <= ids.size() - 1) {
+			addItemSet(pPlayer, ids[index]);
+		}
+		else {
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:系统itemset配置异常");
+		}
 	}
 	else if (uiAction> GOSSIP_ACTION_INFO_DEF) {
 		int index = uiAction - GOSSIP_ACTION_INFO_DEF;

@@ -1,6 +1,29 @@
 ﻿#include "AI/ScriptDevAI/include/example.h"
 
-
+std::vector<uint32> itemset(Player *player) {
+	uint8 clazz=player->getClass();
+	std::string classIds("itemset_"+ std::to_string(clazz) );
+	//std::string names(clazz + "_setname");
+	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault(classIds, ""), ",");
+	std::vector<uint32> ids;
+	for (auto& tokenName : tokensNames)
+	{
+		std::string name(tokenName.c_str());
+		if (name.length() > 0) {
+			try
+			{
+				uint32 vid = atoi(name.c_str());
+				ids.push_back(vid);
+			}
+			catch (const std::exception&)
+			{
+				sLog.outError("[pzx itemset config error]:%s", name);
+				break;
+			}
+		}
+	}
+	return ids;
+}
 bool check(Player *player, bool modify) {
 	bool isok = true;
 	const static uint32 NUM_BREATHS = sizeof(all) / sizeof(all[0]);
@@ -101,8 +124,8 @@ bool addRep(Player *player, bool modify) {
 	return isok;
 }
 
-void addItemSet(Player *player, uint8 itemindex) {
-	uint32 itemsetid = IDS[player->getClass()][itemindex];
+void addItemSet(Player *player, uint32 itemsetid) {
+	//uint32 itemsetid = IDS[player->getClass()][itemindex];
 	if (itemsetid) {
 		for (uint32 id = 0; id < sItemStorage.GetMaxEntry(); id++)
 		{
