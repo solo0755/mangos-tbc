@@ -28,35 +28,34 @@ EndScriptData */
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
 
-	
 	if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 	}
 	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望+提升武器熟练度", GOSSIP_SENDER_MAIN, 206);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望", GOSSIP_SENDER_MAIN, 206);
 	}
 	if (sPzxConfig.GetIntDefault("openT", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"获取一套|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
+		pPlayer->ADD_GOSSIP_ITEM(7, u8"免费获取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（新手接待）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"-->其他位传送", GOSSIP_SENDER_MAIN, 300);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"其他传送-->", GOSSIP_SENDER_MAIN, 300);
 
 	if (pPlayer->getClass() == CLASS_HUNTER) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
 	}
 	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入ID|cff0070dd获取物品|r,仅限部分物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"BUFF|满血、蓝、怒|修理|冷却", GOSSIP_SENDER_MAIN, 208);
+	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"一键复活拉人", GOSSIP_SENDER_MAIN, 209);
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TAXI, u8"清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
+	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
 	
 	
 	if (pPlayer->IsGameMaster()) {
