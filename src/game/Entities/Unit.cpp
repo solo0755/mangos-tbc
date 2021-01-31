@@ -50,6 +50,7 @@
 #include "Tools/Formulas.h"
 #include "Metric/Metric.h"
 #include "Entities/Transports.h"
+#include "Config/PzxConfig.h"
 
 #include <math.h>
 #include <limits>
@@ -7222,6 +7223,12 @@ uint32 Unit::SpellDamageBonusDone(Unit* victim, SpellEntry const* spellProto, ui
     DoneTotal = SpellBonusWithCoeffs(spellProto, DoneTotal, DoneAdvertisedBenefit, 0, damagetype, true);
 
     float tmpDamage = (int32(pdamage) + DoneTotal * int32(stack)) * DoneTotalMod;
+	if (GetTypeId() == TYPEID_PLAYER)
+	{
+		//副本类法伤加层
+		Player* pl = ((Player*)this);
+		tmpDamage += tmpDamage*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_DEMAGEDOT);
+	}
     // apply spellmod to Done damage (flat and pct)
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, tmpDamage);
@@ -7292,6 +7299,7 @@ uint32 Unit::SpellDamageBonusTaken(Unit* caster, SpellEntry const* spellProto, u
         TakenTotal = caster->SpellBonusWithCoeffs(spellProto, TakenTotal, TakenAdvertisedBenefit, 0, damagetype, false);
 
     float tmpDamage = (int32(pdamage) + TakenTotal * int32(stack)) * TakenTotalMod;
+	
 
     return tmpDamage > 0 ? uint32(tmpDamage) : 0;
 }
@@ -7330,6 +7338,10 @@ int32 Unit::SpellBaseDamageBonusDone(SpellSchoolMask schoolMask)
             if (i->GetModifier()->m_miscvalue & schoolMask)
                 DoneAdvertisedBenefit += int32(GetTotalAttackPowerValue(BASE_ATTACK) * i->GetModifier()->m_amount / 100.0f);
         }
+
+		//副本类法伤加层
+		Player* pl = ((Player*)this);
+		DoneAdvertisedBenefit += DoneAdvertisedBenefit*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_DEMAGE);
     }
     return DoneAdvertisedBenefit;
 }
@@ -7430,6 +7442,13 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellEntry const* spellProto, i
 
     // use float as more appropriate for negative values and percent applying
     float heal = (healamount + DoneTotal * int32(stack)) * DoneTotalMod;
+	//副本类法伤加层
+	if (GetTypeId() == TYPEID_PLAYER) {
+		//副本类法伤加层
+		Player* pl = ((Player*)this);
+		heal += heal*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_HEALDOT);
+
+	}
     // apply spellmod to Done amount
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
@@ -7541,9 +7560,14 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask)
 
         // ... and attack power
         AuraList const& mHealingDonebyAP = GetAurasByType(SPELL_AURA_MOD_SPELL_HEALING_OF_ATTACK_POWER);
+
         for (auto i : mHealingDonebyAP)
             if (i->GetModifier()->m_miscvalue & schoolMask)
                 AdvertisedBenefit += int32(GetTotalAttackPowerValue(BASE_ATTACK) * i->GetModifier()->m_amount / 100.0f);
+		//副本类法伤加层
+		Player* pl = ((Player*)this);
+		AdvertisedBenefit += AdvertisedBenefit*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_HEAL);
+
     }
     return AdvertisedBenefit;
 }
@@ -7855,6 +7879,10 @@ uint32 Unit::MeleeDamageBonusDone(Unit* victim, uint32 pdamage, WeaponAttackType
 
     float tmpDamage = (int32(pdamage) + DoneTotal * int32(stack)) * DoneTotalMod;
 
+	if (GetTypeId() == TYPEID_PLAYER) {//自定义法伤加层
+		Player* pl = ((Player*)this);
+		tmpDamage += tmpDamage*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_MEEL);
+	}
     // apply spellmod to Done damage
     if (spellProto)
     {

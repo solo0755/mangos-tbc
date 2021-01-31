@@ -140,6 +140,27 @@ enum ActionButtonUpdateState
     ACTIONBUTTON_NEW            = 2,
     ACTIONBUTTON_DELETED        = 3
 };
+enum CustomPlayerActionTime
+{
+	PLAYED_TIME_BUFF = 0,//一键buff冷却时间
+	PLAYED_TIME_HIDDEN = 1, //群体隐身BUFF时间
+	PLAYED_TIME_PULL = 2, //群体拉人时间
+	PLAYED_TIME_COOL = 3 //群体冷却时间
+};
+
+#define PLAYER_ACTION_COOLTIME 4
+
+
+enum CustomPlayerPzxAuras
+{
+	PLAYED_PZXAURA_DEMAGE = 0,//
+	PLAYED_PZXAURA_DEMAGEDOT = 1,//
+	PLAYED_PZXAURA_HEAL = 2, //
+	PLAYED_PZXAURA_HEALDOT = 3, //
+	PLAYED_PZXAURA_MEEL= 4//
+};
+
+#define PLAYER_PZXAURA_MUTI 5 //加层参数
 
 enum ActionButtonType
 {
@@ -1589,7 +1610,7 @@ class Player : public Unit
         static void RemoveFromGroup(Group* group, ObjectGuid guid);
         void RemoveFromGroup() { RemoveFromGroup(GetGroup(), GetObjectGuid()); }
         void SendUpdateToOutOfRangeGroupMembers();
-
+		void updatePzxStatus();
         void SetInGuild(uint32 GuildId) { SetUInt32Value(PLAYER_GUILDID, GuildId); }
         void SetRank(uint32 rankId) { SetUInt32Value(PLAYER_GUILDRANK, rankId); }
         void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
@@ -2136,7 +2157,8 @@ class Player : public Unit
         bool IsPetNeedBeTemporaryUnsummoned(Pet* pet) const;
 
         void SendCinematicStart(uint32 CinematicSequenceId);
-
+		bool CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime TimeType);
+		int Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType);
         /*********************************************************/
         /***                 INSTANCE SYSTEM                   ***/
         /*********************************************************/
@@ -2253,6 +2275,8 @@ class Player : public Unit
         bool HasQueuedSpell();
         void ClearQueuedSpell();
         void CastQueuedSpell(SpellCastTargets& targets);
+		int32 m_PlayerActionTime[PLAYER_ACTION_COOLTIME] = { 0 };
+		int32 m_PlayerPzxAura[PLAYER_PZXAURA_MUTI] = { 0 };
     protected:
         /*********************************************************/
         /***               BATTLEGROUND SYSTEM                 ***/

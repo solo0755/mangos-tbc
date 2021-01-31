@@ -63,6 +63,7 @@
 #include "Loot/LootMgr.h"
 #include "World/WorldStateDefines.h"
 #include "World/WorldState.h"
+#include "Config/PzxConfig.h"
 
 #ifdef BUILD_PLAYERBOT
 #include "PlayerBot/Base/PlayerbotAI.h"
@@ -1574,7 +1575,7 @@ void Player::Update(const uint32 diff)
 
     if (IsHasDelayedTeleport())
         TeleportTo(m_teleport_dest, m_teleport_options);
-
+		updatePzxStatus();//更新自定义状态PZX
 #ifdef BUILD_PLAYERBOT
     if (m_playerbotAI)
         m_playerbotAI->UpdateAI(diff);
@@ -22017,4 +22018,49 @@ void Player::StopCinematic()
 
     m_cinematicMgr->EndCinematic();
     m_cinematicMgr.reset(nullptr);
+}
+
+bool Player::CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime TimeType)
+{
+	if (!this || !m_session)
+		return false;
+
+	time_t now = time(NULL);
+	time_t NowTime = now - m_PlayerActionTime[TimeType];
+	if (NowTime < Etctime)//间隔时间
+	{
+		ChatHandler(this).PSendSysMessage(u8"[系统消息]:该功能还在冷却中,|cffff0000%u秒|h|r后解锁", uint32(Etctime - NowTime));//改菜单功能还在冷却中
+		return false;
+	}
+	else
+		m_PlayerActionTime[TimeType] = now;
+
+	return true;
+}
+void Player::updatePzxStatus(){
+	//PLAYED_PZXAURA_DEMAGE = 0,//
+	//	PLAYED_PZXAURA_DEMAGEDOT = 1,//
+	//	PLAYED_PZXAURA_HEAL = 2, //
+	//	PLAYED_PZXAURA_HEALDOT = 3 //
+	if (GetTypeId() == TYPEID_PLAYER&&sPzxConfig.GetIntDefault("pzx.raid.mutil", 1)) {
+		Map * map = this->GetMap();
+		Group * group = this->GetGroup();
+		if (group &&map&& map->IsRaidOrHeroicDungeon()) {
+			uint32 pls = map->GetMaxPlayers();
+			uint32 menbers = group->GetMembersCount();
+			m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidDemag.mult", 0.3f) / pls;
+			m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGEDOT]	= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidDemagDot.mult", 0.3f) / pls;
+			m_PlayerPzxAura[PLAYED_PZXAURA_HEAL]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHeal.mult", 1.0f) / pls;
+			m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHealDot.mult", 1.0f) / pls;
+			m_PlayerPzxAura[PLAYED_PZXAURA_MEEL] = (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidMeel.mult", 0.5f) / pls;
+			
+		}
+	}
+}
+
+int Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType)
+{
+	if (!this || !GetSession())
+		return false;
+	return m_PlayerPzxAura[AurasType];
 }
