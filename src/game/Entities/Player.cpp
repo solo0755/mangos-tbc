@@ -22055,6 +22055,7 @@ void Player::updatePzxStatus(){
 				m_PlayerPzxAura[PLAYED_PZXAURA_HEAL]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHeal.mult", 1.0f) / pls;
 				m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHealDot.mult", 1.0f) / pls;
 				m_PlayerPzxAura[PLAYED_PZXAURA_MEEL]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidMeel.mult", 0.5f) / pls;
+				//sLog.outString("4 value[%f] [%f] [%f] [%f] [%f]", m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE], m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGEDOT], m_PlayerPzxAura[PLAYED_PZXAURA_HEAL], m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT], m_PlayerPzxAura[PLAYED_PZXAURA_MEEL]);
 				return;
 			}
 		}
@@ -22069,14 +22070,10 @@ void Player::updatePzxStatus(){
 
 void Player::setCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType,float value)
 {
-	if (!this || !GetSession())
-		return ;
 	 m_PlayerPzxAura[AurasType]= value;
 }
 
-int Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType)
+float Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType)
 {
-	if (!this || !GetSession())
-		return false;
 	return m_PlayerPzxAura[AurasType];
 }

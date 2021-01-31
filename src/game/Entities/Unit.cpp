@@ -7444,10 +7444,9 @@ uint32 Unit::SpellHealingBonusDone(Unit* victim, SpellEntry const* spellProto, i
     float heal = (healamount + DoneTotal * int32(stack)) * DoneTotalMod;
 	//副本类法伤加层
 	if (GetTypeId() == TYPEID_PLAYER) {
-		//副本类法伤加层
 		Player* pl = ((Player*)this);
 		heal += heal*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_HEALDOT);
-
+		//sLog.outString("SpellBaseHealingBonusDone [%f] ", heal);
 	}
     // apply spellmod to Done amount
     if (Player* modOwner = GetSpellModOwner())
@@ -7567,7 +7566,7 @@ int32 Unit::SpellBaseHealingBonusDone(SpellSchoolMask schoolMask)
 		//副本类法伤加层
 		Player* pl = ((Player*)this);
 		AdvertisedBenefit += AdvertisedBenefit*pl->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_HEAL);
-
+		//sLog.outString("SpellBaseHealingBonusDone [%d] ", AdvertisedBenefit);
     }
     return AdvertisedBenefit;
 }
