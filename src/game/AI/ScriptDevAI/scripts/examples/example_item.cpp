@@ -26,42 +26,45 @@ EndScriptData */
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
-
-	if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
-	}
-	else {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望", GOSSIP_SENDER_MAIN, 206);
-	}
-	if (sPzxConfig.GetIntDefault("openT", 1)) {
+	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
+		if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
+		}
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 		pPlayer->ADD_GOSSIP_ITEM(7, u8"免费获取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
-	}
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"其他传送-->", GOSSIP_SENDER_MAIN, 300);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"其他传送-->", GOSSIP_SENDER_MAIN, 300);
 
-	if (pPlayer->getClass() == CLASS_HUNTER) {
-		pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
-	}
-	if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
+		if (pPlayer->getClass() == CLASS_HUNTER) {
+			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
+		}
+		if (sPzxConfig.GetIntDefault("show.additem", 1)) {
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
+		}
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
+
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)|| pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	}
 
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
-	pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
-	
+	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
+
+		if (pPlayer->getLevel() < 70 || !addRep(pPlayer, false) || !check(pPlayer, false) || pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL || pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL || pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
+		}
+		else {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望", GOSSIP_SENDER_MAIN, 206);
+		}
+	}
 	
 	if (pPlayer->IsGameMaster()) {
 		pPlayer->ADD_GOSSIP_ITEM(3, u8"重新加载系统参数", GOSSIP_SENDER_MAIN, 778);
 	}
-	// pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 	pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 	return false;
 }
@@ -92,18 +95,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				std::string name = set->name[loc];
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, name.c_str(), GOSSIP_SENDER_MAIN, 400+i);
 			}
-			// Search in ItemSet.dbc
-			
+
 		}
-		//if (sPzxConfig.GetIntDefault("openT3", 1)) {
-		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T4套装|h|r", GOSSIP_SENDER_MAIN, 109);
-		//}
-		//if (sPzxConfig.GetIntDefault("openT4", 1)) {
-		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T5套装|h|r", GOSSIP_SENDER_MAIN, 110);
-		//}
-		//if (sPzxConfig.GetIntDefault("openT5", 1)) {
-		//	pPlayer->ADD_GOSSIP_ITEM(0, u8"请送我|cffe31bd2T6套装|h|r", GOSSIP_SENDER_MAIN, 111);
-		//}
 		pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, _item->GetObjectGuid());
 		return true;
 	}else if (uiAction == 101)
@@ -127,11 +120,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		//职业菜单
 		if (!check(pPlayer, false)) {//暂定60级才能学习
 			check(pPlayer, true); //学习职业技能
-			//const char* getmenu = all[pPlayer->getClass()].menuName.c_str();
-			//pPlayer->ADD_GOSSIP_ITEM(3, getmenu, GOSSIP_SENDER_MAIN, 201);//  职业菜单
 		}
-
-
 		//学习骑术
 		//pPlayer->learnSpell(33392, false);//中级骑术
 		pPlayer->learnSpell(34093, false);//专家级级骑术
@@ -254,6 +243,9 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 
 			if (!target || !target->GetSession())
 				continue;
+			if (_player == target) {
+				continue;
+			}
 
 			// check online security
 			if (target->IsInCombat() || target->IsBeingTeleported() || target->IsTaxiFlying()) {//战斗中正在传送中不可再次使用
@@ -298,14 +290,14 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			}
 
 
-			if (_player != target && _player->IsVisibleGloballyFor(target)) {
-				ChatHandler(target).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:团长正在召唤你%s", target->GetName());
-			}
+	/*		if ( _player->IsVisibleGloballyFor(target)) {
+				ChatHandler(target).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:团长正在召唤你[%s]", target->GetName());
+			}*/
 			// stop flight if need
 			if (!_player->TaxiFlightInterrupt())
 				_player->SaveRecallPosition(); 
 
-			if (target->IsAlive() && target->GetDistance(_player,false, DIST_CALC_BOUNDING_RADIUS) < sPzxConfig.GetIntDefault("raidTool.instance", 50)) {
+			if (target->IsAlive() && target->GetDistance(_player,false, DIST_CALC_BOUNDING_RADIUS) < sPzxConfig.GetIntDefault("raidTool.instance", 30)&& target->IsWithinLOSInMap(_player)) {
 				//小于50码而且在同一地图，不召唤
 				continue;
 			}
@@ -313,7 +305,12 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				_player->SetTarget(target);
 				_player->SetSelectionGuid(target->GetObjectGuid());
 				SpellCastResult rlt=_player->CastSpell(target, 7720, TRIGGERED_OLD_TRIGGERED);
-				ChatHandler(target).PSendSysMessage(u8"call %s->(%d)", target->GetName(),rlt);
+				if (rlt != SPELL_CAST_OK) {
+					ChatHandler(_player).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:召唤失败[%s]-[原因:%d]", target->GetName(), rlt);
+				}
+				else {
+					ChatHandler(target).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:团长正在召唤你[%s],请尽快脱离战斗或副本战场区域", target->GetName());
+				}
 			}
 			else {
 				//开始拉人代码
@@ -335,7 +332,6 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 						continue;
 					}
 					//释放了,直接复活再拉人
-
 					target->ResurrectPlayer(0.99f);
 					target->SpawnCorpseBones();
 	/*				if (target->IsAlive()) {
