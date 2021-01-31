@@ -22058,7 +22058,7 @@ void Player::updatePzxStatus(){
 				}
 				uint32 pls = map->GetMaxPlayers();
 				uint32 size = (pls - online);
-				if (pls >= online) {
+				if (online >= pls) {
 					online = pls;
 				}
 				uint32 index = pls - online;//ÈËÊı²îÁ¿
