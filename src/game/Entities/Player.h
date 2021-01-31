@@ -157,10 +157,11 @@ enum CustomPlayerPzxAuras
 	PLAYED_PZXAURA_DEMAGEDOT = 1,//
 	PLAYED_PZXAURA_HEAL = 2, //
 	PLAYED_PZXAURA_HEALDOT = 3, //
-	PLAYED_PZXAURA_MEEL= 4//
+	PLAYED_PZXAURA_MEEL= 4,//
+	PLAYED_PZXAURA_ONOFF = 5//
 };
 
-#define PLAYER_PZXAURA_MUTI 5 //加层参数
+#define PLAYER_PZXAURA_MUTI 6 //加层参数
 
 enum ActionButtonType
 {
@@ -2159,6 +2160,7 @@ class Player : public Unit
         void SendCinematicStart(uint32 CinematicSequenceId);
 		bool CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime TimeType);
 		int GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType);
+		void setCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType, float value);
         /*********************************************************/
         /***                 INSTANCE SYSTEM                   ***/
         /*********************************************************/
@@ -2276,7 +2278,7 @@ class Player : public Unit
         void ClearQueuedSpell();
         void CastQueuedSpell(SpellCastTargets& targets);
 		int32 m_PlayerActionTime[PLAYER_ACTION_COOLTIME] = { 0 };
-		int32 m_PlayerPzxAura[PLAYER_PZXAURA_MUTI] = { 0 };
+		float m_PlayerPzxAura[PLAYER_PZXAURA_MUTI] = { 0 };
     protected:
         /*********************************************************/
         /***               BATTLEGROUND SYSTEM                 ***/

@@ -46,6 +46,12 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	}
 
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)|| pPlayer->IsGameMaster()) {
+		if (pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000关闭|r副本弹性模式", GOSSIP_SENDER_MAIN, 508);
+		}
+		else {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
+		}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	}
@@ -378,6 +384,16 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		//
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return GossipHello_ItemPzx(pPlayer, _item);
+	}
+	else if (uiAction == 508) {
+		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 0.0f);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
+	}
+	else if (uiAction == 509) {
+		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
 	}
 	else if (uiAction == 300) {
 		
