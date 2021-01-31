@@ -2158,7 +2158,7 @@ class Player : public Unit
 
         void SendCinematicStart(uint32 CinematicSequenceId);
 		bool CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime TimeType);
-		int Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType);
+		int GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType);
         /*********************************************************/
         /***                 INSTANCE SYSTEM                   ***/
         /*********************************************************/
