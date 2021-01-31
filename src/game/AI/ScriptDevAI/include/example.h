@@ -2,7 +2,7 @@
 #include "Maps/MapPersistentStateMgr.h"
 #include "Maps/InstanceData.h"
 #include "Config/PzxConfig.h"
-
+#include "Globals/ObjectMgr.h"
 
 #define MYMAXSKILL 375
 const uint32 factionID[2][53] =

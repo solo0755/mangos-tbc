@@ -22048,13 +22048,31 @@ void Player::updatePzxStatus(){
 		if (group &&map&& (map->IsRaidOrHeroicDungeon()||map->IsDungeon())) {//副本内才享受
 			Player* leader = sObjectMgr.GetPlayer(group->GetLeaderGuid());
 			if (leader&&leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF)>0.0f) {
+				uint32 online = 0;
+				for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
+				{
+					Player* target = itr->getSource();
+					if (!target || !target->GetSession())
+						continue;
+					online++;
+				}
 				uint32 pls = map->GetMaxPlayers();
-				uint32 menbers = group->GetMembersCount();
-				m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidDemag.mult", 0.3f) / pls;
-				m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGEDOT]	= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidDemagDot.mult", 0.3f) / pls;
-				m_PlayerPzxAura[PLAYED_PZXAURA_HEAL]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHeal.mult", 1.0f) / pls;
-				m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidHealDot.mult", 1.0f) / pls;
-				m_PlayerPzxAura[PLAYED_PZXAURA_MEEL]		= (pls - menbers)*sPzxConfig.GetFloatDefault("pzx.raidMeel.mult", 0.5f) / pls;
+				uint32 size = (pls - online);
+				if (pls >= online) {
+					online = pls;
+				}
+				uint32 index = pls - online;//人数差量
+				float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
+				if (sPzxConfig.GetFloatDefault("pzx.raidDemag", 0.3f)>0) 
+				m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE]		= index* dx / pls;
+				if (sPzxConfig.GetFloatDefault("pzx.raidDemagDot", 0.3f))
+				m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGEDOT]	= index*dx / pls;
+				if (sPzxConfig.GetFloatDefault("pzx.raidHeal", 1.0f)>0)
+				m_PlayerPzxAura[PLAYED_PZXAURA_HEAL]		= index*dx / pls;
+				if (sPzxConfig.GetFloatDefault("pzx.raidHealDot", 1.0f)>0)
+				m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT]		= index*dx / pls;
+				if (sPzxConfig.GetFloatDefault("pzx.raidMeel", 0.3f)>0)
+				m_PlayerPzxAura[PLAYED_PZXAURA_MEEL]		= index*dx / pls;
 				//sLog.outString("4 value[%f] [%f] [%f] [%f] [%f]", m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE], m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGEDOT], m_PlayerPzxAura[PLAYED_PZXAURA_HEAL], m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT], m_PlayerPzxAura[PLAYED_PZXAURA_MEEL]);
 				return;
 			}

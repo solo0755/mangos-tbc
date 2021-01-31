@@ -46,11 +46,22 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 	}
 
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)|| pPlayer->IsGameMaster()) {
+			Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
 		if (pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0) {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000关闭|r副本弹性模式", GOSSIP_SENDER_MAIN, 508);
+			std::ostringstream oss;
+			
+			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
+			oss << u8"|cffff0000关闭|r副本弹性模式-当前[" << dx << "]";
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508);
+			//
+			/*pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd治疗|r弹性值,默认值1", GOSSIP_SENDER_MAIN, 507, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd近战DPS|r弹性值，默认值1", GOSSIP_SENDER_MAIN, 506, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队DPS弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd法术DPS|r弹性值，默认值1", GOSSIP_SENDER_MAIN, 505, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值成百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);*/
+
 		}
 		else {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00f0ff开启并且设置|r副本弹性值默认值1", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
 		}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
@@ -391,6 +402,36 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		return false;
 	}
 	else if (uiAction == 509) {
+
+		sLog.outString(u8"[pzx] (%s)-(%s) Input str: [%s]", pPlayer->GetName(), pPlayer->GetGuidStr(), reStr);
+		if (!reStr || strlen(reStr)>4) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+		std::string a(reStr);
+		try {
+				float input = std::stof(a);
+				pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, input);
+			}
+			catch (...) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的区间值");
+		}
+		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
+	}
+	else if (uiAction == 505) {
+		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
+	}
+	else if (uiAction == 505) {
+		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return false;
+	}
+	else if (uiAction == 507) {
 		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return false;
