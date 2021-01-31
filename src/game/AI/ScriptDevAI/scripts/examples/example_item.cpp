@@ -61,7 +61,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		}
 		else {
 			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00f0ff开启并且设置|r副本弹性值默认值1", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cffff0000开启并且设置|r副本弹性值默认值1", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF002|r", 0, true);
 		}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
@@ -417,7 +417,6 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			catch (...) {
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的区间值");
 		}
-		pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, 1.0f);
 		pPlayer->CLOSE_GOSSIP_MENU();
 		return false;
 	}
