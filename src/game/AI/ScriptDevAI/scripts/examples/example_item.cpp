@@ -45,9 +45,9 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 
 	}
 
-	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)|| pPlayer->IsGameMaster()) {
+	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
 			Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
-		if (pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0) {
+		if (pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0&& pPlayer->GetGroup()) {
 			std::ostringstream oss;
 			
 			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
