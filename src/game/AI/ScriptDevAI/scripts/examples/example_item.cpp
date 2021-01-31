@@ -61,7 +61,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		}
 		else {
 			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cffff0000开启并设置|r当前副本弹性值,默认值[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF002|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cffff0000开启并设置|r当前副本弹性值,默认值[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
 		}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
@@ -412,6 +412,12 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		std::string a(reStr);
 		try {
 				float input = std::stof(a);
+				if (input > 10.0f) {
+					input = 10.0f;
+				}
+				if (input < 0.0f) {
+					input = 0.0f;
+				}
 				pPlayer->setCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF, input);
 			}
 			catch (...) {
