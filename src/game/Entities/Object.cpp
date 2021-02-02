@@ -2018,6 +2018,27 @@ Creature* WorldObject::SummonCreature(TempSpawnSettings settings, Map* map)
     return creature;
 }
 
+Creature* WorldObject::FindNearestCreature(uint32 uiEntry, float range, bool alive, bool onlyDead) const
+{
+	Creature* pCreature = nullptr;
+
+	CellPair pair(MaNGOS::ComputeCellPair(GetPositionX(), GetPositionY()));
+	Cell cell(pair);
+	cell.SetNoCreate();
+
+
+	MaNGOS::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*this, uiEntry, alive, onlyDead, range);
+	MaNGOS::CreatureLastSearcher<MaNGOS::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pCreature, creature_check);
+
+	TypeContainerVisitor<MaNGOS::CreatureLastSearcher<MaNGOS::NearestCreatureEntryWithLiveStateInObjectRangeCheck>, GridTypeMapContainer> creature_searcher(searcher);
+
+	cell.Visit(pair, creature_searcher, *(GetMap()), *this, range);
+
+	return pCreature;
+}
+
+
+
 Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, float ang, TempSpawnType spwtype, uint32 despwtime, bool asActiveObject, bool setRun, uint32 pathId, uint32 faction, uint32 modelId, bool spawnCounting, bool forcedOnTop)
 {
     return WorldObject::SummonCreature(TempSpawnSettings(this, id, x, y, z, ang, spwtype, despwtime, asActiveObject, setRun, pathId, faction, modelId, spawnCounting, forcedOnTop), GetMap());

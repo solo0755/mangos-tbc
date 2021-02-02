@@ -1067,6 +1067,8 @@ class WorldObject : public Object
         static Creature* SummonCreature(TempSpawnSettings settings, Map* map);
         Creature* SummonCreature(uint32 id, float x, float y, float z, float ang, TempSpawnType spwtype, uint32 despwtime, bool asActiveObject = false, bool setRun = false, uint32 pathId = 0, uint32 faction = 0, uint32 modelId = 0, bool spawnCounting = false, bool forcedOnTop = false);
 
+		Creature* FindNearestCreature(uint32 entry, float range, bool alive = true, bool onlyDead = false) const;
+
         static GameObject* SpawnGameObject(uint32 dbGuid, Map* map);
         static Creature* SpawnCreature(uint32 dbGuid, Map* map);
 

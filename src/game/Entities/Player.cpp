@@ -20715,9 +20715,17 @@ void Player::UpdateTerainEnvironmentFlags(Map* m, float x, float y, float z)
                                     CastSpell(this, liquidSpellId, TRIGGERED_OLD_TRIGGERED);
                                 else
                                 {
-									if (SummonCreature(21508, 0, 0, 0, 0, TEMPSPAWN_TIMED_OOC_DESPAWN, 2000)) {//按每个人算
-                                    // Special update timer for the SSC water
-										m_positionStatusUpdateTimer = 30000;
+									uint32 zone, area;
+									GetZoneAndAreaId(zone, area);
+									if (zone == 3607) {
+										Creature* pCreature = FindNearestCreature(21213, 90.0f);
+										if (pCreature) {
+											//不召唤
+										}else
+										if (SummonCreature(21508, 0, 0, 0, 0, TEMPSPAWN_TIMED_OOC_DESPAWN, 2000)) {//按每个人算
+										// Special update timer for the SSC water
+											m_positionStatusUpdateTimer = 30000;
+										}
 									}
                                 }
                             }
