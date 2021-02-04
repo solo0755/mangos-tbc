@@ -339,10 +339,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 						GetPlayer()->ResurrectPlayer(0.5f);
 						GetPlayer()->SpawnCorpseBones();
 					}
-					
 				}else{
-					GetPlayer()->ResurrectPlayer(0.5f);
-					GetPlayer()->SpawnCorpseBones();
+					if (GetPlayer()->CustomPlayerActionTimeCheck(sPzxConfig.GetIntDefault("pzx.time.pull", 60), PLAYED_TIME_PULL)) {
+						GetPlayer()->ResurrectPlayer(0.5f);
+						GetPlayer()->SpawnCorpseBones();
+					}
 				}
 				
 				break;
