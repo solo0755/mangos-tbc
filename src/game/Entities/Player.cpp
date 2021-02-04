@@ -22093,6 +22093,22 @@ void Player::updatePzxStatus(){
 		m_PlayerPzxAura[PLAYED_PZXAURA_HEALDOT] = 0;
 		m_PlayerPzxAura[PLAYED_PZXAURA_MEEL] = 0;
 	}
+
+
+	time_t now = time(NULL);
+	uint32 ptime = GetTotalPlayedTime();
+	if (ptime <  sPzxConfig.GetIntDefault("pzx.time.broadcast", 3600)) {//在线时长少于1小时
+		time_t NowTime = now - m_PlayerActionTime[PLAYED_TIME_COOL];
+		if (NowTime > sPzxConfig.GetIntDefault("pzx.time.broadcast.intv", 300))//间隔时间
+		{
+			std::stringstream ss;
+			ss << "pzx.time.ads" << urand(1, 3);
+			std::string  ads=sPzxConfig.GetStringDefault(ss.str(), u8"[新手指南]:可以通过右键炉石获取功能菜单。更多精彩可以传送沙塔斯城。");
+			ChatHandler(this).PSendSysMessage(ads.c_str());//改菜单功能还在冷却中
+			m_PlayerActionTime[PLAYED_TIME_COOL] = now;
+		}
+	}
+		
 }
 
 void Player::setCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType,float value)
