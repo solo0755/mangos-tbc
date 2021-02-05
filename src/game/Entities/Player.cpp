@@ -15713,7 +15713,7 @@ void Player::LoadCorpse()
 
 void Player::_LoadInventory(QueryResult* result, uint32 timediff)
 {
-	BASIC_LOG("_LoadInventory start.[%S]",GetName());
+	BASIC_LOG("_LoadInventory start.[%s]",GetName());
     //        0          1            2                3      4         5        6      7             8                 9           10          11   12    13    14
     // SELECT itemEntry, creatorGuid, giftCreatorGuid, count, duration, charges, flags, enchantments, randomPropertyId, durability, itemTextId, bag, slot, item, item_template FROM character_inventory JOIN item_instance ON character_inventory.item = item_instance.guid WHERE character_inventory.guid = '%u' ORDER BY bag, slot
     std::map<uint32, Bag*> bagMap;                          // fast guid lookup for bags
