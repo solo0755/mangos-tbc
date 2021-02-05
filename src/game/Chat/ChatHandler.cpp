@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ bool WorldSession::CheckChatMessage(std::string& msg, bool addon/* = false*/)
 
 
 void vChatLog(Player* plr, char const* type, std::string const& msg, Player* target, uint32 chanId, char const* chanStr) {
-	//ASSERT(sess);Ôö¼ÓÁÄÌìÈÕÖ¾¼à¿Ø
+	//ASSERT(sess);å¢žåŠ èŠå¤©æ—¥å¿—ç›‘æŽ§
 	//Player* plr = sess->GetPlayer();
 	//ASSERT(plr);
 	if (!plr) {
@@ -332,7 +332,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
 
             if (msg.empty())
                 break;
-			if (GetPlayer()->IsDead() && msg.compare("up") == 0) {//×ÔÎÒ¸´»î,×é³¤»òÕßÃ»ÓÐ×é
+			if (GetPlayer()->IsDead() && msg.compare("up") == 0) {//è‡ªæˆ‘å¤æ´»,ç»„é•¿æˆ–è€…æ²¡æœ‰ç»„
 
 				if (sPzxConfig.GetIntDefault("pzx.revive.flag", 0)) {
 					if (GetPlayer()->GetGroup() && GetPlayer()->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER) || !GetPlayer()->GetGroup()) {

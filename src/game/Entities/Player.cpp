@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1575,7 +1575,7 @@ void Player::Update(const uint32 diff)
 
     if (IsHasDelayedTeleport())
         TeleportTo(m_teleport_dest, m_teleport_options);
-		updatePzxStatus();//¸üĞÂ×Ô¶¨Òå×´Ì¬PZX
+		updatePzxStatus();//æ›´æ–°è‡ªå®šä¹‰çŠ¶æ€PZX
 #ifdef BUILD_PLAYERBOT
     if (m_playerbotAI)
         m_playerbotAI->UpdateAI(diff);
@@ -7999,7 +7999,7 @@ void Player::_ApplyAllItemMods()
 
 	std::ostringstream ss;
 
-	//¶ÁÈ¡Êı¾İ¿â¼ÇÂ¼
+	//è¯»å–æ•°æ®åº“è®°å½•
 	QueryResult* result = CharacterDatabase.PQuery("select huanhua from _character_hh where guid='%u'", GetGUIDLow());
 	if (!result)
 	{
@@ -8026,7 +8026,7 @@ void Player::_ApplyAllItemMods()
 				uint32 visualbase = slot * 2;                       // entry, perm ench., temp ench.
 				uint32 item_id = GetUInt32ValueFromArray(data, visualbase);
 				if (item_id > 0) {
-					SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + slot * MAX_VISIBLE_ITEM_OFFSET, item_id);// Ëæ»úÊÍ·Å
+					SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + slot * MAX_VISIBLE_ITEM_OFFSET, item_id);// éšæœºé‡Šæ”¾
 				}
 			}
 		}
@@ -16767,16 +16767,16 @@ void Player::SaveToDB()
     }
     uberInsert.addString(ss);
 
-	//»Ã»¯´æµµ-start
+	//å¹»åŒ–å­˜æ¡£-start
 	std::ostringstream ss_copy;
 	for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)         // string: item id, ench (perm/temp)
     {
         ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
-		ss_copy << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";	//»Ã»¯´æµµ-start
+		ss_copy << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";	//å¹»åŒ–å­˜æ¡£-start
         uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
         uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
         ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
-		ss_copy << uint32(MAKE_PAIR32(ench1, ench2)) << " ";//»Ã»¯´æµµ-end
+		ss_copy << uint32(MAKE_PAIR32(ench1, ench2)) << " ";//å¹»åŒ–å­˜æ¡£-end
     }
 	uberInsert2.addUInt32(GetGUIDLow());
 	uberInsert2.addString(ss_copy);
@@ -16799,7 +16799,7 @@ void Player::SaveToDB()
     uberInsert.addUInt32(uint32(GetByteValue(PLAYER_FIELD_BYTES, 2)));
 
     uberInsert.Execute();
-	uberInsert2.Execute();//»Ã»¯±£´æ
+	uberInsert2.Execute();//å¹»åŒ–ä¿å­˜
     if (m_mailsUpdated)                                     // save mails only when needed
         _SaveMail();
 
@@ -20720,9 +20720,9 @@ void Player::UpdateTerainEnvironmentFlags(Map* m, float x, float y, float z)
 									if (zone == 3607) {
 										Creature* pCreature = FindNearestCreature(21213, 90.0f);
 										if (pCreature) {
-											//²»ÕÙ»½
+											//ä¸å¬å”¤
 										}else
-										if (SummonCreature(21508, 0, 0, 0, 0, TEMPSPAWN_TIMED_OOC_DESPAWN, 2000)) {//°´Ã¿¸öÈËËã
+										if (SummonCreature(21508, 0, 0, 0, 0, TEMPSPAWN_TIMED_OOC_DESPAWN, 2000)) {//æŒ‰æ¯ä¸ªäººç®—
 										// Special update timer for the SSC water
 											m_positionStatusUpdateTimer = 30000;
 										}
@@ -22036,9 +22036,9 @@ bool Player::CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime 
 
 	time_t now = time(NULL);
 	time_t NowTime = now - m_PlayerActionTime[TimeType];
-	if (NowTime < Etctime)//¼ä¸ôÊ±¼ä
+	if (NowTime < Etctime)//é—´éš”æ—¶é—´
 	{
-		ChatHandler(this).PSendSysMessage(u8"[ÏµÍ³ÏûÏ¢]:¸Ã¹¦ÄÜ»¹ÔÚÀäÈ´ÖĞ,|cffff0000%uÃë|h|rºó½âËø", uint32(Etctime - NowTime));//¸Ä²Ëµ¥¹¦ÄÜ»¹ÔÚÀäÈ´ÖĞ
+		ChatHandler(this).PSendSysMessage(u8"[ç³»ç»Ÿæ¶ˆæ¯]:è¯¥åŠŸèƒ½è¿˜åœ¨å†·å´ä¸­,|cffff0000%uç§’|h|råè§£é”", uint32(Etctime - NowTime));//æ”¹èœå•åŠŸèƒ½è¿˜åœ¨å†·å´ä¸­
 		return false;
 	}
 	else
@@ -22051,10 +22051,10 @@ void Player::updatePzxStatus(){
 	//	PLAYED_PZXAURA_DEMAGEDOT = 1,//
 	//	PLAYED_PZXAURA_HEAL = 2, //
 	//	PLAYED_PZXAURA_HEALDOT = 3 //
-	if (sPzxConfig.GetIntDefault("pzx.raid.mutil", 1)) {//ÏµÍ³¿ª¹Ø
+	if (sPzxConfig.GetIntDefault("pzx.raid.mutil", 1)) {//ç³»ç»Ÿå¼€å…³
 		Map * map = this->GetMap();
 		Group * group = this->GetGroup();
-		if (group &&map&& (map->IsRaidOrHeroicDungeon()||map->IsDungeon())) {//¸±±¾ÄÚ²ÅÏíÊÜ
+		if (group &&map&& (map->IsRaidOrHeroicDungeon()||map->IsDungeon())) {//å‰¯æœ¬å†…æ‰äº«å—
 			Player* leader = sObjectMgr.GetPlayer(group->GetLeaderGuid());
 			if (leader&&leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF)>0.0f) {
 				uint32 online = 0;
@@ -22070,7 +22070,7 @@ void Player::updatePzxStatus(){
 				if (online >= pls) {
 					online = pls;
 				}
-				uint32 index = pls - online;//ÈËÊı²îÁ¿
+				uint32 index = pls - online;//äººæ•°å·®é‡
 				float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
 				if (sPzxConfig.GetFloatDefault("pzx.raidDemag", 0.3f)>0) 
 				m_PlayerPzxAura[PLAYED_PZXAURA_DEMAGE]		= index* dx / pls;
@@ -22097,14 +22097,14 @@ void Player::updatePzxStatus(){
 
 	time_t now = time(NULL);
 	uint32 ptime = GetTotalPlayedTime();
-	if (ptime <  sPzxConfig.GetIntDefault("pzx.time.broadcast", 3600)) {//ÔÚÏßÊ±³¤ÉÙÓÚ1Ğ¡Ê±
+	if (ptime <  sPzxConfig.GetIntDefault("pzx.time.broadcast", 3600)) {//åœ¨çº¿æ—¶é•¿å°‘äº1å°æ—¶
 		time_t NowTime = now - m_PlayerActionTime[PLAYED_TIME_COOL];
-		if (NowTime > sPzxConfig.GetIntDefault("pzx.time.broadcast.intv", 300))//¼ä¸ôÊ±¼ä
+		if (NowTime > sPzxConfig.GetIntDefault("pzx.time.broadcast.intv", 300))//é—´éš”æ—¶é—´
 		{
 			std::stringstream ss;
 			ss << "pzx.time.ads" << urand(1, 3);
-			std::string  ads=sPzxConfig.GetStringDefault(ss.str(), u8"[ĞÂÊÖÖ¸ÄÏ]:¿ÉÒÔÍ¨¹ıÓÒ¼üÂ¯Ê¯»ñÈ¡¹¦ÄÜ²Ëµ¥¡£¸ü¶à¾«²Ê¿ÉÒÔ´«ËÍÉ³ËşË¹³Ç¡£");
-			ChatHandler(this).PSendSysMessage(ads.c_str());//¸Ä²Ëµ¥¹¦ÄÜ»¹ÔÚÀäÈ´ÖĞ
+			std::string  ads=sPzxConfig.GetStringDefault(ss.str(), u8"[æ–°æ‰‹æŒ‡å—]:å¯ä»¥é€šè¿‡å³é”®ç‚‰çŸ³è·å–åŠŸèƒ½èœå•ã€‚æ›´å¤šç²¾å½©å¯ä»¥ä¼ é€æ²™å¡”æ–¯åŸã€‚");
+			ChatHandler(this).PSendSysMessage(ads.c_str());//æ”¹èœå•åŠŸèƒ½è¿˜åœ¨å†·å´ä¸­
 			m_PlayerActionTime[PLAYED_TIME_COOL] = now;
 		}
 	}
