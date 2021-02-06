@@ -239,8 +239,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			else if (pPlayer->GetPowerType() == POWER_MANA) {
 				pPlayer->SetPower(POWER_MANA, 100000);
 			}
-			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
 		}
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
 	}
 	else if (uiAction == 501) {
 		if (!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
