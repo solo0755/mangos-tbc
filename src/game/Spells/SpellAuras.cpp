@@ -852,7 +852,7 @@ void Aura::UpdateAuraScaling()
         int32 amount = 0;
         amount = OnAuraValueCalculate(caster, amount);
         // Reapply if amount change
-        if (amount != GetModifier()->m_amount)
+        if (GetModifier()&&(amount != GetModifier()->m_amount))
         {
             SetRemoveMode(AURA_REMOVE_BY_GAINED_STACK);
             if (IsAuraRemoveOnStacking(this->GetSpellProto(), GetEffIndex()))
