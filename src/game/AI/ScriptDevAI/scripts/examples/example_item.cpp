@@ -202,6 +202,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		return GossipHello_ItemPzx(pPlayer, _item);
 	}
 	else if (uiAction == 208) {
+		GroupReference* itr = pPlayer->GetGroup()->GetFirstMember();
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
 			if (!pPlayer->HasAura(35076))//阿达尔的祝福
 				pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
