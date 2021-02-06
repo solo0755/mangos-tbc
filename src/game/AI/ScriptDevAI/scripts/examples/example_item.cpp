@@ -41,8 +41,9 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		if (sPzxConfig.GetIntDefault("show.additem", 1)) {
 			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 		}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
-
+		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
+		}
 	}
 
 	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
@@ -51,7 +52,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 			std::ostringstream oss;
 			
 			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
-			oss << u8"|cffff0000关闭|r副本弹性模式-当前[" << dx << "]";
+			oss << u8"|cffff0000关闭|r副本弹性模式-当前[|cff00ff00" << dx << "|r]";
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508);
 			//
 			/*pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd治疗|r弹性值,默认值1", GOSSIP_SENDER_MAIN, 507, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
@@ -61,7 +62,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		}
 		else {
 			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cffff0000开启并设置|r当前副本弹性值,默认值[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00ff00开启并设置|r当前副本弹性值,默认值[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
 		}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
@@ -201,7 +202,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		return GossipHello_ItemPzx(pPlayer, _item);
 	}
 	else if (uiAction == 208) {
-		if (sPzxConfig.GetIntDefault("show.morebuff", 0)) {
+		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
 			if (!pPlayer->HasAura(35076))//阿达尔的祝福
 				pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
 			if (!pPlayer->HasAura(25392))//耐力
@@ -225,7 +226,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			}
 			//if (!pPlayer->HasAura(27141))
 			//		pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
-		
+		}
 			pPlayer->DurabilityRepairAll(false, 0, false);//修理
 			pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
 			pPlayer->RemoveAllCooldowns();//冷却所有技能
@@ -239,7 +240,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			else if (pPlayer->GetPowerType() == POWER_MANA) {
 				pPlayer->SetPower(POWER_MANA, 100000);
 			}
-		}
+		
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
 	}
 	else if (uiAction == 501) {
@@ -258,7 +259,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				
 			std::string chrNameLink = playerLink(target_name);*/
 
-			if (!target || !target->GetSession())
+			if (!target || !target->GetSession()|| target->GetSession()->isLogingOut())
 				continue;
 			if (_player == target) {
 				continue;

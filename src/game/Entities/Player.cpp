@@ -22034,7 +22034,7 @@ void Player::StopCinematic()
 
 bool Player::CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime TimeType)
 {
-	if (!this || !m_session)
+	if (!this || !m_session|| m_session->isLogingOut())
 		return false;
 
 	time_t now = time(NULL);
@@ -22050,6 +22050,8 @@ bool Player::CustomPlayerActionTimeCheck(time_t Etctime, CustomPlayerActionTime 
 	return true;
 }
 void Player::updatePzxStatus(){
+	if (!this || !m_session || m_session->isLogingOut())
+		return ;
 	//PLAYED_PZXAURA_DEMAGE = 0,//
 	//	PLAYED_PZXAURA_DEMAGEDOT = 1,//
 	//	PLAYED_PZXAURA_HEAL = 2, //
@@ -22069,7 +22071,6 @@ void Player::updatePzxStatus(){
 					online++;
 				}
 				uint32 pls = map->GetMaxPlayers();
-				uint32 size = (pls - online);
 				if (online >= pls) {
 					online = pls;
 				}
@@ -22116,10 +22117,14 @@ void Player::updatePzxStatus(){
 
 void Player::setCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType,float value)
 {
+	if (!this || !m_session || m_session->isLogingOut())
+		return;
 	 m_PlayerPzxAura[AurasType]= value;
 }
 
 float Player::GetCustomPzxAuaraMutil(CustomPlayerPzxAuras AurasType)
 {
+	if (!this || !m_session || m_session->isLogingOut())
+		return 0;
 	return m_PlayerPzxAura[AurasType];
 }
