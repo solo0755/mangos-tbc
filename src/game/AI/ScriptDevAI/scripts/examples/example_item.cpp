@@ -225,7 +225,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			}
 			//if (!pPlayer->HasAura(27141))
 			//		pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
-		}
+		
 			pPlayer->DurabilityRepairAll(false, 0, false);//修理
 			pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
 			pPlayer->RemoveAllCooldowns();//冷却所有技能
@@ -240,7 +240,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				pPlayer->SetPower(POWER_MANA, 100000);
 			}
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
-		
+		}
 	}
 	else if (uiAction == 501) {
 		if (!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
