@@ -841,7 +841,7 @@ void Aura::ApplyModifier(bool apply, bool Real)
     if (!apply)
         OnApply(apply);
 
-	if (GetSpellProto()->HasAttribute(SPELL_ATTR_EX4_IS_PET_SCALING) && m_removeMode != AURA_REMOVE_BY_GAINED_STACK)
+    if (GetSpellProto()->HasAttribute(SPELL_ATTR_EX4_IS_PET_SCALING))
         GetTarget()->RegisterScalingAura(this, apply);
 }
 
@@ -2130,7 +2130,7 @@ void Aura::TriggerSpell()
     {
         CastTriggeredSpell(data);
     }
-    else
+    else if (!GetAuraScript()) // if scripter scripted spell, it is handled somehow
     {
         if (Unit* caster = GetCaster())
         {
