@@ -9447,7 +9447,7 @@ bool ObjectMgr::IsVendorItemValid(bool isTemplate, char const* tableName, uint32
 								}
 								catch (const std::exception&)
 								{
-									sLog.outError("[pzx startB error]:%s", token);
+									sLog.outError("[pzx MenuIds error]");
 									break;
 								}
 							}

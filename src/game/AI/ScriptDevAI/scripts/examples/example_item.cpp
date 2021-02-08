@@ -403,7 +403,6 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 509) {
 
-		sLog.outString(u8"[pzx] (%s)-(%s) Input str: [%s]", pPlayer->GetName(), pPlayer->GetGuidStr(), reStr);
 		if (!reStr || strlen(reStr)>4) {
 			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
 			pPlayer->CLOSE_GOSSIP_MENU();
@@ -664,7 +663,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 }
-	catch (const std::exception&)
+	catch (...)
 	{
 		sLog.outString("[pzx-exception] (%s:%d) Select action   [%d]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), uiAction);
 		pPlayer->CLOSE_GOSSIP_MENU();
