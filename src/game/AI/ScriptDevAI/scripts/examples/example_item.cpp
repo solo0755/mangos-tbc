@@ -26,6 +26,21 @@ EndScriptData */
 
 bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
+	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
+		Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
+		if (leader&&leader->GetSession()&&pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0 ) {
+
+			std::ostringstream oss;
+			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
+			oss << u8"|cffff0000关闭|r 副本弹性模式--->当前设置值[|cff00ff00" << dx << "|r]";
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508);
+
+		}else {
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00ff00开启|r 当前副本弹性模式,默认值:[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
+		}
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
+	}
 	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
 		if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
@@ -46,27 +61,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		}
 	}
 
-	if (pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER)) {
-			Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
-		if (pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0&& pPlayer->GetGroup()) {
-			std::ostringstream oss;
-			
-			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
-			oss << u8"|cffff0000关闭|r副本弹性模式-当前[|cff00ff00" << dx << "|r]";
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508);
-			//
-			/*pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd治疗|r弹性值,默认值1", GOSSIP_SENDER_MAIN, 507, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd近战DPS|r弹性值，默认值1", GOSSIP_SENDER_MAIN, 506, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队DPS弹性值百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"设置|cff0070dd法术DPS|r弹性值，默认值1", GOSSIP_SENDER_MAIN, 505, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队治疗弹性值成百分比200%|r，请输入:|cFFF0FF0014156 2|r", 0, true);*/
 
-		}
-		else {
-			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"|cffff0000开启|r副本弹性模式", GOSSIP_SENDER_MAIN, 509);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00ff00开启并设置|r当前副本弹性值,默认值[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
-		}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
-	}
 
 	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
@@ -377,7 +372,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		ChatHandler(_player).PSendSysMessage(u8"[|cffff0000系统消息|h|r]:您的队伍已经|cff00ff00集合完毕|h|r");
 		_player->CLOSE_GOSSIP_MENU();
 
-		return GossipHello_ItemPzx(pPlayer, _item);
+		return true;
 	}
 	else if (uiAction == 502) {
 		if (!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
@@ -447,20 +442,27 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		return false;
 	}
 	else if (uiAction == 300) {
-		
-		if (pPlayer->GetTeam() == HORDE) {
+		if (pPlayer->IsGameMaster()) {//GM 都可以传送
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
-		}
-		else {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+		}else if (pPlayer->GetTeam() == HORDE) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+		}else {
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
 		}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 卡拉赞 团队副本", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 卡拉赞", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 		//5个区域本
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 风暴要塞", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 盘牙水库", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);

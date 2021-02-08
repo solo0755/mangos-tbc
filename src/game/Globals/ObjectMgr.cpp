@@ -9453,7 +9453,7 @@ bool ObjectMgr::IsVendorItemValid(bool isTemplate, char const* tableName, uint32
 							}
 						}
 						if (index == (ids.size() - 1)) {
-							sLog.outError("≈‰÷√“Ï≥£%s", sPzxConfig.GetStringDefault("pzx.vendor.MenuIds", ""));
+							sLog.outError("≈‰÷√“Ï≥£%s", sPzxConfig.GetStringDefault("pzx.vendor.MenuIds", "").c_str());
 							return false;
 						}
 						if (checkin) {
