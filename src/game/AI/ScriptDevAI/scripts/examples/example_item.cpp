@@ -57,7 +57,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156 4|r", 0, true);
 		}
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 		}
 	}
 
