@@ -294,7 +294,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 
 					for (int i = 0; i<ids.size()-1; i++)
 					{
-						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
+						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
 					}
 				}
 				break;
