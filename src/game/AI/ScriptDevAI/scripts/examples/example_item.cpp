@@ -554,25 +554,25 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				break;
 			case 11://风暴要塞
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(530, 3100.48, 1536.49, 190.3, 4.62226);
+				pPlayer->TeleportTo(530, 3100.48f, 1536.49f, 190.3f, 4.62226f);
 				break;
 
 			case 12://盘牙水库
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(530, 738.865, 6865.77, -69.4659, 6.27655);
+				pPlayer->TeleportTo(530, 738.865f, 6865.77f, -69.4659f, 6.27655f);
 				break;
 
 			case 13://奥金顿60级"
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(530, -3324.49, 4943.45, -101.239, 4.63901);
+				pPlayer->TeleportTo(530, -3324.49f, 4943.45f, -101.239f, 4.63901f);
 				break;
 			case 14://地狱火堡垒60级
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(530, -347.29, 3089.82, 21.394, 5.68114);
+				pPlayer->TeleportTo(530, -347.29f, 3089.82f, 21.394f, 5.68114f);
 				break;
 			case 15://时光之穴65级
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(1, -8369.65, -4253.11, -204.272, -2.70526);
+				pPlayer->TeleportTo(1, -8369.65f, -4253.11f, -204.272f, -2.70526f);
 				break;
 			default:
 				break;
