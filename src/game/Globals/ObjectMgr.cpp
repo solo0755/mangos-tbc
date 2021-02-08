@@ -9423,7 +9423,7 @@ bool ObjectMgr::IsVendorItemValid(bool isTemplate, char const* tableName, uint32
 		if (!cInfo){//自定义的多功能NPC
 			//判断是否为虚拟菜单
 			const std::string mmmmmm = sPzxConfig.GetStringDefault("pzx.vendor.MenuNames");
-			sLog.outError("配置异常%d-%s", vendor_entry, sPzxConfig.GetStringDefault("pzx.vendor.MenuIds"));
+			sLog.outError("配置虚拟菜单%d-%s", vendor_entry, sPzxConfig.GetStringDefault("pzx.vendor.MenuIds").c_str());
 			Tokens tokensNames = StrSplit(mmmmmm, ",");
 			for (auto& tokenName : tokensNames)
 			{

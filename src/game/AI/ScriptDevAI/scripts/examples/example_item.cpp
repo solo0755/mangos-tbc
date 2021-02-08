@@ -89,7 +89,11 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 
 bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uint32 uiAction, char const* reStr)
 {
-	sLog.outString("[pzx-select] (%s)-(%s) Select action   [%d]", pPlayer->GetName(), pPlayer->GetGuidStr(), uiAction);
+	try
+	{
+
+	
+	sLog.outString("[pzx-select] (%s:%d) Select action   [%d]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), uiAction);
 	if (uiAction == 108) {
 		resetIntance(pPlayer, 0, false);
 	}
@@ -579,7 +583,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 			player->CLOSE_GOSSIP_MENU();
 			return false;
 			}*/
-			sLog.outString(u8"[pzx] (%s)-(%s) Input str: [%s]", pPlayer->GetName(),pPlayer->GetGuidStr() ,reStr );
+			sLog.outString(u8"[GetItembyID] (%s:%d) Input str: [%s]", pPlayer->GetName(),pPlayer->GetObjectGuid().GetCounter(),reStr );
 			if (!reStr||strlen(reStr)>12) {
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
 				pPlayer->CLOSE_GOSSIP_MENU();
@@ -657,7 +661,13 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 
 	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
-
+}
+	catch (const std::exception&)
+	{
+		sLog.outString("[pzx-exception] (%s:%d) Select action   [%d]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), uiAction);
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return true;
+}
 }
 bool resetIntance(Player *player, const uint32 got_map, bool modify) {
 	ChatHandler session(player);
