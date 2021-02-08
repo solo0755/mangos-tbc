@@ -119,6 +119,8 @@ bool addRep(Player *player, bool modify) {
 		addOneItemToPlayer(30634, player);//平民窟区域
 		addOneItemToPlayer(30637, player);//破损大厅
 		addOneItemToPlayer(27991, player);//安逸迷宫
+		addOneItemToPlayer(30623, player);//水库钥匙
+		
 	}
 
 	return isok;
