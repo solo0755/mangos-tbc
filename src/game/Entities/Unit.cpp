@@ -12306,11 +12306,11 @@ void Unit::RegisterScalingAura(Aura* aura, bool apply)
 
 void Unit::UpdateScalingAuras()
 {
-	//for (Aura* aura : m_scalingAuras) {
- //       if(aura){//空指针异常处理
-	//		aura->UpdateAuraScaling();
-	//	}
-	//}
+	for (Aura* aura : m_scalingAuras) {
+        if(aura){//空指针异常处理
+			aura->UpdateAuraScaling();
+		}
+	}
 }
 
 uint32 Unit::GetModifierXpBasedOnDamageReceived(uint32 xp)
