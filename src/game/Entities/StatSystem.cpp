@@ -43,8 +43,7 @@ bool Player::UpdateStats(Stats stat)
     if (oldValue != value)
         if (stat == STAT_STAMINA || stat == STAT_INTELLECT)
 			if (Pet* pet = GetPet()) {
-				//展示不享受主人的加层
-              // pet->UpdateScalingAuras();
+              pet->UpdateScalingAuras();
 			}
     switch (stat)
     {
