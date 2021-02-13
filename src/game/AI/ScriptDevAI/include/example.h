@@ -5,6 +5,7 @@
 #include "Globals/ObjectMgr.h"
 
 #define MYMAXSKILL 375
+#define GOSSIP_ACTION_INFO_DEF 450
 const uint32 factionID[2][53] =
 {
 
@@ -61,3 +62,4 @@ bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 acti
 void CompleteLearnProfession(Player *pPlayer, SkillType skill);
 bool resetIntance(Player *player, const uint32 instanceID, bool modify);
 std::vector<uint32> itemset(Player *player);
+bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint32 uiAction, char const* reStr);

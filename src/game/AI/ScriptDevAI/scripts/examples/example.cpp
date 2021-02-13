@@ -1,8 +1,8 @@
 ﻿#include "AI/ScriptDevAI/include/example.h"
 
 std::vector<uint32> itemset(Player *player) {
-	uint8 clazz=player->getClass();
-	std::string classIds("itemset_"+ std::to_string(clazz) );
+	uint8 clazz = player->getClass();
+	std::string classIds("itemset_" + std::to_string(clazz));
 	//std::string names(clazz + "_setname");
 	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault(classIds, ""), ",");
 	std::vector<uint32> ids;
@@ -120,7 +120,7 @@ bool addRep(Player *player, bool modify) {
 		addOneItemToPlayer(30637, player);//破损大厅
 		addOneItemToPlayer(27991, player);//安逸迷宫
 		addOneItemToPlayer(30623, player);//水库钥匙
-		
+
 	}
 
 	return isok;
@@ -216,7 +216,7 @@ bool LearnAllRecipesInProfession(Player *pPlayer, SkillType skill)
 	return true;
 }
 
-void CompleteLearnProfession(Player *pPlayer,  SkillType skill)
+void CompleteLearnProfession(Player *pPlayer, SkillType skill)
 {
 	if (pPlayer->GetFreePrimaryProfessionPoints() == 0 && !(skill == SKILL_COOKING || skill == SKILL_FIRST_AID || skill == SKILL_FISHING))
 	{
@@ -228,54 +228,369 @@ void CompleteLearnProfession(Player *pPlayer,  SkillType skill)
 			ChatHandler(pPlayer).PSendSysMessage(u8"系统错误.练习管理人员");
 	}
 }
-bool GossipSelect_ProfessionNPC(Player* player,  uint32 sender, const uint32 action)
+bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 action)
 {
 	switch (action)
 	{
 	case 1:
-		if (player->GetSkillValue(SKILL_ALCHEMY)<MYMAXSKILL)
+		if (player->GetSkillValue(SKILL_ALCHEMY) < MYMAXSKILL)
 			CompleteLearnProfession(player, SKILL_ALCHEMY);
 		break;
 	case 2:
-		if (player->GetSkillValue(SKILL_BLACKSMITHING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_BLACKSMITHING);
+		if (player->GetSkillValue(SKILL_BLACKSMITHING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_BLACKSMITHING);
 		break;
 	case 3:
-		if (player->GetSkillValue(SKILL_LEATHERWORKING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_LEATHERWORKING);
+		if (player->GetSkillValue(SKILL_LEATHERWORKING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_LEATHERWORKING);
 		break;
 	case 4:
-		if (player->GetSkillValue(SKILL_TAILORING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_TAILORING);
+		if (player->GetSkillValue(SKILL_TAILORING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_TAILORING);
 		break;
 	case 5:
-		if (player->GetSkillValue(SKILL_ENGINEERING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_ENGINEERING);
+		if (player->GetSkillValue(SKILL_ENGINEERING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_ENGINEERING);
 		break;
 	case 6:
-		if (player->GetSkillValue(SKILL_ENCHANTING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_ENCHANTING);
+		if (player->GetSkillValue(SKILL_ENCHANTING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_ENCHANTING);
 		break;
 	case 7:
-		if (player->GetSkillValue(SKILL_JEWELCRAFTING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_JEWELCRAFTING);
+		if (player->GetSkillValue(SKILL_JEWELCRAFTING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_JEWELCRAFTING);
 		break;
 
 	case 9:
-		if (player->GetSkillValue(SKILL_HERBALISM)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_HERBALISM);
+		if (player->GetSkillValue(SKILL_HERBALISM) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_HERBALISM);
 		break;
 	case 10:
-		if (player->GetSkillValue(SKILL_SKINNING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_SKINNING);
+		if (player->GetSkillValue(SKILL_SKINNING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_SKINNING);
 		break;
 	case 11:
-		if (player->GetSkillValue(SKILL_MINING)<MYMAXSKILL)
-			CompleteLearnProfession(player,  SKILL_MINING);
+		if (player->GetSkillValue(SKILL_MINING) < MYMAXSKILL)
+			CompleteLearnProfession(player, SKILL_MINING);
 		break;
 
 	}
 
 	player->CLOSE_GOSSIP_MENU();
+	return true;
+}
+bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint32 uiAction, char const* reStr) {
+	if (uiAction < 1000 && uiAction>100) {
+		sLog.outString("[pzx-select] (%s:%d) Select action   [%d]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), uiAction);
+		if (uiAction == 101)
+		{
+			//player->LearnSpell(33389, false);
+			ObjectGuid target_guid;
+			if (pPlayer->getLevel() < 70) {
+				pPlayer->GiveLevel(70);
+				pPlayer->InitTalentForLevel();
+			}
+			//添加声望和钥匙
+			addRep(pPlayer, true);
+			FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+			FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
+			if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
+				pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+			}
+			else {
+				pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+			}
+			//职业菜单
+			if (!check(pPlayer, false)) {//暂定60级才能学习
+				check(pPlayer, true); //学习职业技能
+			}
+			//学习骑术
+			//pPlayer->learnSpell(33392, false);//中级骑术
+			pPlayer->learnSpell(34093, false);//专家级级骑术
+			pPlayer->SetUInt32Value(PLAYER_XP, 0);
+			pPlayer->UpdateSkillsForLevel(true);
+
+			if (pPlayer->GetSkillValue(SKILL_FIRST_AID) < MYMAXSKILL)
+				CompleteLearnProfession(pPlayer, SKILL_FIRST_AID);
+			if (pPlayer->GetSkillValue(SKILL_FISHING) < MYMAXSKILL)
+				CompleteLearnProfession(pPlayer, SKILL_FISHING);
+			if (pPlayer->GetSkillValue(SKILL_COOKING) < MYMAXSKILL)
+				CompleteLearnProfession(pPlayer, SKILL_COOKING);
+
+			if (sPzxConfig.GetIntDefault("initItemSet", 1) <= 2) {
+				addItemSet(pPlayer, sPzxConfig.GetIntDefault("initItemSet", 0));//增加T1套装
+			}
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+		}
+		else if (uiAction == 108) {
+			resetIntance(pPlayer, 0, false);
+			return true;
+		}
+		else if (uiAction == 105) {
+			pPlayer->resetTalents(true);
+			pPlayer->CastSpell(pPlayer, 14867, TRIGGERED_OLD_TRIGGERED);
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff00ff00 天赋已经重置.|h|r");
+			return true;
+		}
+		else if (uiAction == 106) {
+			pPlayer->SetAtLoginFlag(AT_LOGIN_RENAME);
+			CharacterDatabase.PExecute("UPDATE characters SET at_login = at_login | '1' WHERE guid = '%u'", pPlayer->GetGUIDLow());
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff00ff00 请返回到人物界面后更改您的新角色名.|h|r");
+			return true;
+		}
+		else if (uiAction == 400) {
+			std::vector<uint32> ids = itemset(pPlayer);
+			for (uint32 i = 0; i < ids.size(); i++)
+			{
+				//获取套装中文名
+				ItemSetEntry const* set = sItemSetStore.LookupEntry(ids[i]);
+				if (set)
+				{
+					int loc = pPlayer->GetSession()->GetSessionDbcLocale();
+					std::string name = set->name[loc];
+					pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, name.c_str(), GOSSIP_SENDER_MAIN, 400 + i+1);
+				}
+
+			}
+			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
+			return true;
+		}
+
+		else if (uiAction == 205) {
+			if (pPlayer->GetPet() && pPlayer->GetPet()->getPetType() == HUNTER_PET) {
+
+
+				uint32 maxlevel = 70;
+				Pet* HunterPet = pPlayer->GetPet();
+				if (HunterPet->getLevel() < maxlevel) {
+					HunterPet->GivePetLevel(70);
+				}
+				uint32 loyaltyLevel = HunterPet->GetLoyaltyLevel();
+				uint32 levelupCount = 7;
+				for (; loyaltyLevel < BEST_FRIEND && levelupCount > 0; levelupCount--)
+				{
+					HunterPet->UpdateRequireXpForNextLoyaltyLevel(214748364);
+					HunterPet->ModifyLoyalty(HunterPet->GetStartLoyaltyPoints(loyaltyLevel + 1));
+					++loyaltyLevel;
+				}
+				if (loyaltyLevel == BEST_FRIEND) {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cff0000ff 您的宠物已经强化完成!|h|r");
+				}
+				else {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cffff0000 您的宠物还需要继续训练!|h|r");
+
+				}
+			}
+			else {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 驯服或者召唤出|h|r一只要强化的宠物");
+
+			}
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+		}
+		else if (uiAction == 206) {
+			FactionEntry const* factionEntry_adl = sFactionStore.LookupEntry<FactionEntry>(932);//奥尔多
+			FactionEntry const* factionEntry_zxz = sFactionStore.LookupEntry<FactionEntry>(934);//占星者
+			if (pPlayer->GetReputationMgr().GetReputation(factionEntry_adl) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
+				pPlayer->GetReputationMgr().SetReputation(factionEntry_adl, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+			}
+			else {
+				pPlayer->GetReputationMgr().SetReputation(factionEntry_zxz, sPzxConfig.GetIntDefault("rep.init", 42001));//声望值
+			}
+			pPlayer->UpdateSkillsForLevel(true);
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+		}
+		else if (uiAction == 208) {
+			if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
+				if (!pPlayer->HasAura(35076))//阿达尔的祝福
+					pPlayer->CastSpell(pPlayer, 35076, TRIGGERED_FULL_MASK);
+				if (!pPlayer->HasAura(25392))//耐力
+					pPlayer->CastSpell(pPlayer, 25392, TRIGGERED_FULL_MASK);
+				if (!pPlayer->HasAura(26991))//爪子
+					pPlayer->CastSpell(pPlayer, 26991, TRIGGERED_FULL_MASK);
+				if (!pPlayer->HasAura(27127))
+					pPlayer->CastSpell(pPlayer, 27127, TRIGGERED_FULL_MASK);//奥术光辉
+				if (!pPlayer->HasAura(32999))
+					pPlayer->CastSpell(pPlayer, 32999, TRIGGERED_FULL_MASK);//精神
+				if (!pPlayer->HasAura(25289))
+					pPlayer->CastSpell(pPlayer, 25289, TRIGGERED_FULL_MASK);//战斗怒吼
+
+				if (pPlayer->GetPowerType() == POWER_MANA) {
+					if (!pPlayer->HasAura(27143))
+						pPlayer->CastSpell(pPlayer, 27143, TRIGGERED_FULL_MASK);//智慧祝福
+				}
+				else {
+					if (!pPlayer->HasAura(20217))//王者
+						pPlayer->CastSpell(pPlayer, 20217, TRIGGERED_FULL_MASK);
+				}
+				//if (!pPlayer->HasAura(27141))
+				//		pPlayer->CastSpell(pPlayer, 27141, TRIGGERED_FULL_MASK);//力量祝福
+			}
+			pPlayer->DurabilityRepairAll(false, 0, false);//修理
+			pPlayer->UpdateSkillsForLevel(true);//提升武器熟练度
+			pPlayer->RemoveAllCooldowns();//冷却所有技能
+			if (pPlayer->HasAura(15007))//移除复活虚弱
+				pPlayer->RemoveAurasDueToSpell(15007);
+
+			pPlayer->SetHealth(pPlayer->GetMaxHealth());//满血满蓝满怒
+			if (pPlayer->GetPowerType() == POWER_RAGE) {
+				pPlayer->SetPower(POWER_RAGE, 100000);
+			}
+			else if (pPlayer->GetPowerType() == POWER_MANA) {
+				pPlayer->SetPower(POWER_MANA, 100000);
+			}
+
+			ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:您已经被强化了.奔跑吧...勇士");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+		}
+		else if (uiAction == 300) {
+			if (pPlayer->IsGameMaster()) {//GM 都可以传送
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+			}
+			else if (pPlayer->GetTeam() == HORDE) {
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+			}
+			else {
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+			}
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 卡拉赞", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+			//5个区域本
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 风暴要塞", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 盘牙水库", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 12);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 奥金顿", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 地狱火堡垒", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 时光之穴", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
+
+			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
+			return true;
+		}
+		else if (uiAction == 301) {
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Alchemy.blp:30|t|r炼金术", GOSSIP_SENDER_MAIN, 301 + 1);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_BlackSmithing.blp:30|t|r 锻造", GOSSIP_SENDER_MAIN, 301 + 2);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_LeatherWorking.blp:30|t|r制皮", GOSSIP_SENDER_MAIN, 301 + 3);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Tailoring.blp:30|t|r裁缝", GOSSIP_SENDER_MAIN, 301 + 4);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engineering.blp:30|t|r 工程", GOSSIP_SENDER_MAIN, 301 + 5);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\Trade_Engraving.blp:30|t|r 附魔", GOSSIP_SENDER_MAIN, 301 + 6);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gem_02.blp:30|t|r 珠宝", GOSSIP_SENDER_MAIN, 301 + 7);
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"铭文",        GOSSIP_SENDER_MAIN, 301+8);773
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"草药", GOSSIP_SENDER_MAIN, 301 + 9);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"剥皮", GOSSIP_SENDER_MAIN, 301 + 10);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"采矿", GOSSIP_SENDER_MAIN, 301 + 11);
+
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"急救", GOSSIP_SENDER_MAIN, 301 + 12);
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"钓鱼", GOSSIP_SENDER_MAIN, 301 + 13);
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_INTERACT_2, u8"烹饪", GOSSIP_SENDER_MAIN, 301 + 14);
+
+			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
+			return true;
+		}
+		else if (uiAction - 301 <= 14 && uiAction - 301 >= 1) {
+			return GossipSelect_ProfessionNPC(pPlayer, sender, uiAction - 301);
+		}
+		else if ((uiAction - 400 )<= 15 && (uiAction - 400) >= 1) {//401~415
+			uint32 index = uiAction - 400-1;
+			std::vector<uint32> ids = itemset(pPlayer);
+			if (index <= ids.size() - 1) {
+				addItemSet(pPlayer, ids[index]);
+			}
+			else {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:系统itemset配置异常");
+			}
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+		}
+		else if (uiAction - GOSSIP_ACTION_INFO_DEF > 0) {
+			int index = uiAction - GOSSIP_ACTION_INFO_DEF;
+			switch (index)
+			{
+			case 1://KLZ
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -11120.2f, -2015.27f, 47.1869f, 1.91823f);
+				break;
+
+			case 2://STS
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -1863.0f, 5430.1f, -9.70549f, 3.7f);
+				break;
+
+			case 3://ogrimmar
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, 1541.0f, -4426.0f, 11.24f, 0.85f);
+				break;
+			case 5://幽暗
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, 1633.75f, 240.167f, -43.1034f, 6.26128f);
+				break;
+			case 7://雷霆崖
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, -1274.45f, 71.8601f, 128.159f, 2.80623f);
+				break;
+			case 9://银月城
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 9738.28f, -7454.19f, 13.5605f, 0.043914f);
+				break;
+
+			case 4://IRONforge
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -4917.0f, -955.0f, 502.0f, 0.0f);
+				break;
+
+			case 6://暴风城
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(0, -8842.09f, 626.358f, 94.0867f, 3.61363f);
+				break;
+			case 8://达纳苏斯
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, 9869.91f, 2493.58f, 1315.88f, 2.78897f);
+				break;
+			case 10://埃索达
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -3864.92f, -11643.7f, -137.644f, 5.50862f);
+				break;
+			case 11://风暴要塞
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 3100.48f, 1536.49f, 190.3f, 4.62226f);
+				break;
+
+			case 12://盘牙水库
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 738.865f, 6865.77f, -69.4659f, 6.27655f);
+				break;
+
+			case 13://奥金顿60级"
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -3324.49f, 4943.45f, -101.239f, 4.63901f);
+				break;
+			case 14://地狱火堡垒60级
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, -347.29f, 3089.82f, 21.394f, 5.68114f);
+				break;
+			case 15://时光之穴65级
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(1, -8369.65f, -4253.11f, -204.272f, -2.70526f);
+				break;
+			default:
+				break;
+			}
+			return true;
+		}
+	}
+	pPlayer->CLOSE_GOSSIP_MENU();
 	return true;
 }
