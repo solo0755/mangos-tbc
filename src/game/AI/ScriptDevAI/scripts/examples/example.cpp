@@ -323,6 +323,82 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return true;
 		}
+		else if (uiAction == 103) {
+			/*	if (!player->HasItemCount(sPzxConfig.GetIntDefault("vipItemID", 40003), 1, true)) {
+			ChatHandler(pPlayer).PSendSysMessage( u8"[系统消息]:需要VIP认证卡才可以使用本功能，请联系GM获取");
+			player->CLOSE_GOSSIP_MENU();
+			return false;
+			}*/
+			sLog.outString(u8"[GetItembyID] (%s:%d) Input str: [%s]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), reStr);
+			if (!reStr || strlen(reStr)>12) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
+				pPlayer->CLOSE_GOSSIP_MENU();
+				return false;
+			}
+			std::string a(reStr);
+			char * b = new char[a.length() + 1];
+			uint32 ssitem[2] = { 0, 1 };
+			try {
+				std::strcpy(b, a.c_str());
+				int index = 0;
+				char *ptr;
+				ptr = strtok(b, " ");
+				while (ptr != NULL)
+				{
+					if (index == 2)
+						break;
+					ssitem[index] = std::stoi(ptr);
+					ptr = strtok(NULL, " ");
+					index++;
+				}
+				delete[] b;
+				//getItemID = std::stoi(reStr);
+				if (ssitem[0] <= 0) {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID或数量ID");
+					pPlayer->CLOSE_GOSSIP_MENU();
+					return false;
+				}
+			}
+			catch (...) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID或数量ID");
+				pPlayer->CLOSE_GOSSIP_MENU();
+				return false;
+			}
+
+
+			ItemPrototype const *pProto = sItemStorage.LookupEntry<ItemPrototype>(ssitem[0]);
+			if (pProto) {
+
+				if (pProto->Quality < sPzxConfig.GetIntDefault("item.quality", ITEM_QUALITY_LEGENDARY) && pProto->ItemLevel < sPzxConfig.GetIntDefault("item.level", 151))
+				{
+					if (pPlayer->HasItemCount(pProto->ItemId, 1, true)) {//已经有一件了
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:该物品唯一");
+					}
+					ItemPosCountVec dest;
+					InventoryResult msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, pProto->ItemId, ssitem[1]);
+					if (msg == EQUIP_ERR_OK)
+					{
+						Item* item = pPlayer->StoreNewItem(dest, pProto->ItemId, true);
+						pPlayer->SendNewItem(item, ssitem[1], true, false);
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:%s 已经添加到你包中", item->GetProto()->Name1);
+					}
+					else
+					{
+						pPlayer->SendEquipError(msg, nullptr, nullptr, pProto->ItemId);
+						ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请保持包包有足够空间");
+					}
+				}
+				else {
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]等级;如需要特殊物品，请联系管理园微信:solomon0728", sPzxConfig.GetIntDefault("item.level", 155));
+				}
+			}
+			else
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:物品未找到");
+			//继续显示这个页面
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return true;
+
+		}
 		else if (uiAction == 108) {
 			resetIntance(pPlayer, 0, false);
 			return true;

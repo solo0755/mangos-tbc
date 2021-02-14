@@ -318,7 +318,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_01.blp:30|t|r 免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
 
 			if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-				pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 777, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
+				pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
 			}
 
 			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
