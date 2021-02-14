@@ -33,7 +33,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 			std::ostringstream oss;
 			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
 			oss << u8"|cffff0000关闭|r 副本弹性模式--->当前设置值[|cff00ff00" << dx << "|r]";
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508, u8"确定要|cff0070dd关闭弹性模式|r吗?", 0, false);
 
 		}else {
 			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cff00ff00开启|r 当前副本弹性模式,默认值:[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
@@ -45,19 +45,18 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		//if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 		//}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 		
 		
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
-
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
 
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"|cFF990066|TInterface\\ICONS\\Spell_Holy_PrayerOfFortitude.blp:30|t|r一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 		}
 		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
 		if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"输入|cff0070dd物品ID|r获取限制物品", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
-			pPlayer->ADD_GOSSIP_ITEM(7, u8"免费获取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM(7, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 		}
 
 		//pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
