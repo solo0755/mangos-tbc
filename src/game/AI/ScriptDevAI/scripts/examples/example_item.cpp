@@ -253,11 +253,8 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 				continue;
 			if (pl->IsAlive() && pl->GetMap() && pPlayer->IsWithinLOSInMap(pl) && pl->GetMap() == pPlayer->GetMap()) {
 				//杀死副本内所有玩家
-				//pPlayer->DealDamage(pl, pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
-				//pPlayer->DealDamage(pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
-				//PSendSysMessage(player, u8"团队成员[|cff00ff00%s|h|r]已经被杀死",pl->GetName());
-				if (!pPlayer->HasAura(21751))
-					pPlayer->CastSpell(pPlayer, 21751, TRIGGERED_FULL_MASK);//战斗怒吼
+				if (!pl->HasAura(21751))
+					pl->CastSpell(pl, 21751, TRIGGERED_FULL_MASK);//战斗怒吼
 			}
 		}
 		//
