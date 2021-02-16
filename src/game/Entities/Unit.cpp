@@ -4591,11 +4591,11 @@ float Unit::GetTotalAuraMultiplierByMiscMask(AuraType auratype, uint32 misc_mask
     float multiplier = 1.0f;
 
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
-    for (auto i : mTotalAuraList)
-    {
-        Modifier* mod = i->GetModifier();
-        if (mod->m_miscvalue & misc_mask)
-            multiplier *= (100.0f + mod->m_amount) / 100.0f;
+	for (auto i : mTotalAuraList) {
+		Modifier* mod = i->GetModifier();
+		if (mod->m_miscvalue & misc_mask) {
+			multiplier *= (100.0f + i->GetId() == 21751?sPzxConfig.GetIntDefault("pzx.cut.aura",35): mod->m_amount) / 100.0f;//ÃâÉË¹â»·Ä¬ÈÏ¼õÉË35%
+		}
     }
     return multiplier;
 }

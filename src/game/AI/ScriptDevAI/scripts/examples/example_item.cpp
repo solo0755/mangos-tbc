@@ -40,6 +40,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		}
 	}
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"为全团增加|cff0070dd免伤光环|r", GOSSIP_SENDER_MAIN, 507);
 		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
 		//if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
@@ -237,7 +238,31 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 		//
 		pPlayer->CLOSE_GOSSIP_MENU();
-		return GossipHello_ItemPzx(pPlayer, _item);
+		return true;
+	}
+	else if (uiAction == 507) {
+		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+		for (GroupReference* itr = pPlayer->GetGroup()->GetFirstMember(); itr != nullptr; itr = itr->next())
+		{
+			Player* pl = itr->getSource();
+			if (!pl || !pl->GetSession())
+				continue;
+			if (pl->IsAlive() && pl->GetMap() && pPlayer->IsWithinLOSInMap(pl) && pl->GetMap() == pPlayer->GetMap()) {
+				//杀死副本内所有玩家
+				//pPlayer->DealDamage(pl, pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+				//pPlayer->DealDamage(pl, pl->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
+				//PSendSysMessage(player, u8"团队成员[|cff00ff00%s|h|r]已经被杀死",pl->GetName());
+				if (!pPlayer->HasAura(21751))
+					pPlayer->CastSpell(pPlayer, 21751, TRIGGERED_FULL_MASK);//战斗怒吼
+			}
+		}
+		//
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return true;
 	}
 	else if (uiAction == 508) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
