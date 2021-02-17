@@ -28,7 +28,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
 	if (pPlayer->GetGroup()) {//TODO 换成全员都显示，但是只能团长执行
 		Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
-		if (leader&&leader->GetSession()&&pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0 ) {
+		if (leader&&leader->GetSession()&& leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0 ) {
 
 			std::ostringstream oss;
 			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
