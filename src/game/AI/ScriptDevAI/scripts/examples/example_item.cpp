@@ -39,11 +39,11 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"|cff00ff00开启|r 当前副本弹性模式,默认值:[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
 		}
 	}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"一键|cff0070dd复活拉人|r(全体队员)", GOSSIP_SENDER_MAIN, 501);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键|cff0070dd复活拉人|r(全体队员)", GOSSIP_SENDER_MAIN, 501);
 		std::ostringstream oss2;
 		oss2 << u8"为全团增加免伤光环|cff0070dd" << sPzxConfig.GetIntDefault("pzx.cut.aura", -35) << u8"%伤害|r";
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, oss2.str().c_str(), GOSSIP_SENDER_MAIN, 507);
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"一键|cff0070dd秒杀团队成员|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, oss2.str().c_str(), GOSSIP_SENDER_MAIN, 507);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"一键|cff0070dd秒杀团队成员|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
 		//if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
