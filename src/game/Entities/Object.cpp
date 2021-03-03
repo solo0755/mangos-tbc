@@ -2360,19 +2360,25 @@ void WorldObject::UpdateObjectVisibility()
     CellPair p = MaNGOS::ComputeCellPair(GetPositionX(), GetPositionY());
     Cell cell(p);
 	if(GetMap())
-    GetMap()->UpdateObjectVisibility(this, cell, p);
+		 GetMap()->UpdateObjectVisibility(this, cell, p);
+	else
+		sLog.outError("[pzx-EXCEPTION]%d map is null when UpdateObjectVisibility", GetTypeId());
 }
 
 void WorldObject::AddToClientUpdateList()
 {
 	if (GetMap())
-    GetMap()->AddUpdateObject(this);
+		GetMap()->AddUpdateObject(this);
+	else
+		sLog.outError("[pzx-EXCEPTION]%d map is null when AddToClientUpdateList", GetTypeId());
 }
 
 void WorldObject::RemoveFromClientUpdateList()
 {
 	if (GetMap())
-    GetMap()->RemoveUpdateObject(this);
+		GetMap()->RemoveUpdateObject(this);
+	else
+		sLog.outError("[pzx-EXCEPTION]%d map is null when RemoveFromClientUpdateList", GetTypeId());
 }
 
 struct WorldObjectChangeAccumulator
