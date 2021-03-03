@@ -261,8 +261,8 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 	
 	pPlayer->PrepareGossipMenu(pCreature, 20001);
 	if (pCreature->GetEntry() == sPzxConfig.GetIntDefault("pzx.init.npc", 198601)) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
-		pPlayer->ADD_GOSSIP_ITEM(7, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 	}
 	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", ""), ",");
 	for (auto& tokenName : tokensNames)
@@ -298,7 +298,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 
 					for (int i = 0; i<ids.size()-1; i++)
 					{
-						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
+						pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, titles[i], GOSSIP_SENDER_MAIN, ids[i]);
 					}
 				}
 				break;
@@ -310,20 +310,20 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 			
 			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
 
 			//if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
 			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 			//}
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_01.blp:30|t|r 免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_01.blp:30|t|r 免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
 
 			if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-				pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
+				pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
 			}
 
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"->清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
 
 		}
 	}

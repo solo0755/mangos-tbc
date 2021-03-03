@@ -28,44 +28,49 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 {
 	if (pPlayer->GetGroup()) {//TODO 换成全员都显示，但是只能团长执行
 		Player* leader = sObjectMgr.GetPlayer(pPlayer->GetGroup()->GetLeaderGuid());
-		if (leader&&leader->GetSession()&&pPlayer->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0 ) {
+		if (leader&&leader->GetSession()&& leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF) > 0 ) {
 
 			std::ostringstream oss;
 			float dx = leader->GetCustomPzxAuaraMutil(PLAYED_PZXAURA_ONOFF);
 			oss << u8"|cffff0000关闭|r 副本弹性模式--->当前设置值[|cff00ff00" << dx << "|r]";
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508, u8"确定要|cff0070dd关闭弹性模式|r吗?", 0, false);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, oss.str().c_str(), GOSSIP_SENDER_MAIN, 508, u8"确定要|cff0070dd关闭弹性模式|r吗?", 0, false);
 
 		}else {
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"|cff00ff00开启|r 当前副本弹性模式,默认值:[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"|cff00ff00开启|r 当前副本弹性模式,默认值:[1]", GOSSIP_SENDER_MAIN, 509, u8"在弹框中输入1~10.0 数量\n 例:|cFF00F0ff更改团队弹性值百分比200%|r，请输入:|cFFF0FF002.0|r", 0, true);
 		}
 	}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TALK, u8"一键|cff0070dd复活拉人|r", GOSSIP_SENDER_MAIN, 501);
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_TALK, u8"一键|cff0070dd秒杀全团|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"一键|cff0070dd复活拉人|r(全体队员)", GOSSIP_SENDER_MAIN, 501);
+		std::ostringstream oss2;
+		oss2 << u8"为全团增加免伤光环|cff0070dd" << sPzxConfig.GetIntDefault("pzx.cut.aura", -35) << u8"%伤害|r";
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, oss2.str().c_str(), GOSSIP_SENDER_MAIN, 507);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"一键|cff0070dd秒杀团队成员|r", GOSSIP_SENDER_MAIN, 502, u8"确定要|cFFF0FF00秒杀全团|r吗?", 0, false);
 	if (!pPlayer->IsInCombat()|| pPlayer->IsGameMaster()) {//战斗中不显示菜单
 		//if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 		//}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 沙塔斯城（|cffFF00c8新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 沙塔斯城（|cffff0000新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 		
 		
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 其他区域", GOSSIP_SENDER_MAIN, 300);
 
 		if (sPzxConfig.GetIntDefault("show.morebuff", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"|cFF990066|TInterface\\ICONS\\Spell_Holy_PrayerOfFortitude.blp:30|t|r一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Holy_PrayerOfFortitude.blp:30|t|r一键全BUFF、满血蓝怒、修理、冷却", GOSSIP_SENDER_MAIN, 208);
 		}
 		//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TRAINER, u8"免费学习-|cff6247c8商业技能|h|r", GOSSIP_SENDER_MAIN, 301);
 		if (sPzxConfig.GetIntDefault("show.additem", 1)) {
-			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(6, u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(151等级以下)", GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
-			pPlayer->ADD_GOSSIP_ITEM(7, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
+			std::ostringstream oss3;
+			oss3 << u8"|cFF990066|TInterface\\ICONS\\Mail_GMIcon.blp:30|t|r 输入|cff0070dd物品ID|r获取部分限制物品(" << sPzxConfig.GetIntDefault("item.level", 151) << u8"等级以下)";
+			pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, oss3.str().c_str(), GOSSIP_SENDER_MAIN, 103, u8"在弹框中输入物品ID编号 数量\n 例:|cFF00F0ff需要4个无底包|r，请输入:|cFFF0FF0014156   4|r", 0, true);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 		}
 
 		//pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->天赋重置", GOSSIP_SENDER_MAIN, 105, u8"确定要|cff0070dd重置天赋|r吗?", 0, false);
 		//pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"->角色更名", GOSSIP_SENDER_MAIN, 106, u8"确定要|cff0070dd更改此角色的名称|r吗?", 0, false);
 		
-		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_CHAT, u8"|cFF990066|TInterface\\ICONS\\Spell_Nature_WispSplode.blp:30|t|r 清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
+		pPlayer->ADD_GOSSIP_ITEM_EXTENDED(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Nature_WispSplode.blp:30|t|r 清理副本CD", GOSSIP_SENDER_MAIN, 108, u8"确定要|cff0070dd清理所有副本CD|r吗?", 0, false);
 		if (pPlayer->getClass() == CLASS_HUNTER) {
-			pPlayer->ADD_GOSSIP_ITEM(3, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
 		}
 
 	}
@@ -237,7 +242,28 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		}
 		//
 		pPlayer->CLOSE_GOSSIP_MENU();
-		return GossipHello_ItemPzx(pPlayer, _item);
+		return true;
+	}
+	else if (uiAction == 507) {
+		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			pPlayer->CLOSE_GOSSIP_MENU();
+			return false;
+		}
+		for (GroupReference* itr = pPlayer->GetGroup()->GetFirstMember(); itr != nullptr; itr = itr->next())
+		{
+			Player* pl = itr->getSource();
+			if (!pl || !pl->GetSession())
+				continue;
+			if (pl->IsAlive() && pl->GetMap() && pPlayer->IsWithinLOSInMap(pl) && pl->GetMap() == pPlayer->GetMap()) {
+				//杀死副本内所有玩家
+				if (!pl->HasAura(21751))
+					pl->CastSpell(pl, 21751, TRIGGERED_FULL_MASK);//战斗怒吼
+			}
+		}
+		//
+		pPlayer->CLOSE_GOSSIP_MENU();
+		return true;
 	}
 	else if (uiAction == 508) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
