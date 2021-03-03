@@ -2359,17 +2359,19 @@ void WorldObject::UpdateObjectVisibility()
 {
     CellPair p = MaNGOS::ComputeCellPair(GetPositionX(), GetPositionY());
     Cell cell(p);
-
+	if(GetMap())
     GetMap()->UpdateObjectVisibility(this, cell, p);
 }
 
 void WorldObject::AddToClientUpdateList()
 {
+	if (GetMap())
     GetMap()->AddUpdateObject(this);
 }
 
 void WorldObject::RemoveFromClientUpdateList()
 {
+	if (GetMap())
     GetMap()->RemoveUpdateObject(this);
 }
 
