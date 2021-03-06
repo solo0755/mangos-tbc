@@ -1206,7 +1206,63 @@ void WorldSession::HandleWrapItemOpcode(WorldPacket& recv_data)
 				_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + eSolt * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 随机释放
 
 			}
-
+			else {
+				int viable_slots[1] = { NULL_SLOT };
+				uint32 inventoryType=item->GetProto()->InventoryType;
+				switch (inventoryType)
+				{
+				case INVTYPE_HEAD:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_HEAD ****");
+					viable_slots[0] = EQUIPMENT_SLOT_HEAD;
+					break;
+				case INVTYPE_NECK:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_NECK ****");
+					viable_slots[0] = EQUIPMENT_SLOT_NECK;
+					break;
+				case INVTYPE_SHOULDERS:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_SHOULDERS ****");
+					viable_slots[0] = EQUIPMENT_SLOT_SHOULDERS;
+					break;
+				case INVTYPE_BODY:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_BODY ****");
+					viable_slots[0] = EQUIPMENT_SLOT_BODY;
+					break;
+				case INVTYPE_CHEST:
+				case INVTYPE_ROBE:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == %s ****",(INVTYPE_CHEST ? "INVTYPE_CHEST" : "INVTYPE_ROBE"));
+					viable_slots[0] = EQUIPMENT_SLOT_CHEST;
+					break;
+				case INVTYPE_WAIST:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_WAIST ****");
+					viable_slots[0] = EQUIPMENT_SLOT_WAIST;
+					break;
+				case INVTYPE_LEGS:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_LEGS ****");
+					viable_slots[0] = EQUIPMENT_SLOT_LEGS;
+					break;
+				case INVTYPE_FEET:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_FEET ****");
+					viable_slots[0] = EQUIPMENT_SLOT_FEET;
+					break;
+				case INVTYPE_WRISTS:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_WRISTS ****");
+					viable_slots[0] = EQUIPMENT_SLOT_WRISTS;
+					break;
+				case INVTYPE_HANDS:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_HANDS ****");
+					viable_slots[0] = EQUIPMENT_SLOT_HANDS;
+					break;
+				case INVTYPE_CLOAK:
+					//DEBUG_LOG("**** [Player::ViableEquipSlots] proto->InventoryType == INVTYPE_CLOAK ****");
+					viable_slots[0] = EQUIPMENT_SLOT_BACK;
+					break;
+				default:
+					break;
+				}
+				if (viable_slots[0] != NULL_SLOT) {
+					_player->SetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + viable_slots[0] * MAX_VISIBLE_ITEM_OFFSET, _itemID);// 随机释放
+				}
+			}
 		}
 		_player->SaveToDB();
 		//PSendSysMessage(player, u8"您的武器幻化完成");
