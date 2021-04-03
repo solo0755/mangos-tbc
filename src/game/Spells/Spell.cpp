@@ -380,18 +380,18 @@ Spell::Spell(Unit* caster, SpellEntry const* info, uint32 triggeredFlags, Object
     m_needAliveTargetMask = 0;
 
     m_ignoreHitResult = (triggeredFlags & TRIGGERED_IGNORE_HIT_CALCULATION) != 0;
-    m_ignoreUnselectableTarget = m_IsTriggeredSpell | ((triggeredFlags & TRIGGERED_IGNORE_UNSELECTABLE_FLAG) != 0);
+    m_ignoreUnselectableTarget = m_IsTriggeredSpell || ((triggeredFlags & TRIGGERED_IGNORE_UNSELECTABLE_FLAG) != 0);
     m_ignoreCastTime = (triggeredFlags & TRIGGERED_INSTANT_CAST) != 0;
     m_ignoreUnattackableTarget = (triggeredFlags & TRIGGERED_IGNORE_UNATTACKABLE_FLAG) != 0;
     m_triggerAutorepeat = (triggeredFlags & TRIGGERED_AUTOREPEAT) != 0;
     m_doNotProc = (triggeredFlags & TRIGGERED_DO_NOT_PROC) != 0;
     m_petCast = (triggeredFlags & TRIGGERED_PET_CAST) != 0;
     m_notifyAI = (triggeredFlags & TRIGGERED_NORMAL_COMBAT_CAST) != 0;
-    m_ignoreGCD = m_IsTriggeredSpell | ((triggeredFlags & TRIGGERED_IGNORE_GCD) != 0);
-    m_ignoreCosts = m_IsTriggeredSpell | ((triggeredFlags & TRIGGERED_IGNORE_COSTS) != 0);
-    m_ignoreCooldowns = m_IsTriggeredSpell | ((triggeredFlags & TRIGGERED_IGNORE_COOLDOWNS) != 0);
-    m_ignoreConcurrentCasts = m_IsTriggeredSpell | ((triggeredFlags & TRIGGERED_IGNORE_CURRENT_CASTED_SPELL) != 0) | m_spellInfo->HasAttribute(SPELL_ATTR_EX4_CAN_CAST_WHILE_CASTING);
-    m_hideInCombatLog = (m_IsTriggeredSpell && !IsAutoRepeatRangedSpell(m_spellInfo)) | ((triggeredFlags & TRIGGERED_HIDE_CAST_IN_COMBAT_LOG) != 0);
+    m_ignoreGCD = m_IsTriggeredSpell || ((triggeredFlags & TRIGGERED_IGNORE_GCD) != 0);
+    m_ignoreCosts = m_IsTriggeredSpell || ((triggeredFlags & TRIGGERED_IGNORE_COSTS) != 0);
+    m_ignoreCooldowns = m_IsTriggeredSpell || ((triggeredFlags & TRIGGERED_IGNORE_COOLDOWNS) != 0);
+    m_ignoreConcurrentCasts = m_IsTriggeredSpell || ((triggeredFlags & TRIGGERED_IGNORE_CURRENT_CASTED_SPELL) != 0) || m_spellInfo->HasAttribute(SPELL_ATTR_EX4_CAN_CAST_WHILE_CASTING);
+    m_hideInCombatLog = (m_IsTriggeredSpell && !IsAutoRepeatRangedSpell(m_spellInfo)) || ((triggeredFlags & TRIGGERED_HIDE_CAST_IN_COMBAT_LOG) != 0);
 
     m_reflectable = IsReflectableSpell(m_spellInfo);
 
@@ -792,7 +792,7 @@ void Spell::AddUnitTarget(Unit* target, uint8 effectMask, CheckException excepti
     targetInfo.heartbeatResistChance = 0;
 
     // Calculate hit result
-    targetInfo.missCondition = (m_ignoreHitResult ? SPELL_MISS_NONE : m_caster->SpellHitResult(target, m_spellInfo, targetInfo.effectMask, m_reflectable, &targetInfo.heartbeatResistChance));
+    targetInfo.missCondition = (m_ignoreHitResult ? SPELL_MISS_NONE : m_caster->SpellHitResult(target, m_spellInfo, targetInfo.effectMask, m_reflectable, false, &targetInfo.heartbeatResistChance));
 
     // spell fly from visual cast object
     WorldObject* affectiveObject = GetAffectiveCasterObject();
@@ -1091,7 +1091,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
 
         Unit::DealDamageMods(caster, spellDamageInfo.target, spellDamageInfo.damage, &spellDamageInfo.absorb, SPELL_DIRECT_DAMAGE, m_spellInfo);
 
-        // Send log damage message to client        
+        // Send log damage message to client
         if (reflectTarget)
             reflectTarget->SendSpellNonMeleeDamageLog(&spellDamageInfo);
         else
@@ -3897,9 +3897,28 @@ void Spell::WriteSpellGoTargets(WorldPacket& data)
     size_t count_pos = data.wpos();
     data << uint8(0);                                      // placeholder
 
+    if (m_UniqueTargetInfo.size() > 255)
+    {
+        sLog.outError("Spell ID %u cast by %s hit/missed too many unit targets %u. Ignored after 255.", m_spellInfo->Id, m_caster->GetObjectGuid().GetString().c_str(), (uint32)m_UniqueTargetInfo.size());
+        m_UniqueTargetInfo.resize(255);
+    }
+
+    if (m_UniqueGOTargetInfo.size() > 255)
+    {
+        sLog.outError("Spell ID %u cast by %s hit/missed too many GO targets %u. Ignored after 255.", m_spellInfo->Id, m_caster->GetObjectGuid().GetString().c_str(), (uint32)m_UniqueGOTargetInfo.size());
+        m_UniqueGOTargetInfo.resize(255);
+    }
+
+    if (m_UniqueGOTargetInfo.size() + m_UniqueTargetInfo.size() > 255)
+    {
+        sLog.outError("Spell ID %u cast by %s hit/missed too many targets %u. Ignored after 255.", m_spellInfo->Id, m_caster->GetObjectGuid().GetString().c_str(), (uint32)(m_UniqueGOTargetInfo.size() + m_UniqueTargetInfo.size()));
+        m_UniqueTargetInfo.resize(127);
+        m_UniqueGOTargetInfo.resize(127);
+    }
+
     // This function also fill data for channeled spells:
     // m_needAliveTargetMask req for stop channeling if one target die
-    uint32 hit  = m_UniqueGOTargetInfo.size();              // Always hits on GO
+    uint32 hit = m_UniqueGOTargetInfo.size();              // Always hits on GO
     uint32 miss = 0;
 
     for (auto& ihit : m_UniqueTargetInfo)
@@ -3907,6 +3926,8 @@ void Spell::WriteSpellGoTargets(WorldPacket& data)
         if (ihit.effectHitMask == 0)                       // No effect apply - all immuned add state
         {
             // possibly SPELL_MISS_IMMUNE2 for this??
+            if (IsChanneledSpell(m_spellInfo) && ihit.targetGUID == m_targets.getUnitTargetGuid()) // can happen due to DR
+                m_duration = 0;                            // cancel aura to avoid visual effect continue
             ihit.missCondition = SPELL_MISS_IMMUNE2;
             ++miss;
         }
@@ -3924,20 +3945,20 @@ void Spell::WriteSpellGoTargets(WorldPacket& data)
         }
     }
 
-    for (GOTargetList::const_iterator ighit = m_UniqueGOTargetInfo.begin(); ighit != m_UniqueGOTargetInfo.end(); ++ighit)
-        data << ighit->targetGUID;                         // Always hits
+    for (auto& ighit : m_UniqueGOTargetInfo)
+        data << ighit.targetGUID;                         // Always hits
 
     data.put<uint8>(count_pos, hit);
 
     data << (uint8)miss;
-    for (TargetList::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
+    for (auto& ihit : m_UniqueTargetInfo)
     {
-        if (ihit->missCondition != SPELL_MISS_NONE)         // Add only miss
+        if (ihit.missCondition != SPELL_MISS_NONE)         // Add only miss
         {
-            data << ihit->targetGUID;
-            data << uint8(ihit->missCondition);
-            if (ihit->missCondition == SPELL_MISS_REFLECT)
-                data << uint8(ihit->reflectResult);
+            data << ihit.targetGUID;
+            data << uint8(ihit.missCondition);
+            if (ihit.missCondition == SPELL_MISS_REFLECT)
+                data << uint8(ihit.reflectResult);
         }
     }
     // Reset m_needAliveTargetMask for non channeled spell
@@ -7113,7 +7134,7 @@ float Spell::GetSpellSpeed() const
         return 0.f;
     if (IsChanneledSpell(m_spellInfo))
         return 0.f;
-    
+
     return m_spellInfo->speed;
 }
 
@@ -7275,6 +7296,7 @@ void Spell::GetSpellRangeAndRadius(SpellEffectIndex effIndex, float& radius, boo
                     if (data.enumerator == TARGET_ENUMERATOR_CHAIN || data.enumerator == TARGET_ENUMERATOR_AOE || data.enumerator == TARGET_ENUMERATOR_CONE)
                         radius = 200.f;
                     break;
+                default: break;
             }
         }
     }
