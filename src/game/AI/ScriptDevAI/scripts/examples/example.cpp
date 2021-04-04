@@ -120,6 +120,7 @@ bool addRep(Player *player, bool modify) {
 		addOneItemToPlayer(30637, player);//破损大厅
 		addOneItemToPlayer(27991, player);//安逸迷宫
 		addOneItemToPlayer(30623, player);//水库钥匙
+		addOneItemToPlayer(30633, player);//水库钥匙
 
 	}
 
@@ -389,7 +390,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 					}
 				}
 				else {
-					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品等级过高,需小于[%d]等级;如需要特殊物品，请联系管理园微信:solomon0728", sPzxConfig.GetIntDefault("item.level", 155));
+					ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:获取物品级别过高,需小于[%d]等级;如需要特殊物品，请联系管理园微信:solomon0728", sPzxConfig.GetIntDefault("item.level", 155));
 				}
 			}
 			else
