@@ -117,10 +117,11 @@ bool addRep(Player *player, bool modify) {
 		addOneItemToPlayer(24490, player);//卡拉赞钥匙
 		addOneItemToPlayer(31084, player);//禁魔监狱
 		addOneItemToPlayer(30634, player);//平民窟区域
-		addOneItemToPlayer(30637, player);//破损大厅
-		addOneItemToPlayer(27991, player);//安逸迷宫
+		addOneItemToPlayer(30637, player);//萨尔玛H本钥匙
+		addOneItemToPlayer(28395, player);//破损大厅钥匙
+		addOneItemToPlayer(27991, player);//暗影迷宫钥匙
 		addOneItemToPlayer(30623, player);//水库钥匙
-		addOneItemToPlayer(30633, player);//水库钥匙
+		addOneItemToPlayer(30633, player);//水库H本钥匙
 
 	}
 

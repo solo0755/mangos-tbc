@@ -261,7 +261,7 @@ bool GossipHello_example_creature(Player* pPlayer, Creature* pCreature)
 	
 	pPlayer->PrepareGossipMenu(pCreature, 20001);
 	if (pCreature->GetEntry() == sPzxConfig.GetIntDefault("pzx.init.npc", 198601)) {
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包[H本声望、钥匙、生活技能]~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Misc_Gift_03.blp:30|t|r 免费领取-|cff6247c8职业套装|h|r", GOSSIP_SENDER_MAIN, 400);
 	}
 	Tokens tokensNames = StrSplit(sPzxConfig.GetStringDefault("pzx.vendor.MenuNames", ""), ",");

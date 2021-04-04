@@ -48,7 +48,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		//if (pPlayer->getLevel() < 70|| !addRep(pPlayer, false)|| !check(pPlayer, false)|| pPlayer->GetSkillValue(SKILL_FIRST_AID)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_FISHING)<MYMAXSKILL|| pPlayer->GetSkillValue(SKILL_COOKING)<MYMAXSKILL) {
 		//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"开始新的旅途(必选哦~)", GOSSIP_SENDER_MAIN, 101);
 		//}
-		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\INV_Holiday_Christmas_Present_02.blp:30|t|r 领取新手大礼包[H本声望、钥匙、生活技能]~~(|cffff0000必选|r)", GOSSIP_SENDER_MAIN, 101);
 		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 传送--> 沙塔斯城（|cffff0000新手接待|r）", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
 		
 		
