@@ -101,7 +101,7 @@ bool addRep(Player *player, bool modify) {
 	const uint32* fas = player->GetTeam() == HORDE ? factionID[0] : factionID[1];
 
 	//const static uint32 NUM_BREATHS = sizeof(fas) / sizeof(fas[0]);
-	for (uint32 id = 0; id < 5; id++) {
+	for (uint32 id = 0; id < 6; id++) {
 		//FactionEntry const *factionEntry = sObjectMgr.getFactionEntry(fas[id]);//faction ID 参考DPS
 		FactionEntry const* factionEntry = sFactionStore.LookupEntry<FactionEntry>(fas[id]);
 		if (player->GetReputationMgr().GetReputation(factionEntry) < sPzxConfig.GetIntDefault("rep.init", 42001)) {
@@ -554,6 +554,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 奥金顿", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 13);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 地狱火堡垒", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 时光之穴", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 太阳井高地", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 16);
 
 			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
 			return true;
@@ -662,6 +663,10 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			case 15://时光之穴65级
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(1, -8369.65f, -4253.11f, -204.272f, -2.70526f);
+				break;
+			case 16://太阳井高地
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(530, 12582.3f, - 6775.1f, 15.1f, 6.2f);
 				break;
 			default:
 				break;

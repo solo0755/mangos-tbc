@@ -6,11 +6,11 @@
 
 #define MYMAXSKILL 375
 #define GOSSIP_ACTION_INFO_DEF 450
-const uint32 factionID[2][53] =
+const uint32 factionID[2][10] =
 {
 
-	{ 947,942,1011,935,989 },//H
-	{ 946,942,1011,935,989 }//B
+	{ 947,942,1011,935,989,1077 },//H
+	{ 946,942,1011,935,989,1077 }//B
 };
 
 //0.5~2.5,
