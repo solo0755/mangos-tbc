@@ -342,9 +342,33 @@ struct boss_illidari_councilAI : public CombatAI
         int32 damageTaken = (int32)damage;
         m_creature->CastCustomSpell(nullptr, SPELL_SHARED_RULE_DAM, &damageTaken, nullptr, nullptr, TRIGGERED_OLD_TRIGGERED);
 
-        if (m_creature->GetHealth() <= damage)
+		if (m_creature->GetHealth() <= damage) {
+			//等待其他NPC的血量减少
+			for (uint32 i : aCouncilMember)
+			{
+				Creature* member = m_instance->GetSingleCreatureFromStorage(i);
+				if (member && member->IsAlive() && member->GetMaxHealth() > 5000) {//如果其他NPC大于3K 等一轮
+					sLog.outString("[Pzx]Entry:%u-HP(%u)", member->GetEntry(), member->GetHealth());
+					damage = 0; return;
+				}
+			}
             damage = m_creature->GetHealth() - 1;
+		}
     }
+
+	//void JustDied(Unit* killer) override
+	//{
+	//	if (Creature* controller = m_instance->GetSingleCreatureFromStorage(NPC_ILLIDARI_COUNCIL))
+	//	{
+	//		if (mob_illidari_councilAI* controlAI = dynamic_cast<mob_illidari_councilAI*>(controller->AI()))
+	//			controlAI->DoEndEvent();
+	//	}
+
+	//	if (m_instance)
+	//		m_instance->SetData(TYPE_COUNCIL, DONE);
+	//}
+
+
 
     void HealedBy(Unit* /*healer*/, uint32& healedAmount) override
     {
