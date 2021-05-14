@@ -230,8 +230,24 @@ struct boss_kalecgosAI : public ScriptedAI
                 m_uiExitTimer -= uiDiff;
         }
 
-        if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态
-            return;
+		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态
+		{
+			if (Creature* pSathrovarr = m_pInstance->GetSingleCreatureFromStorage(NPC_SATHROVARR))
+			{
+				if (pSathrovarr->HasAura(SPELL_BANISH)) {
+					DoStartOutro();//两个都是放逐态
+				}
+				else {//还没初始化
+					//一般是不存在的场景
+					sLog.outError("[PZX] nooooooooooooooooooooo1");
+					//EnterEvadeMode();
+				}
+			}
+		
+			sLog.outError("[PZX] boss_kalecgos freeeeeeeee");
+			return;
+		}
+	
 
         if (m_bIsBanished)
         {
@@ -251,10 +267,10 @@ struct boss_kalecgosAI : public ScriptedAI
             else
             {
                 // Spell is targeting both bosses
-				if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
+				//if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
 					sLog.outError("[PZX] boss_kalecgos SPELL_CRAZED_RAGE(44807)");
                     m_bIsEnraged = true;
-				}
+				//}
             }
         }
 
@@ -347,6 +363,8 @@ struct boss_sathrovarrAI : public ScriptedAI
         m_bIsEnraged  = false;
 
         DoCastSpellIfCan(m_creature, SPELL_SPECTRAL_INVISIBILITY);
+		if(m_pInstance)
+			m_pInstance->DoEjectSpectralPlayers();//恶魔死亡后就会弹出所有玩家
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -430,8 +448,31 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff) override
     {
-        if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
+		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim()) {
+			if (!m_creature->HasAura(SPELL_BANISH)&& m_creature->GetMap()->HavePlayers()) {//没有免疫光辉的时候，弹出所有人
+				Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
+				for (Map::PlayerList::const_iterator itr = pPlayers.begin(); itr != pPlayers.end(); ++itr)
+				{
+					if (Player* pPlayer = itr->getSource())
+					{
+						if (pPlayer->IsAlive()&& pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
+						{
+
+								if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA))//没有光环("灵魂世界")的玩家会被传送  
+								{
+									pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
+									pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
+									sLog.outError("[PZX] boss_sathrovarr freeeeeeeee eject player");
+									if (m_pInstance)
+										m_pInstance->RemoveFromSpectralRealm(pPlayer->GetObjectGuid());
+								}
+						}
+					}
+				}
+			}
+			
             return;
+		}
 
         if (m_bIsBanished)
             return;
@@ -444,10 +485,10 @@ struct boss_sathrovarrAI : public ScriptedAI
             else
             {
                 // Spell is targeting both bosses
-				if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
+				//if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE, CAST_FORCE_TARGET_SELF) == CAST_OK) {
 					sLog.outError("[PZX] boss_sathrovarr SPELL_CRAZED_RAGE(44807)");
                     m_bIsEnraged = true;
-				}
+				//}
             }
         }
 
