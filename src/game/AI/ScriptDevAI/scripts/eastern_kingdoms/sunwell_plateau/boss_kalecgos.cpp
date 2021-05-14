@@ -153,13 +153,13 @@ struct boss_kalecgosAI : public ScriptedAI
     void JustPreventedDeath(Unit* /*attacker*/) override
     {
         // If Sathrovarr is not banished yet, then banish the boss
-        if (!m_bIsUncorrupted)
+        if (!m_bIsUncorrupted)//恶魔没死，龙先死，就放逐自己
         {
             if (DoCastSpellIfCan(m_creature, SPELL_BANISH, CAST_TRIGGERED) == CAST_OK)
                 m_bIsBanished = true;
         }
         else
-            DoStartOutro();
+            DoStartOutro();//恶魔已经死，龙再死就结束战斗
     }
 
     void KilledUnit(Unit* /*pVictim*/) override
@@ -171,7 +171,7 @@ struct boss_kalecgosAI : public ScriptedAI
     {
         if (!m_pInstance)
             return;
-
+		sLog.outError("[PZX]  DoStartOutro ");
         // Bring Sathrovarr in the normal realm and kill him
         if (Creature* pSathrovarr = m_pInstance->GetSingleCreatureFromStorage(NPC_SATHROVARR))
         {
@@ -192,7 +192,8 @@ struct boss_kalecgosAI : public ScriptedAI
 
     void MovementInform(uint32 uiMotionType, uint32 uiPointId) override
     {
-        if (uiMotionType != POINT_MOTION_TYPE)
+		sLog.outError("[PZX]  DoStartOutro ");
+        if (uiMotionType != POINT_MOTION_TYPE)//移动到某个点强制1秒后消失
             return;
 
         if (uiPointId)
@@ -207,12 +208,12 @@ struct boss_kalecgosAI : public ScriptedAI
     void ReceiveAIEvent(AIEventType eventType, Unit* /*pSender*/, Unit* pInvoker, uint32 /*uiMiscValue*/) override
     {
         if (eventType == AI_EVENT_CUSTOM_A && m_pInstance)
-            m_pInstance->AddToSpectralRealm(pInvoker->GetObjectGuid());
+            m_pInstance->AddToSpectralRealm(pInvoker->GetObjectGuid());//传送到恶魔领域
     }
 
     void UpdateAI(const uint32 uiDiff) override
     {
-        if (m_uiExitTimer)
+        if (m_uiExitTimer)//退场动画
         {
             if (m_uiExitTimer <= uiDiff)
             {
@@ -229,20 +230,20 @@ struct boss_kalecgosAI : public ScriptedAI
                 m_uiExitTimer -= uiDiff;
         }
 
-        if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态
             return;
 
         if (m_bIsBanished)
         {
             // When Sathrovarr is banished then start outro
             if (m_bIsUncorrupted)
-                DoStartOutro();
+                DoStartOutro();//两个都是放逐态
 
             // return when banished
             return;
         }
 
-        if (!m_bIsEnraged && m_creature->GetHealthPercent() < 10.0f)
+        if (!m_bIsEnraged && m_creature->GetHealthPercent() < 10.0f)//小于10% 狂暴
         {
             // If the boss already has the aura, then mark the enraged as true
             if (m_creature->HasAura(SPELL_CRAZED_RAGE))
@@ -250,8 +251,10 @@ struct boss_kalecgosAI : public ScriptedAI
             else
             {
                 // Spell is targeting both bosses
-                if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK)
+				if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
+					sLog.outError("[PZX] boss_kalecgos SPELL_CRAZED_RAGE(44807)");
                     m_bIsEnraged = true;
+				}
             }
         }
 
@@ -372,10 +375,10 @@ struct boss_sathrovarrAI : public ScriptedAI
         if (Creature* pKalecgos = m_pInstance->GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON))
         {
             if (boss_kalecgosAI* pKalecgosAI = dynamic_cast<boss_kalecgosAI*>(pKalecgos->AI()))
-                pKalecgosAI->m_bIsUncorrupted = true;
+                pKalecgosAI->m_bIsUncorrupted = true;//恶魔锁血1%后，设置副本状态为异常状态？
         }
 
-        m_pInstance->DoEjectSpectralPlayers();
+        m_pInstance->DoEjectSpectralPlayers();//恶魔死亡后就会弹出所有玩家
     }
 
     void KilledUnit(Unit* pVictim) override
@@ -385,8 +388,8 @@ struct boss_sathrovarrAI : public ScriptedAI
         // !!! Workaround which ejects the players from the spectral realm on death !!!
         if (pVictim->GetTypeId() == TYPEID_PLAYER)
         {
-            pVictim->CastSpell(pVictim, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
-            pVictim->CastSpell(pVictim, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
+            pVictim->CastSpell(pVictim, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);//"传送：正常世界"
+            pVictim->CastSpell(pVictim, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);//"灵魂疲惫"
         }
     }
 
@@ -395,7 +398,7 @@ struct boss_sathrovarrAI : public ScriptedAI
         // !!! Workaround which ejects the players from the spectral realm !!!
         if (pWho->GetTypeId() == TYPEID_PLAYER && pWho->IsWithinLOSInMap(m_creature) && pWho->IsWithinDistInMap(m_creature, 75.0f))
         {
-            if (!pWho->HasAura(SPELL_SPECTRAL_REALM_AURA))
+            if (!pWho->HasAura(SPELL_SPECTRAL_REALM_AURA))//没有光环("灵魂世界")的玩家会被传送  
             {
                 pWho->CastSpell(pWho, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
                 pWho->CastSpell(pWho, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
@@ -415,14 +418,14 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void JustSummoned(Creature* pSummoned) override
     {
-        if (pSummoned->GetEntry() == NPC_KALECGOS_HUMAN)
+        if (pSummoned->GetEntry() == NPC_KALECGOS_HUMAN)//召唤出人形态并且开始攻击
             pSummoned->AI()->AttackStart(m_creature);
     }
 
     void ReceiveAIEvent(AIEventType eventType, Unit* /*pSender*/, Unit* pInvoker, uint32 /*uiMiscValue*/) override
     {
         if (eventType == AI_EVENT_CUSTOM_A && m_pInstance)
-            m_pInstance->AddToSpectralRealm(pInvoker->GetObjectGuid());
+            m_pInstance->AddToSpectralRealm(pInvoker->GetObjectGuid());//传送到恶魔领域
     }
 
     void UpdateAI(const uint32 uiDiff) override
@@ -441,8 +444,10 @@ struct boss_sathrovarrAI : public ScriptedAI
             else
             {
                 // Spell is targeting both bosses
-                if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK)
+				if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
+					sLog.outError("[PZX] boss_sathrovarr SPELL_CRAZED_RAGE(44807)");
                     m_bIsEnraged = true;
+				}
             }
         }
 

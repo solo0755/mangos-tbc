@@ -202,14 +202,22 @@ void instance_sunwell_plateau::SetData(uint32 uiType, uint32 uiData)
             DoUseDoorOrButton(GO_BOSS_COLLISION_2);
             if (uiData == FAIL)
             {
+				
                 m_uiKalecRespawnTimer = 20000;
 
-                if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON))
+				if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON)) {
+					sLog.outError("[PZX] TYPE_KALECGOS fail pKalecDragon->ForcedDespawn");
                     pKalecDragon->ForcedDespawn();
-                if (Creature* pKalecHuman = GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN))
+				}
+				if (Creature* pKalecHuman = GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN)) {
+					sLog.outError("[PZX] TYPE_KALECGOS fail pKalecHuman->ForcedDespawn()");
                     pKalecHuman->ForcedDespawn();
-                if (Creature* pSathrovarr = GetSingleCreatureFromStorage(NPC_SATHROVARR))
-                    pSathrovarr->AI()->EnterEvadeMode();
+				}
+				if (Creature* pSathrovarr = GetSingleCreatureFromStorage(NPC_SATHROVARR))
+				{
+					sLog.outError("[PZX] TYPE_KALECGOS fail pSathrovarr->AI()->EnterEvadeMode()");
+					pSathrovarr->AI()->EnterEvadeMode();
+				}
             }
             break;
         case TYPE_BRUTALLUS:
@@ -306,10 +314,15 @@ void instance_sunwell_plateau::Update(uint32 uiDiff)
     {
         if (m_uiKalecRespawnTimer <= uiDiff)
         {
-            if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON))
+			if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON)) {
+				sLog.outError("[PZX]  pKalecDragon->Respawn()");
                 pKalecDragon->Respawn();
-            if (Creature* pKalecHuman = GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN))
-                pKalecHuman->Respawn();
+			}
+			if (Creature* pKalecHuman = GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN))
+			{
+				sLog.outError("[PZX] pKalecHuman->Respawn()");
+				pKalecHuman->Respawn();
+			}
             m_uiKalecRespawnTimer = 0;
         }
         else
