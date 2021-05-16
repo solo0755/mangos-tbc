@@ -332,7 +332,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			return false;
 			}*/
 			sLog.outString(u8"[GetItembyID] (%s:%d) Input str: [%s]", pPlayer->GetName(), pPlayer->GetObjectGuid().GetCounter(), reStr);
-			if (!reStr || strlen(reStr)>12) {
+			if (!reStr || strlen(reStr) > 12) {
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请输入正确的物品ID和数量ID");
 				pPlayer->CLOSE_GOSSIP_MENU();
 				return false;
@@ -402,7 +402,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 
 		}
 		else if (uiAction == 108) {
-			resetIntance(pPlayer, 0, false);
+			resetIntance(pPlayer, 0);
 			return true;
 		}
 		else if (uiAction == 105) {
@@ -427,7 +427,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				{
 					int loc = pPlayer->GetSession()->GetSessionDbcLocale();
 					std::string name = set->name[loc];
-					pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, name.c_str(), GOSSIP_SENDER_MAIN, 400 + i+1);
+					pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, name.c_str(), GOSSIP_SENDER_MAIN, 400 + i + 1);
 				}
 
 			}
@@ -524,6 +524,15 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return true;
 		}
+		else if (uiAction == 209) {
+			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《伊利丹》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 31);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《布鲁塔鲁斯》斯进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 32);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《菲米丝》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 33);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《艾瑞达双子》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 34);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《穆鲁》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 35);
+			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
+			return true;
+		}
 		else if (uiAction == 300) {
 			if (pPlayer->IsGameMaster()) {//GM 都可以传送
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
@@ -582,8 +591,8 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 		else if (uiAction - 301 <= 14 && uiAction - 301 >= 1) {
 			return GossipSelect_ProfessionNPC(pPlayer, sender, uiAction - 301);
 		}
-		else if ((uiAction - 400 )<= 15 && (uiAction - 400) >= 1) {//401~415
-			uint32 index = uiAction - 400-1;
+		else if ((uiAction - 400) <= 15 && (uiAction - 400) >= 1) {//401~415
+			uint32 index = uiAction - 400 - 1;
 			std::vector<uint32> ids = itemset(pPlayer);
 			if (index <= ids.size() - 1) {
 				addItemSet(pPlayer, ids[index]);
@@ -594,7 +603,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return true;
 		}
-		else if (uiAction - GOSSIP_ACTION_INFO_DEF > 0) {
+		else if (uiAction - GOSSIP_ACTION_INFO_DEF > 0 && uiAction - GOSSIP_ACTION_INFO_DEF < 20) {//20个传送点
 			int index = uiAction - GOSSIP_ACTION_INFO_DEF;
 			switch (index)
 			{
@@ -666,12 +675,51 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				break;
 			case 16://太阳井高地
 				pPlayer->CLOSE_GOSSIP_MENU();
-				pPlayer->TeleportTo(530, 12582.3f, - 6775.1f, 15.1f, 6.2f);
+				pPlayer->TeleportTo(530, 12582.3f, -6775.1f, 15.1f, 6.2f);
 				break;
 			default:
 				break;
 			}
 			return true;
+		}
+		else if (uiAction - GOSSIP_ACTION_INFO_DEF > 0 && uiAction - GOSSIP_ACTION_INFO_DEF < 40) {//20个传送点
+			if (pPlayer->GetGroup() || pPlayer->GetMapRef()->IsDungeon()) {
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:|cffff0000您已经在队伍或者副本中|h|r，请先脱离队伍或离开副本区域.");
+				pPlayer->CLOSE_GOSSIP_MENU();
+				return false;
+			}
+			int index = uiAction - GOSSIP_ACTION_INFO_DEF-30;
+			switch (index)
+			{
+				//case 1://伊利丹
+				//	pPlayer->CLOSE_GOSSIP_MENU();
+				//	pPlayer->TeleportTo(0, -11120.2f, -2015.27f, 47.1869f, 1.91823f);
+				//	break;
+
+			case 2://布胖
+				pPlayer->CLOSE_GOSSIP_MENU();
+				saveInstance(pPlayer, 1, "3 0 0 0 0 0");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 布鲁塔鲁斯 |h|r进度已经创建");
+				break;
+
+			case 3://菲米丝
+				pPlayer->CLOSE_GOSSIP_MENU();
+				saveInstance(pPlayer, 2, "3 3 0 0 0 0");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 菲米丝 |h|r进度已经创建");
+				break;
+			case 4://双子
+				pPlayer->CLOSE_GOSSIP_MENU();
+				saveInstance(pPlayer, 3, "3 3 3 0 0 0");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 艾瑞达双子 |h|r进度已经创建");
+				break;
+			case 5://穆鲁
+				pPlayer->CLOSE_GOSSIP_MENU();
+				saveInstance(pPlayer, 4, "3 3 3 3 0 0");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 穆鲁 |h|r进度已经创建");
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	pPlayer->CLOSE_GOSSIP_MENU();

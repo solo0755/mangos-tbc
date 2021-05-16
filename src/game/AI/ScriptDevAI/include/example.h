@@ -53,13 +53,14 @@ const initClazz all[] = {
 	{ 0, u8"未定义",{},{} ,{ u8"",u8"",u8"" } },
 	{ CLASS_DRUID,u8"学习 |cff6247c8熊形态和飞行形态|h|r 职业技能",{ 5487,9634,6795,6807,33943,40120 },{} ,{ u8"平衡",u8"野性战斗",u8"恢复" } }
 };
-
+static const uint32 SWBossIndex[6][5] = { { 5800061,5800064,58000246，58000244},{ 5800062 },{ 0 },{ 5800346,5800347},{ 0 },{ 0,0 }  };
 bool check(Player *player, bool modify);
 bool addRep(Player *player, bool modify);
 void addOneItemToPlayer(uint32 itemid, Player* player);
 void addItemSet(Player *player, uint32 itemindex);
 bool GossipSelect_ProfessionNPC(Player* player, uint32 sender, const uint32 action);
 void CompleteLearnProfession(Player *pPlayer, SkillType skill);
-bool resetIntance(Player *player, const uint32 instanceID, bool modify);
+bool resetIntance(Player *player, const uint32 instanceID);
+void saveInstance(Player * player, const uint32 bossindex, const char *  szData, uint32 /**/mapid = 580);
 std::vector<uint32> itemset(Player *player);
 bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint32 uiAction, char const* reStr);

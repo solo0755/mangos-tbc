@@ -72,7 +72,7 @@ bool GossipHello_ItemPzx(Player *pPlayer, Item *_item)
 		if (pPlayer->getClass() == CLASS_HUNTER) {
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"提升 我的宠物|cff6247c8忠诚度和等级|h|r ", GOSSIP_SENDER_MAIN, 205);
 		}
-
+		pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_DOT, u8"|cFF990066|TInterface\\ICONS\\Spell_Arcane_PortalThunderBluff.blp:30|t|r 创建副本进度", GOSSIP_SENDER_MAIN, 209);
 	}
 	//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, u8"切换[占星者/奥尔多]声望", GOSSIP_SENDER_MAIN, 206);
 	if (pPlayer->IsGameMaster()) {
@@ -322,7 +322,53 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 		return true;
 	}
 }
-bool resetIntance(Player *player, const uint32 got_map, bool modify) {
+
+
+void saveInstance(Player * player, const uint32 bossindex, const char *  szData, uint32 /**/mapid) {
+
+	uint32 id = sMapMgr.GenerateInstanceId();
+	uint32 count = 0;
+	uint32 bossmask=(1 << bossindex)-1;
+	while (!CharacterDatabase.DirectPExecute("INSERT INTO instance VALUES ('%u', '%u', '0','%u','0', '%s')", id, mapid, bossmask , szData)) {
+		count++;
+		if (count > 100) {
+			sLog.outError(u8"[系统消息]:|cffff0000系统繁忙，稍后再试|h|r");//防止死循环
+			return;
+		}
+		id = sMapMgr.GenerateInstanceId();
+		continue;//插入成功为止
+	}
+
+	resetIntance(player, 580);
+	time_t mutetime = time(nullptr) + 60 * 48 * MINUTE;//2天后再刷新，一般公会不会连续开荒2天
+	if (mapid > 0) {///SW
+		for (size_t i = 0; i < bossindex; i++)
+		{
+			const uint32*   getkillCreature = SWBossIndex[i];
+			while (*getkillCreature) {//指针有值
+					CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u')", *getkillCreature, uint64(mutetime), id);
+				//if (mapid == 531 && bossindex == 4 && ins_satus == 4) {//创建双子进度的时候，需要清理掉5狗
+				//	CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u','%u')", 88015, uint64(mutetime), id);
+				//	CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u','%u')", 88016, uint64(mutetime), id);
+				//	CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u','%u')", 88017, uint64(mutetime), id);
+				//	CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u','%u')", 88018, uint64(mutetime), id);
+				//	CharacterDatabase.DirectPExecute("INSERT INTO creature_respawn VALUES ('%u', '%u', '%u','%u')", 88019, uint64(mutetime), id);
+				//}
+				getkillCreature++;
+			}
+		}
+
+	}
+
+	MapEntry const* mapEntry = sMapStore.LookupEntry(mapid);
+	DungeonPersistentState *state = (DungeonPersistentState*)sMapPersistentStateMgr.AddPersistentState(mapEntry, id, REGULAR_DIFFICULTY,uint64(mutetime), true);
+	if (state) player->BindToInstance(state, true, false);
+	sMapPersistentStateMgr.LoadCreatureRespawnTimes();
+	sMapPersistentStateMgr.LoadGameobjectRespawnTimes();
+
+}
+
+bool resetIntance(Player *player, const uint32 got_map) {
 	ChatHandler session(player);
 	if (player->GetGroup() || player->GetMapRef()->IsDungeon()) {
 		session.PSendSysMessage(u8"[系统消息]:|cffff0000您已经在队伍或者副本中|h|r，请先脱离队伍或离开副本区域.");
