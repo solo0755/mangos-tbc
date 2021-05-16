@@ -699,23 +699,23 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			case 2://布胖
 				pPlayer->CLOSE_GOSSIP_MENU();
 				saveInstance(pPlayer, 1, "3 0 0 0 0 0");
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 布鲁塔鲁斯 |h|r进度已经创建");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 布鲁塔鲁斯 |h|r进度已经创建");
 				break;
 
 			case 3://菲米丝
 				pPlayer->CLOSE_GOSSIP_MENU();
 				saveInstance(pPlayer, 2, "3 3 0 0 0 0");
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 菲米丝 |h|r进度已经创建");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 菲米丝 |h|r进度已经创建");
 				break;
 			case 4://双子
 				pPlayer->CLOSE_GOSSIP_MENU();
 				saveInstance(pPlayer, 3, "3 3 3 0 0 0");
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 艾瑞达双子 |h|r进度已经创建");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 艾瑞达双子 |h|r进度已经创建");
 				break;
 			case 5://穆鲁
 				pPlayer->CLOSE_GOSSIP_MENU();
 				saveInstance(pPlayer, 4, "3 3 3 3 0 0");
-				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:请先|cffff0000 穆鲁 |h|r进度已经创建");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 穆鲁 |h|r进度已经创建");
 				break;
 			default:
 				break;
