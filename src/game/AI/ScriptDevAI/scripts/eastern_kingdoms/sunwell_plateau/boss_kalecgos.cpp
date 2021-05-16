@@ -276,13 +276,7 @@ struct boss_kalecgosAI : public ScriptedAI
                 m_uiExitTimer -= uiDiff;
         }
 
-		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态，如果里面有人？？TODO 只能炉石
-		{
-			if (m_bIsUncorrupted) {
-				return;//恶魔已经死了
-			}
-			return;
-		}
+
 
         if (m_bIsBanished)
         {
@@ -309,6 +303,14 @@ struct boss_kalecgosAI : public ScriptedAI
             // return when banished
             return;
         }
+
+		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态，如果里面有人？？TODO 只能炉石
+		{
+			if (m_bIsUncorrupted) {
+				return;//恶魔已经死了
+			}
+			return;
+		}
 
         if (!m_bIsEnraged && m_creature->GetHealthPercent() < 10.0f)//小于10% 狂暴
         {

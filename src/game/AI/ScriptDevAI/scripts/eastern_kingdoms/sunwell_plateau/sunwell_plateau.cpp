@@ -206,7 +206,9 @@ void instance_sunwell_plateau::SetData(uint32 uiType, uint32 uiData)
             DoUseDoorOrButton(GO_BOSS_COLLISION_2);
             if (uiData == FAIL)
             {
-				
+				DoUseOpenableObject(GO_FORCEFIELD, true, 0, false);//失败后强制关闭
+				DoUseOpenableObject(GO_BOSS_COLLISION_1, true, 0, false);//失败后强制关闭
+				DoUseOpenableObject(GO_BOSS_COLLISION_2, true, 0, false);//失败后强制关闭
                 m_uiKalecRespawnTimer = 20000;
 
 				if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON)) {
