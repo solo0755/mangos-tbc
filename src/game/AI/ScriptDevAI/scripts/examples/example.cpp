@@ -525,6 +525,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			return true;
 		}
 		else if (uiAction == 209) {
+			pPlayer->CLOSE_GOSSIP_MENU();
 			//pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《伊利丹》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 31);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《布鲁塔鲁斯》斯进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 32);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《菲米丝》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 33);
@@ -534,6 +535,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			return true;
 		}
 		else if (uiAction == 300) {
+			pPlayer->CLOSE_GOSSIP_MENU();
 			if (pPlayer->IsGameMaster()) {//GM 都可以传送
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
