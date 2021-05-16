@@ -2502,13 +2502,22 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                         return;
 
                     // If target has spectral exhaustion or spectral realm aura return
-                    if (unitTarget->HasAura(44867) || unitTarget->HasAura(46021))
+                    if (unitTarget->HasAura(44867) || unitTarget->HasAura(46021))//有疲惫光环，或者正在传说到正常世界的需要忽略
                         return;
 
                     // Cast the spectral realm effect spell, visual spell and spectral blast rift summoning
-                    unitTarget->CastSpell(unitTarget, 44866, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_caster->GetObjectGuid());
-                    unitTarget->CastSpell(unitTarget, 46648, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_caster->GetObjectGuid());
-                    unitTarget->CastSpell(unitTarget, 44811, TRIGGERED_OLD_TRIGGERED);
+					SpellCastResult ret= unitTarget->CastSpell(m_caster, 44866, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, unitTarget->GetObjectGuid());//"灵魂冲击",创建门
+					if (ret != SPELL_CAST_OK) {
+						sLog.outError("44866  failed");
+					}
+					ret = m_caster->CastSpell(unitTarget, 46648, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_caster->GetObjectGuid());//46648:131="灵魂冲击",165="Spectral Blast visual effect."
+					if (ret != SPELL_CAST_OK) {
+						sLog.outError("46648  failed");
+					}
+					ret = unitTarget->CastSpell(unitTarget, 44811, TRIGGERED_OLD_TRIGGERED);//44811:131="灵魂世界"
+					if (ret != SPELL_CAST_OK) {
+						sLog.outError("44811  failed");
+					}
                     return;
                 }
                 case 44875:                                 // Complete Raptor Capture
@@ -3277,7 +3286,7 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
     bool libraryResult = false;
     if (gameObjTarget)
         libraryResult = sScriptDevAIMgr.OnEffectDummy(m_caster, m_spellInfo->Id, eff_idx, gameObjTarget, m_originalCasterGUID);
-    else if (unitTarget && unitTarget->GetTypeId() == TYPEID_UNIT)
+	else if (unitTarget && unitTarget->GetTypeId() == TYPEID_UNIT) 
         libraryResult = sScriptDevAIMgr.OnEffectDummy(m_caster, m_spellInfo->Id, eff_idx, (Creature*)unitTarget, m_originalCasterGUID);
     else if (itemTarget)
         libraryResult = sScriptDevAIMgr.OnEffectDummy(m_caster, m_spellInfo->Id, eff_idx, itemTarget, m_originalCasterGUID);
@@ -7591,7 +7600,7 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     unitTarget->CastSpell(unitTarget, 44870, TRIGGERED_OLD_TRIGGERED);
                     break;
                 }
-                case 44811:                                 // Spectral Realm
+                case 44811:                                 // Spectral Realm 灵魂世界
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
                         return;
@@ -7604,10 +7613,10 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     }
 
                     // Teleport target to the spectral realm, add debuff and force faction
-                    unitTarget->CastSpell(unitTarget, 46019, TRIGGERED_OLD_TRIGGERED);
-                    unitTarget->CastSpell(unitTarget, 46021, TRIGGERED_OLD_TRIGGERED);
-                    unitTarget->CastSpell(unitTarget, 44845, TRIGGERED_OLD_TRIGGERED);
-                    unitTarget->CastSpell(unitTarget, 44852, TRIGGERED_OLD_TRIGGERED);
+                    unitTarget->CastSpell(unitTarget, 46019, TRIGGERED_OLD_TRIGGERED);//"传送：灵魂世界"
+                    unitTarget->CastSpell(unitTarget, 46021, TRIGGERED_OLD_TRIGGERED);//被传送到了灵魂世界
+					unitTarget->CastSpell(unitTarget, 44845, TRIGGERED_OLD_TRIGGERED);//灵魂世界
+                    unitTarget->CastSpell(unitTarget, 44852, TRIGGERED_OLD_TRIGGERED);//131="灵魂世界",182="被传送到了灵魂世界。"
                     return;
                 }
                 case 45071:                                 // Quest - Sunwell Daily - Dead Scar Bombing Run

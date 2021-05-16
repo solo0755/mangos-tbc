@@ -2628,7 +2628,8 @@ void Unit::AttackerStateUpdate(Unit* pVictim, WeaponAttackType attType, bool ext
 {
     if (hasUnitState(UNIT_STAT_CAN_NOT_REACT) || HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
         return;
-
+	if (!pVictim)
+		return;
     if (!pVictim->IsAlive())
         return;
 

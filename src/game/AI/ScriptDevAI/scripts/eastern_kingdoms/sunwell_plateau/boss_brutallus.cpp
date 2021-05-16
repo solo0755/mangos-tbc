@@ -278,12 +278,14 @@ struct boss_brutallusAI : public ScriptedAI, private DialogueHelper
                     pMadrigosa->CastSpell(pMadrigosa, SPELL_FREEZE, TRIGGERED_NONE);
                 break;
             case YELL_MADR_INTRO:
-                if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA))
+				if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA)) 
                     pMadrigosa->GetMotionMaster()->MovePoint(POINT_MOVE_GROUND, aMadrigosaLoc[0].m_fX, aMadrigosaLoc[0].m_fY, aMadrigosaLoc[0].m_fZ);
                 break;
             case YELL_INTRO:
-                if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA))
+				if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA)) {
+					pMadrigosa->SetFacingToObject(m_creature);
                     m_creature->AI()->AttackStart(pMadrigosa);
+				}
                 break;
             case SPELL_FROST_BREATH:
                 if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA))
@@ -297,6 +299,7 @@ struct boss_brutallusAI : public ScriptedAI, private DialogueHelper
                 if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA))
                 {
                     pMadrigosa->GetMotionMaster()->MovePoint(POINT_MOVE_ICE_BLOCK, aMadrigosaLoc[1].m_fX, aMadrigosaLoc[1].m_fY, aMadrigosaLoc[1].m_fZ);
+					
                     pMadrigosa->HandleEmote(EMOTE_ONESHOT_LIFTOFF);
                     pMadrigosa->SetLevitate(true);
                 }
@@ -304,8 +307,10 @@ struct boss_brutallusAI : public ScriptedAI, private DialogueHelper
                 m_creature->GetMotionMaster()->MoveIdle();
                 break;
             case YELL_MADR_ICE_BLOCK:
-                if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA))
+				if (Creature* pMadrigosa = m_pInstance->GetSingleCreatureFromStorage(NPC_MADRIGOSA)) {
+					pMadrigosa->SetFacingToObject(m_creature);
                     pMadrigosa->CastSpell(m_creature, SPELL_FROST_BLAST, TRIGGERED_OLD_TRIGGERED);
+				}
                 m_uiMadrigosaSpellTimer = 2000;
                 break;
             case SPELL_FLAME_RING:
@@ -345,6 +350,8 @@ struct boss_brutallusAI : public ScriptedAI, private DialogueHelper
                 break;
             case YELL_INTRO_TAUNT:
                 DoCastSpellIfCan(m_creature, SPELL_BREAK_ICE);
+				m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);//??
+				SetReactState(REACT_AGGRESSIVE);//…Ë÷√øÀ’Ω∂∑◊¥Ã¨£ø£ø£ø
                 m_bIsIntroInProgress = false;
                 break;
         }

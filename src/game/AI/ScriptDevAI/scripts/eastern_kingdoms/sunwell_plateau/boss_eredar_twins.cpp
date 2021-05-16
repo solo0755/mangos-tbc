@@ -362,6 +362,7 @@ struct boss_sacrolashAI : public ScriptedAI
     {
         if (pSummoned->GetEntry() == NPC_SHADOW_IMAGE)
         {
+			//pSummoned->SetVisibility(VISIBILITY_OFF);//BUG 设置隐藏
             pSummoned->CastSpell(pSummoned, SPELL_IMAGE_VISUAL, TRIGGERED_NONE);
             // Attack random range target
             if (Unit* pTarget = GetRandomTargetAtDist(10.0f))
@@ -443,9 +444,10 @@ struct boss_sacrolashAI : public ScriptedAI
             // Make sure our attack is ready and we aren't currently casting
             if (m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCasted(false))
             {
-                DoCastSpellIfCan(m_creature->GetVictim(), SPELL_DARK_STRIKE);
-
-                m_creature->AttackerStateUpdate(m_creature->GetVictim());
+					DoCastSpellIfCan(m_creature->GetVictim(), SPELL_DARK_STRIKE);
+				if (m_creature->GetVictim()) {//公共方法有BUG，加一个吧
+					m_creature->AttackerStateUpdate(m_creature->GetVictim());
+				}
                 m_creature->resetAttackTimer();
             }
         }

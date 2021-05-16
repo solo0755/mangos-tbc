@@ -96,36 +96,44 @@ struct boss_kalecgosAI : public ScriptedAI
     uint32 m_uiSpectralBlastTimer;
     uint32 m_uiTailLashTimer;
     uint32 m_uiExitTimer;
-
+	uint32 m_uidipAfterFailTimer;
+	uint32 m_uiAngerPeroid;
     bool m_bIsUncorrupted;
     bool m_bIsBanished;
     bool m_bIsEnraged;
+	bool m_isfinish;
 
     void Reset() override
     {
+		m_uidipAfterFailTimer = 10000; //放逐10秒后消失
         m_uiArcaneBuffetTimer       = 8000;
         m_uiTailLashTimer           = 5000;
         m_uiFrostBreathTimer        = 24000;
         m_uiWildMagicTimer          = 18000;
         m_uiSpectralBlastTimer      = 30000;
+		m_uiAngerPeroid = 10000;//狂暴周期10秒
         m_uiExitTimer               = 0;
 
         m_bIsUncorrupted        = false;
         m_bIsBanished           = false;
         m_bIsEnraged            = false;
+		m_isfinish = false;
     }
 
     void JustReachedHome() override
     {
+		sLog.outError("[PZX]  JustReachedHome boss_kalecgos");
         if (m_pInstance)
         {
             m_pInstance->DoEjectSpectralPlayers();
             m_pInstance->SetData(TYPE_KALECGOS, FAIL);
         }
+		m_creature->SetStandState(UNIT_STAND_STATE_STAND);
     }
 
     void EnterEvadeMode() override
     {
+		sLog.outError("[PZX]  EnterEvadeMode boss_kalecgos-m_bIsUncorrupted:%x",m_bIsUncorrupted);
         // Check if the boss is uncorrupted when evading
         if (m_bIsUncorrupted)
         {
@@ -138,7 +146,7 @@ struct boss_kalecgosAI : public ScriptedAI
             m_creature->SetStandState(UNIT_STAND_STATE_STAND);
             return;
         }
-
+		
         ScriptedAI::EnterEvadeMode();
     }
 
@@ -152,16 +160,30 @@ struct boss_kalecgosAI : public ScriptedAI
 
     void JustPreventedDeath(Unit* /*attacker*/) override
     {
+		if (DoCastSpellIfCan(m_creature, SPELL_BANISH, CAST_TRIGGERED) == CAST_OK) {
+			sLog.outError("[PZX]  JustPreventedDeath succes");
+			m_bIsBanished = true;
+		}
         // If Sathrovarr is not banished yet, then banish the boss
-        if (!m_bIsUncorrupted)//恶魔没死，龙先死，就放逐自己
-        {
-            if (DoCastSpellIfCan(m_creature, SPELL_BANISH, CAST_TRIGGERED) == CAST_OK)
-                m_bIsBanished = true;
-        }
-        else
-            DoStartOutro();//恶魔已经死，龙再死就结束战斗
+        if (m_bIsUncorrupted)//恶魔已经死，龙再死就结束战斗
+            DoStartOutro();
     }
-
+	void DamageTaken(Unit* dealer, uint32& damage, DamageEffectType /*damagetype*/, SpellEntry const* /*spellInfo*/) override
+	{
+			if (m_bIsBanished) {//强制锁血
+				damage = 0;
+				return;
+			}
+			if (m_deathPrevention)
+			{
+				if (m_creature->GetHealth() <= damage)
+				{
+					damage = std::min(damage, m_creature->GetHealth() - 1);
+					if (!m_deathPrevented)
+						JustPreventedDeath(dealer);
+				}
+			}
+	}
     void KilledUnit(Unit* /*pVictim*/) override
     {
         DoScriptText(urand(0, 1) ? SAY_EVIL_SLAY_1 : SAY_EVIL_SLAY_2, m_creature);
@@ -171,7 +193,10 @@ struct boss_kalecgosAI : public ScriptedAI
     {
         if (!m_pInstance)
             return;
-		sLog.outError("[PZX]  DoStartOutro ");
+		sLog.outError("[PZX]  DoStartOutro m_isfinish:%x", m_isfinish);
+		if (m_isfinish)
+			return;
+		m_isfinish = true;
         // Bring Sathrovarr in the normal realm and kill him
         if (Creature* pSathrovarr = m_pInstance->GetSingleCreatureFromStorage(NPC_SATHROVARR))
         {
@@ -188,11 +213,12 @@ struct boss_kalecgosAI : public ScriptedAI
         m_creature->GetMotionMaster()->MoveIdle();
         DoScriptText(SAY_GOOD_PLRWIN, m_creature);
         m_uiExitTimer = 10000;
+		if (m_pInstance)
+			m_pInstance->DoEjectSpectralPlayers();//恶魔死亡后就会弹出所有玩家
     }
 
     void MovementInform(uint32 uiMotionType, uint32 uiPointId) override
     {
-		sLog.outError("[PZX]  DoStartOutro ");
         if (uiMotionType != POINT_MOTION_TYPE)//移动到某个点强制1秒后消失
             return;
 
@@ -210,7 +236,27 @@ struct boss_kalecgosAI : public ScriptedAI
         if (eventType == AI_EVENT_CUSTOM_A && m_pInstance)
             m_pInstance->AddToSpectralRealm(pInvoker->GetObjectGuid());//传送到恶魔领域
     }
+	bool checkisFinish(uint32 npcID) {
+		if (Creature* pSathrovarr = m_pInstance->GetSingleCreatureFromStorage(npcID)) {
+			if (!m_creature->HasAura(SPELL_BANISH) && m_creature->GetMap()->HavePlayers()) {//没有免疫光辉的时候，弹出所有人
+				Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
+				for (Map::PlayerList::const_iterator itr = pPlayers.begin(); itr != pPlayers.end(); ++itr)
+				{
+					if (Player* pPlayer = itr->getSource())
+					{
+						if (pPlayer->IsAlive() && pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
+						{
+							
+							return true;//附近还有人
 
+							
+						}
+					}
+				}
+			}
+		}
+		return false;//附近没有人
+	}
     void UpdateAI(const uint32 uiDiff) override
     {
         if (m_uiExitTimer)//退场动画
@@ -230,31 +276,36 @@ struct boss_kalecgosAI : public ScriptedAI
                 m_uiExitTimer -= uiDiff;
         }
 
-		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态
+		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())//非战斗状态，如果里面有人？？TODO 只能炉石
 		{
-			if (Creature* pSathrovarr = m_pInstance->GetSingleCreatureFromStorage(NPC_SATHROVARR))
-			{
-				if (pSathrovarr->HasAura(SPELL_BANISH)) {
-					DoStartOutro();//两个都是放逐态
-				}
-				else {//还没初始化
-					//一般是不存在的场景
-					sLog.outError("[PZX] nooooooooooooooooooooo1");
-					//EnterEvadeMode();
-				}
+			if (m_bIsUncorrupted) {
+				return;//恶魔已经死了
 			}
-		
-			sLog.outError("[PZX] boss_kalecgos freeeeeeeee");
 			return;
 		}
-	
 
         if (m_bIsBanished)
         {
             // When Sathrovarr is banished then start outro
             if (m_bIsUncorrupted)
                 DoStartOutro();//两个都是放逐态
-
+			else {
+				Creature* pKalec = m_pInstance->GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN);
+				if (!checkisFinish(NPC_SATHROVARR)||( pKalec&&!pKalec->IsAlive())) {//如果这个时候内场没有人，或者NPC死了需要结束战斗
+					sLog.outError("[PZX] NPC_SATHROVARR not found players,boss_kalecgos need to ffffffffffinsh");
+					if (m_uidipAfterFailTimer) {//还没初始化恶魔就打死了外面的，一般是不存在的场景
+						if (m_uidipAfterFailTimer <= uiDiff) {//10秒后进入 失败状态
+							if (m_pInstance)
+								m_pInstance->SetData(TYPE_KALECGOS, FAIL);
+							sLog.outError("[PZX] boss_kalecgos need to EnterEvadeMode");
+							m_bIsBanished = false;
+						}
+						else {
+							m_uidipAfterFailTimer -= uiDiff;
+						}
+					}
+				}
+			}
             // return when banished
             return;
         }
@@ -262,17 +313,31 @@ struct boss_kalecgosAI : public ScriptedAI
         if (!m_bIsEnraged && m_creature->GetHealthPercent() < 10.0f)//小于10% 狂暴
         {
             // If the boss already has the aura, then mark the enraged as true
-            if (m_creature->HasAura(SPELL_CRAZED_RAGE))
+            if (m_creature->HasAura(44806))
                 m_bIsEnraged = true;
             else
             {
                 // Spell is targeting both bosses
-				//if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE) == CAST_OK) {
-					sLog.outError("[PZX] boss_kalecgos SPELL_CRAZED_RAGE(44807)");
+				if (DoCastSpellIfCan(m_creature, 44806) == CAST_OK) {
+					sLog.outError("[PZX] boss_kalecgos SPELL_CRAZED_RAGE(44806)");
                     m_bIsEnraged = true;
-				//}
+					m_uiAngerPeroid = 10000;
+				}
             }
         }
+		
+			if (m_bIsEnraged&&m_uiAngerPeroid < uiDiff)
+			{
+				if (DoCastSpellIfCan(m_creature, 44806) == CAST_OK)
+				{
+					if (!urand(0, 2))
+						DoScriptText(SAY_EVIL_ENRAGE, m_creature);//狂暴喊话
+
+					m_uiAngerPeroid = 10000;
+				}
+			}
+			else
+				m_uiAngerPeroid -= uiDiff;
 
         if (m_uiArcaneBuffetTimer < uiDiff)
         {
@@ -321,8 +386,11 @@ struct boss_kalecgosAI : public ScriptedAI
 
         if (m_uiSpectralBlastTimer < uiDiff)
         {
-            if (DoCastSpellIfCan(m_creature, SPELL_SPECTRAL_BLAST) == CAST_OK)
+			if (DoCastSpellIfCan(m_creature, SPELL_SPECTRAL_BLAST) == CAST_OK)//老卡的传送 25'一个人，TODO 这里要换成召唤传送门，12秒时间
+			{
                 m_uiSpectralBlastTimer = 25000;
+
+			}
         }
         else
             m_uiSpectralBlastTimer -= uiDiff;
@@ -349,8 +417,10 @@ struct boss_sathrovarrAI : public ScriptedAI
     uint32 m_uiCorruptingStrikeTimer;
     uint32 m_uiCurseOfBoundlessAgonyTimer;
     uint32 m_uiShadowBoltVolleyTimer;
+	uint32 m_uiAngerPeroid;
     bool m_bIsBanished;
     bool m_bIsEnraged;
+	bool facefinish;
 
     void Reset() override
     {
@@ -358,10 +428,11 @@ struct boss_sathrovarrAI : public ScriptedAI
         m_uiCorruptingStrikeTimer       = 5000;
         m_uiCurseOfBoundlessAgonyTimer  = 15000;
         m_uiShadowBoltVolleyTimer       = 10000;
+		m_uiAngerPeroid = 10000;//狂暴周期
 
         m_bIsBanished = false;
         m_bIsEnraged  = false;
-
+		facefinish = false;
         DoCastSpellIfCan(m_creature, SPELL_SPECTRAL_INVISIBILITY);
 		if(m_pInstance)
 			m_pInstance->DoEjectSpectralPlayers();//恶魔死亡后就会弹出所有玩家
@@ -380,9 +451,10 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void JustPreventedDeath(Unit* /*attacker*/) override
     {
+
         if (m_bIsBanished)
             return;
-
+		sLog.outError("[PZX] boss_sathrovarr JustPreventedDeath");
         // banish Sathrovarr and eject the players
         if (DoCastSpellIfCan(m_creature, SPELL_BANISH, CAST_TRIGGERED) == CAST_OK)
             m_bIsBanished = true;
@@ -408,6 +480,10 @@ struct boss_sathrovarrAI : public ScriptedAI
         {
             pVictim->CastSpell(pVictim, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);//"传送：正常世界"
             pVictim->CastSpell(pVictim, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);//"灵魂疲惫"
+			if (pVictim->HasAura(44852)) {
+				sLog.outError("[PZX] error3: player %u HasAura(44852)", pVictim->GetObjectGuid());
+				pVictim->RemoveAurasDueToSpell(44852);
+			}
         }
     }
 
@@ -418,9 +494,13 @@ struct boss_sathrovarrAI : public ScriptedAI
         {
             if (!pWho->HasAura(SPELL_SPECTRAL_REALM_AURA))//没有光环("灵魂世界")的玩家会被传送  
             {
+				sLog.outError("PZX no arue SPELL_SPECTRAL_REALM_AURA  to be eject");
                 pWho->CastSpell(pWho, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
                 pWho->CastSpell(pWho, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
-
+				if (pWho->HasAura(44852)) {
+					sLog.outError("[PZX] error1: player %u HasAura(44852)", pWho->GetObjectGuid());
+					pWho->RemoveAurasDueToSpell(44852);
+				}
                 if (m_pInstance)
                     m_pInstance->RemoveFromSpectralRealm(pWho->GetObjectGuid());
             }
@@ -448,6 +528,7 @@ struct boss_sathrovarrAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff) override
     {
+
 		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim()) {
 			if (!m_creature->HasAura(SPELL_BANISH)&& m_creature->GetMap()->HavePlayers()) {//没有免疫光辉的时候，弹出所有人
 				Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
@@ -455,14 +536,19 @@ struct boss_sathrovarrAI : public ScriptedAI
 				{
 					if (Player* pPlayer = itr->getSource())
 					{
-						if (pPlayer->IsAlive()&& pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
+						if (!pPlayer->IsGameMaster()&&pPlayer->IsAlive()&& pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
 						{
 
 								if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA))//没有光环("灵魂世界")的玩家会被传送  
 								{
 									pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
 									pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
-									sLog.outError("[PZX] boss_sathrovarr freeeeeeeee eject player");
+									pPlayer->RemoveAurasDueToSpell(SPELL_SPECTRAL_REALM_AURA);
+									if (pPlayer->HasAura(44852)) {
+										sLog.outError("[PZX] error: player %u HasAura(44852)", pPlayer->GetObjectGuid());
+										pPlayer->RemoveAurasDueToSpell(44852);
+									}
+									sLog.outError("[PZX] boss_sathrovarr freeeeeeeee eject player %u", pPlayer->GetObjectGuid());
 									if (m_pInstance)
 										m_pInstance->RemoveFromSpectralRealm(pPlayer->GetObjectGuid());
 								}
@@ -477,20 +563,52 @@ struct boss_sathrovarrAI : public ScriptedAI
         if (m_bIsBanished)
             return;
 
+		//if (!facefinish) {
+
+		//if (Creature* pKalecgos = m_pInstance->GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON))
+		//{
+		//	
+		//	if (!pKalecgos->IsAlive()|| !pKalecgos->IsInCombat()) {
+		//		if (m_pInstance)
+		//		{
+		//			m_pInstance->DoEjectSpectralPlayers();
+		//			m_pInstance->SetData(TYPE_KALECGOS, FAIL);
+		//			facefinish = true;
+		//			return;
+		//		}
+		//	}
+
+		//}
+		//}
+
         if (!m_bIsEnraged && m_creature->GetHealthPercent() < 10.0f)
         {
             // If the boss already has the aura, then mark the enraged as true
-            if (m_creature->HasAura(SPELL_CRAZED_RAGE))
+            if (m_creature->HasAura(44806))
                 m_bIsEnraged = true;
             else
             {
                 // Spell is targeting both bosses
-				//if (DoCastSpellIfCan(m_creature, SPELL_CRAZED_RAGE, CAST_FORCE_TARGET_SELF) == CAST_OK) {
-					sLog.outError("[PZX] boss_sathrovarr SPELL_CRAZED_RAGE(44807)");
+				if (DoCastSpellIfCan(m_creature, 44806) == CAST_OK) {
+					sLog.outError("[PZX] boss_sathrovarr SPELL_CRAZED_RAGE(44806)");
                     m_bIsEnraged = true;
-				//}
+					m_uiAngerPeroid = 10000;
+				}
             }
         }
+
+		if (m_bIsEnraged&&m_uiAngerPeroid < uiDiff)
+		{
+			if (DoCastSpellIfCan(m_creature, 44806) == CAST_OK)
+			{
+				if (!urand(0, 2))
+					DoScriptText(SAY_EVIL_ENRAGE, m_creature);//狂暴喊话
+
+				m_uiAngerPeroid = 10000;
+			}
+		}
+		else
+			m_uiAngerPeroid -= uiDiff;
 
         if (m_uiCorruptingStrikeTimer < uiDiff)
         {

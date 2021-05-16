@@ -143,8 +143,12 @@ void instance_sunwell_plateau::OnCreatureDeath(Creature* pCreature)
         {
             if (Creature* pController = GetSingleCreatureFromStorage(NPC_KILJAEDEN_CONTROLLER))
             {
-                if (Creature* pKiljaeden = pController->SummonCreature(NPC_KILJAEDEN, pController->GetPositionX(), pController->GetPositionY(), pController->GetPositionZ(), pController->GetOrientation(), TEMPSPAWN_DEAD_DESPAWN, 0))
+				if (Creature* pKiljaeden = pController->SummonCreature(NPC_KILJAEDEN, pController->GetPositionX(), pController->GetPositionY(), pController->GetPositionZ(), pController->GetOrientation(), TEMPSPAWN_DEAD_DESPAWN, 0)) {
+					pKiljaeden->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PLAYER);//??
+					pKiljaeden->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_ATTACKABLE_1);//??
+					pKiljaeden->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);//??
                     pKiljaeden->SetInCombatWithZone();
+				}
 
                 pController->RemoveAurasDueToSpell(SPELL_ANVEENA_DRAIN);
             }
@@ -315,13 +319,15 @@ void instance_sunwell_plateau::Update(uint32 uiDiff)
         if (m_uiKalecRespawnTimer <= uiDiff)
         {
 			if (Creature* pKalecDragon = GetSingleCreatureFromStorage(NPC_KALECGOS_DRAGON)) {
-				sLog.outError("[PZX]  pKalecDragon->Respawn()");
-                pKalecDragon->Respawn();
+				sLog.outError("[PZX] 20000's   pKalecDragon->Respawn()");
+				pKalecDragon->SetStandState(UNIT_STAND_STATE_STAND);
+				pKalecDragon->Respawn();
 			}
 			if (Creature* pKalecHuman = GetSingleCreatureFromStorage(NPC_KALECGOS_HUMAN))
 			{
-				sLog.outError("[PZX] pKalecHuman->Respawn()");
+				sLog.outError("[PZX] 20000's pKalecHuman->Respawn()");
 				pKalecHuman->Respawn();
+
 			}
             m_uiKalecRespawnTimer = 0;
         }
@@ -434,16 +440,23 @@ ObjectGuid instance_sunwell_plateau::SelectFelmystFlightTrigger(bool bLeftSide, 
 
 void instance_sunwell_plateau::DoEjectSpectralPlayers()
 {
+	sLog.outError("start  - DoEject Spectral Players");
     for (auto m_spectralRealmPlayer : m_spectralRealmPlayers)
     {
         if (Player* pPlayer = instance->GetPlayer(m_spectralRealmPlayer))
         {
-            if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA))
+			if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA)) {
+				sLog.outError("%u not have AURA  - continue", pPlayer->GetGUIDLow());
                 continue;
-
-            pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
-            pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
-            pPlayer->RemoveAurasDueToSpell(SPELL_SPECTRAL_REALM_AURA);
+			}
+				sLog.outError("eject player %u ", pPlayer->GetGUIDLow());
+				pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
+				pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
+				pPlayer->RemoveAurasDueToSpell(SPELL_SPECTRAL_REALM_AURA);
+				if (pPlayer->HasAura(44852)) {
+					sLog.outError("[PZX] error: player %u HasAura(44852)", pPlayer->GetObjectGuid());
+					pPlayer->RemoveAurasDueToSpell(44852);
+				}
         }
     }
 }

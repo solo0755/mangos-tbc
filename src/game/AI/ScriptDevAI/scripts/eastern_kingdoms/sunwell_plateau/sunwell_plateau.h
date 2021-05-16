@@ -72,9 +72,9 @@ enum
     AREATRIGGER_TWINS           = 4937,
 
     // Kalec spectral realm spells
-    SPELL_TELEPORT_NORMAL_REALM = 46020,
-    SPELL_SPECTRAL_REALM_AURA   = 46021,
-    SPELL_SPECTRAL_EXHAUSTION   = 44867,
+    SPELL_TELEPORT_NORMAL_REALM = 46020,            //传送：正常世界
+    SPELL_SPECTRAL_REALM_AURA   = 46021,			//46021:131 = "灵魂世界", 182 = "被传送到了灵魂世界
+    SPELL_SPECTRAL_EXHAUSTION   = 44867,			//131="灵魂疲惫",165="从灵魂世界进入物质世界的旅程让你身心疲惫，无法再次使用幽魂裂隙。",182="无法穿越幽魂裂隙。"
     // Felmyst ouro spell
     SPELL_OPEN_BACK_DOOR        = 46650,            // Opens the fire barrier - script effect for 46652
     // used by both muru and entropius

@@ -212,6 +212,8 @@ struct boss_felmystAI : public ScriptedAI
     {
         if (pSummoned->GetEntry() == NPC_DEMONIC_VAPOR)
         {
+			pSummoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);//不可选择
+			pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);//不可攻击
             pSummoned->CastSpell(pSummoned, SPELL_VAPOR_SPAWN_TRIGGER, TRIGGERED_OLD_TRIGGERED);
             pSummoned->CastSpell(pSummoned, SPELL_DEMONIC_VAPOR_PER, TRIGGERED_OLD_TRIGGERED);
         }
