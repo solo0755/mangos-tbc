@@ -179,7 +179,7 @@ struct boss_felmystAI : public ScriptedAI
 
     void Aggro(Unit* pWho) override
     {
-        DoCastSpellIfCan(m_creature, SPELL_NOXIOUS_FUMES);
+        DoCastSpellIfCan(m_creature, SPELL_NOXIOUS_FUMES);//给自己上个光环 47002:131="毒气",165="Deals $s1 damage every $t1 sec.",182="每$t1秒造成$s1点自然伤害。"
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_FELMYST, IN_PROGRESS);
@@ -212,10 +212,10 @@ struct boss_felmystAI : public ScriptedAI
     {
         if (pSummoned->GetEntry() == NPC_DEMONIC_VAPOR)
         {
-			pSummoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);//不可选择
-			pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);//不可攻击
+			//pSummoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);//不可选择
+			//pSummoned->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);//不可攻击
             pSummoned->CastSpell(pSummoned, SPELL_VAPOR_SPAWN_TRIGGER, TRIGGERED_OLD_TRIGGERED);
-            pSummoned->CastSpell(pSummoned, SPELL_DEMONIC_VAPOR_PER, TRIGGERED_OLD_TRIGGERED);
+            pSummoned->CastSpell(pSummoned, SPELL_DEMONIC_VAPOR_PER, TRIGGERED_OLD_TRIGGERED);//追踪玩家
         }
     }
 
@@ -351,7 +351,7 @@ struct boss_felmystAI : public ScriptedAI
 
                 if (m_uiGasNovaTimer < uiDiff)
                 {
-                    if (DoCastSpellIfCan(m_creature, SPELL_GAS_NOVA) == CAST_OK)
+                    if (DoCastSpellIfCan(m_creature, SPELL_GAS_NOVA) == CAST_OK)//毒气新星
                         m_uiGasNovaTimer = 23000;
                 }
                 else
