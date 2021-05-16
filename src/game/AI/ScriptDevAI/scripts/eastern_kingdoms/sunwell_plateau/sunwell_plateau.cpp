@@ -224,7 +224,12 @@ void instance_sunwell_plateau::SetData(uint32 uiType, uint32 uiData)
 					sLog.outError("[PZX] TYPE_KALECGOS fail pSathrovarr->AI()->EnterEvadeMode()");
 					pSathrovarr->AI()->EnterEvadeMode();
 				}
-            }
+			}
+			else if (uiData == FAIL) {
+				DoUseOpenableObject(GO_FORCEFIELD, true, 0, false);//失败后强制关闭
+				DoUseOpenableObject(GO_BOSS_COLLISION_1, true, 0, false);//失败后强制关闭
+				DoUseOpenableObject(GO_BOSS_COLLISION_2, true, 0, false);//失败后强制关闭
+			}
             break;
         case TYPE_BRUTALLUS:
             m_auiEncounter[uiType] = uiData;

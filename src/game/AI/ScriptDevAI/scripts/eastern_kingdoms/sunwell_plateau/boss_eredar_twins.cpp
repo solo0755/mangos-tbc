@@ -439,7 +439,7 @@ struct boss_sacrolashAI : public ScriptedAI
             m_uiSummonShadowImage -= uiDiff;
 
         // Overwrite the melee attack in order to apply the dark strike
-        if (m_creature->CanReachWithMeleeAttack(m_creature->GetVictim()))
+        if (m_creature->GetVictim()&&m_creature->CanReachWithMeleeAttack(m_creature->GetVictim()))
         {
             // Make sure our attack is ready and we aren't currently casting
             if (m_creature->isAttackReady() && !m_creature->IsNonMeleeSpellCasted(false))

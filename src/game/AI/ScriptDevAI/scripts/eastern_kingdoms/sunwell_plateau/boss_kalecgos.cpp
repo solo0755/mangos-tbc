@@ -531,7 +531,7 @@ struct boss_sathrovarrAI : public ScriptedAI
     void UpdateAI(const uint32 uiDiff) override
     {
 
-		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim()) {
+		if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim()) {//空闲状态
 			if (!m_creature->HasAura(SPELL_BANISH)&& m_creature->GetMap()->HavePlayers()) {//没有免疫光辉的时候，弹出所有人
 				Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
 				for (Map::PlayerList::const_iterator itr = pPlayers.begin(); itr != pPlayers.end(); ++itr)
@@ -540,7 +540,6 @@ struct boss_sathrovarrAI : public ScriptedAI
 					{
 						if (!pPlayer->IsGameMaster()&&pPlayer->IsAlive()&& pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
 						{
-
 								if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA))//没有光环("灵魂世界")的玩家会被传送  
 								{
 									pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
@@ -560,6 +559,29 @@ struct boss_sathrovarrAI : public ScriptedAI
 			}
 			
             return;
+		}
+
+		if (!m_creature->HasAura(SPELL_BANISH) && m_creature->GetMap()->HavePlayers()) {//没有免疫光辉的时候，弹出所有人
+			Map::PlayerList const& pPlayers = m_creature->GetMap()->GetPlayers();
+			for (Map::PlayerList::const_iterator itr = pPlayers.begin(); itr != pPlayers.end(); ++itr)
+			{
+				if (Player* pPlayer = itr->getSource())
+				{//没有光环("灵魂世界")的玩家会被传送  
+					if (!pPlayer->HasAura(SPELL_SPECTRAL_REALM_AURA)&& !pPlayer->HasAura(SPELL_SPECTRAL_EXHAUSTION) &&!pPlayer->IsGameMaster() && pPlayer->IsAlive() && pPlayer->IsWithinLOSInMap(m_creature) && pPlayer->IsWithinDistInMap(m_creature, 75.0f))//死亡的玩家怎麽出來
+					{
+							pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_NORMAL_REALM, TRIGGERED_OLD_TRIGGERED);
+							pPlayer->CastSpell(pPlayer, SPELL_SPECTRAL_EXHAUSTION, TRIGGERED_OLD_TRIGGERED);
+							pPlayer->RemoveAurasDueToSpell(SPELL_SPECTRAL_REALM_AURA);
+							if (pPlayer->HasAura(44852)) {
+								sLog.outError("[PZX] error: player %u HasAura(44852)", pPlayer->GetObjectGuid());
+								pPlayer->RemoveAurasDueToSpell(44852);
+							}
+							sLog.outError("[PZX] boss_sathrovarr freeeeeeeee eject player %u", pPlayer->GetObjectGuid());
+							if (m_pInstance)
+								m_pInstance->RemoveFromSpectralRealm(pPlayer->GetObjectGuid());
+					}
+				}
+			}
 		}
 
         if (m_bIsBanished)
