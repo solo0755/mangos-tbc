@@ -337,10 +337,15 @@ bool CreatureEventAI::CheckEvent(CreatureEventAIHolder& holder, Unit* actionInvo
     LOG_PROCESS_EVENT;
 
     CreatureEventAI_Event const& event = holder.event;
+	if (holder.event.event_id == 2573502) {
+		sLog.outError("test");
+		return true;
+	}
 
     // Check event conditions based on the event type, also reset events
     switch (event.event_type)
     {
+
         case EVENT_T_TIMER_IN_COMBAT:
             if (!m_creature->IsInCombat())
                 return false;

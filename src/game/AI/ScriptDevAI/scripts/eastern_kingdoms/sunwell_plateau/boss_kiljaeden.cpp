@@ -72,9 +72,9 @@ enum
     SPELL_BIRTH                 = 37745,            // Kiljaeden spawn animation
 
     // transition spells
-    SPELL_DESTROY_DRAKES        = 46707,
-    SPELL_SINISTER_REFLECTION   = 45892,
-    SPELL_SHADOW_SPIKE          = 46680,
+    SPELL_DESTROY_DRAKES        = 46707,//毁灭所有龙
+    SPELL_SINISTER_REFLECTION   = 45892,//邪恶镜像
+    SPELL_SHADOW_SPIKE          = 46680,//暗影之刺 放不出来BUG
 
     // phase 1
     SPELL_SOUL_FLY              = 45442,
@@ -86,7 +86,7 @@ enum
     SPELL_DARKNESS_OF_SOULS     = 46605,
 
     // phase 3
-    SPELL_ARMAGEDDON            = 45921,        // used from 50% hp - summons 25735 on target location
+    SPELL_ARMAGEDDON            = 45921,        // 流星风暴 召唤3颗陨石 used from 50% hp - summons 25735 on target location
 
     // Npc spells
     SPELL_SHADOW_BOLT_AURA      = 45679,        // periodic aura on shield orbs
@@ -569,12 +569,12 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
             case SAY_PHASE_3:
                 // Set next phase and increase the max shield orbs
                 m_uiPhase = PHASE_DARKNESS;
-                ++m_uiMaxShieldOrbs;
+                //++m_uiMaxShieldOrbs;
                 break;
             case SAY_PHASE_4:
                 // Set next phase and increase the max shield orbs
                 m_uiPhase = PHASE_ARMAGEDDON;
-                ++m_uiMaxShieldOrbs;
+                //++m_uiMaxShieldOrbs;
                 break;
             case SAY_PHASE_5:
                 // Set next phase and sacrifice Anveena
@@ -626,7 +626,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                 // In the last phase he uses Armageddon continuously
                 if (m_uiArmageddonTimer < uiDiff)
                 {
-                    if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON) == CAST_OK)
+                    if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON) == CAST_OK)//流星风暴
                         m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 20000 : 30000;
                 }
                 else
@@ -718,6 +718,15 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                     else
                         m_uiShieldOrbTimer -= uiDiff;
                 }
+
+				// In the last phase he uses Armageddon continuously
+				if (m_uiArmageddonTimer < uiDiff)
+				{
+					if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON) == CAST_OK)//流星风暴
+						m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 20000 : 30000;
+				}
+				else
+					m_uiArmageddonTimer -= uiDiff;
 
                 // Go to next phase and start transition dialogue
                 if (m_uiPhase == PHASE_INFERNO && m_creature->GetHealthPercent() < 85.0f)

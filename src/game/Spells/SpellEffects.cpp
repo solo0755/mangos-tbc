@@ -3525,7 +3525,10 @@ void Spell::EffectTriggerMissileSpell(SpellEffectIndex effect_idx)
         m_targets.setGOTarget(gameObjTarget);
     else
         m_targets.setDestination(m_targets.m_destPos.x, m_targets.m_destPos.y, m_targets.m_destPos.z);
-    m_caster->CastSpell(m_targets, spellInfo, TRIGGERED_OLD_TRIGGERED, m_CastItem, nullptr, m_originalCasterGUID, m_spellInfo);
+	SpellCastResult ret= m_caster->CastSpell(m_targets, spellInfo, TRIGGERED_OLD_TRIGGERED, m_CastItem, nullptr, m_originalCasterGUID, m_spellInfo);
+	if (45915 == triggered_spell_id&&ret != SPELL_CAST_OK) {
+		sLog.outError("45915 is failed %u", ret);
+	}
 }
 
 void Spell::EffectTeleportUnits(SpellEffectIndex eff_idx)   // TODO - Use target settings for this effect!
@@ -4737,6 +4740,12 @@ void Spell::EffectSummonType(SpellEffectIndex eff_idx)
         }
 
         OnSummon(itr->creature);
+		if (itr->creature->GetEntry()== 25603) {
+			//基尔加丹传送门移动BUG
+			if (itr->creature->AI()) {
+				itr->creature->AI()->SetCombatMovement(false);
+			}
+		}
 
         m_spellLog.AddLog(uint32(SPELL_EFFECT_SUMMON), itr->creature->GetPackGUID());
     }

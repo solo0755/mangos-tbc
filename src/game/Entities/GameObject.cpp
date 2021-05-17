@@ -1856,7 +1856,11 @@ void GameObject::Use(Unit* user, SpellEntry const* spellInfo)
 
     if (!spellId)
         return;
-
+	//»ù¶û¼Óµ¤BUGÐÞ¸´
+	if (spellId==45833) {
+		user->CastSpell(user, 45836, TRIGGERED_OLD_TRIGGERED);
+		return;
+	}
     SpellEntry const* triggeredSpellInfo = sSpellTemplate.LookupEntry<SpellEntry>(spellId);
     if (!triggeredSpellInfo)
     {

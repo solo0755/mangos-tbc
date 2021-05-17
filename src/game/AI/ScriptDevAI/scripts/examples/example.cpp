@@ -531,6 +531,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《菲米丝》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 33);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《艾瑞达双子》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 34);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《穆鲁》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 35);
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_BATTLE, u8"创建--> 《基尔加丹》进度", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 36);
 			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
 			return true;
 		}
@@ -718,6 +719,11 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				pPlayer->CLOSE_GOSSIP_MENU();
 				saveInstance(pPlayer, 4, "3 3 3 3 0 0");
 				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 穆鲁 |h|r进度已经创建");
+				break;
+			case 6://鸡儿加蛋
+				pPlayer->CLOSE_GOSSIP_MENU();
+				saveInstance(pPlayer, 5, "3 3 3 3 3 0");
+				ChatHandler(pPlayer).PSendSysMessage(u8"[系统消息]:太阳井高地|cffff0000 鸡儿加蛋 |h|r进度已经创建");
 				break;
 			default:
 				break;
