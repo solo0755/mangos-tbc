@@ -576,6 +576,10 @@ void Spell::EffectSchoolDMG(SpellEffectIndex eff_idx)
 
         if (damage >= 0)
             m_damagePerEffect[eff_idx] = CalculateSpellEffectDamage(unitTarget, damage);
+
+		if (m_spellInfo->Id == 45915 && m_caster&&m_caster->GetEntry() == 25735) {//Á÷ÐÇÕ¨2´ÎµÄBUG
+			((Creature*)m_caster)->ForcedDespawn();
+		}
     }
 }
 

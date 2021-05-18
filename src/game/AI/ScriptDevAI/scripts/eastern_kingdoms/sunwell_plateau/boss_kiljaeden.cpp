@@ -69,35 +69,35 @@ enum
     SAY_OUTRO_12                = -1580106,
 
     // generic spells
-    SPELL_BIRTH                 = 37745,            // Kiljaeden spawn animation
+    SPELL_BIRTH                 = 37745,            // Kiljaeden spawn animation 鸡蛋出生
 
     // transition spells
     SPELL_DESTROY_DRAKES        = 46707,//毁灭所有龙
-    SPELL_SINISTER_REFLECTION   = 45892,//邪恶镜像
-    SPELL_SHADOW_SPIKE          = 46680,//暗影之刺 放不出来BUG
+    SPELL_SINISTER_REFLECTION   = 45892, //邪恶镜像
+    SPELL_SHADOW_SPIKE          = 46680, //暗影之刺
 
     // phase 1
-    SPELL_SOUL_FLY              = 45442,
-    SPELL_LEGION_LIGHTING       = 45664,
-    SPELL_FIRE_BLOOM            = 45641,
+    SPELL_SOUL_FLY              = 45442,//灵魂鞭笞
+    SPELL_LEGION_LIGHTING       = 45664,//军团闪电
+    SPELL_FIRE_BLOOM            = 45641,//火焰之花
 
     // phase 2
-    SPELL_FLAME_DART            = 45740,
-    SPELL_DARKNESS_OF_SOULS     = 46605,
+    SPELL_FLAME_DART            = 45740,//烈焰之刺
+    SPELL_DARKNESS_OF_SOULS     = 46605,//"千魂之暗",伴随着“基尔加丹开始引导黑暗能量”的提示，基尔加丹的双翼将其遮盖
 
     // phase 3
-    SPELL_ARMAGEDDON            = 45921,        // 流星风暴 召唤3颗陨石 used from 50% hp - summons 25735 on target location
+    SPELL_ARMAGEDDON            = 45921,        //召唤流星 used from 50% hp - summons 25735 on target location
 
     // Npc spells
-    SPELL_SHADOW_BOLT_AURA      = 45679,        // periodic aura on shield orbs
-    SPELL_RING_BLUE_FLAME       = 45825,        // cast by the orb targets when activated
-    SPELL_ANVEENA_PRISON        = 46367,
-    SPELL_SACRIFICE_ANVEENA     = 46474,
-    SPELL_ARCANE_BOLT           = 45670,        // used by Kalec
-    SPELL_SINISTER_REFL_CLASS   = 45893,        // increase the size of the clones
-    SPELL_SINISTER_REFL_CLONE   = 45785,        // clone the player
-    SPELL_VENGEANCE_BLUE_FLIGHT = 45839,        // possess the dragon
-    SPELL_POSSESS_DRAKE_IMMUNE  = 45838,        // immunity while the player possesses the dragon
+    SPELL_SHADOW_BOLT_AURA      = 45679,        // periodic aura on shield orbs 暗影箭
+    SPELL_RING_BLUE_FLAME       = 45825,        // cast by the orb targets when activated 蓝色烈焰之环
+    SPELL_ANVEENA_PRISON        = 46367,		//安薇娜的牢笼
+    SPELL_SACRIFICE_ANVEENA     = 46474,		//安薇娜的牺牲 使鸡蛋受到的神圣伤害提高100%?
+    SPELL_ARCANE_BOLT           = 45670,        // used by Kalec 奥术之箭
+    SPELL_SINISTER_REFL_CLASS   = 45893,        // increase the size of the clones 邪恶镜像职业
+    SPELL_SINISTER_REFL_CLONE   = 45785,        // clone the player 邪恶镜像克隆
+    SPELL_VENGEANCE_BLUE_FLIGHT = 45839,        // possess the dragon  宝珠灌注能量，玩家可以使用这些宝珠获得 [蓝龙的复仇] 效果，该效果会将使用者变成一条蓝龙，持续2分钟
+    SPELL_POSSESS_DRAKE_IMMUNE  = 45838,        // immunity while the player possesses the dragon  龙类免疫
 
     // Npcs
     NPC_SHIELD_ORB              = 25502,
@@ -418,6 +418,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
     uint32 m_uiDarknessOfSoulsTimer;
 
     uint32 m_uiArmageddonTimer;
+	uint32 m_countLIUXIONG;
+	uint32 m_uishottTimer;
 
     void Reset() override
     {
@@ -425,7 +427,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         m_uiKalecSummonTimer        = 35000;
         m_uiMaxShieldOrbs           = 1;
         m_uiShieldOrbCount          = 0;
-
+		m_countLIUXIONG				= 3;//释放3个流星
         m_uiSoulFlyTimer            = 10000;
         m_uiLegionLightingTimer     = urand(10000, 15000);
         m_uiFireBloomTimer          = urand(15000, 20000);
@@ -435,6 +437,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         m_uiDarknessOfSoulsTimer    = urand(45000, 50000);
 
         m_uiArmageddonTimer         = 20000;
+		m_uishottTimer = 0;
     }
 
     void Aggro(Unit* /*pWho*/) override
@@ -485,7 +488,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         }
         else if (pSummoned->GetEntry() == NPC_SHIELD_ORB)
         {
-            pSummoned->CastSpell(pSummoned, SPELL_SHADOW_BOLT_AURA, TRIGGERED_OLD_TRIGGERED);
+            //pSummoned->CastSpell(pSummoned, SPELL_SHADOW_BOLT_AURA, TRIGGERED_OLD_TRIGGERED);
 
             // Start the movement of the shadow orb - calculate new position based on the angle between the boss and orb
             float fX, fY;
@@ -512,6 +515,17 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                 }
             }
         }
+		else if (pSummoned->GetEntry() == 25735) {
+			//调整高度
+			//float fX, fY, fZ;
+			//pSummoned->GetRandomPoint(pSummoned->GetPositionX(), pSummoned->GetPositionY(), pSummoned->GetPositionZ(), 2.0f, fX, fY, fZ);
+			//pSummoned->NearTeleportTo(fX, fY, fZ+15, pSummoned->GetOrientation());//增加15码高度
+			pSummoned->GetMotionMaster()->Clear();
+			pSummoned->GetMotionMaster()->MoveIdle();
+			pSummoned->StopMoving(true);
+			sLog.outError("25735 need to move to  a player stationg");
+			
+		}
     }
 
     void SummonedCreatureJustDied(Creature* pSummoned) override
@@ -530,6 +544,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         if (!m_pInstance)
             return;
 
+		
         switch (iEntry)
         {
             case PHASE_DARKNESS:
@@ -551,7 +566,10 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
             case EVENT_SWITCH_PHASE_2:
             case EVENT_SWITCH_PHASE_3:
             case EVENT_SWITCH_PHASE_4:
-                DoCastSpellIfCan(m_creature, SPELL_SHADOW_SPIKE);
+				if (DoCastSpellIfCan(m_creature, SPELL_SHADOW_SPIKE) != CAST_OK) {
+					sLog.outError("CCCC SPELL_SHADOW_SPIKE failed");
+					m_uishottTimer = 1;
+				}
                 break;
             case EVENT_DRAGON_ORB:
                 // Activate blue orbs
@@ -569,12 +587,12 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
             case SAY_PHASE_3:
                 // Set next phase and increase the max shield orbs
                 m_uiPhase = PHASE_DARKNESS;
-                //++m_uiMaxShieldOrbs;
+                ++m_uiMaxShieldOrbs;
                 break;
             case SAY_PHASE_4:
                 // Set next phase and increase the max shield orbs
                 m_uiPhase = PHASE_ARMAGEDDON;
-                //++m_uiMaxShieldOrbs;
+                ++m_uiMaxShieldOrbs;
                 break;
             case SAY_PHASE_5:
                 // Set next phase and sacrifice Anveena
@@ -599,19 +617,45 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         if (GameObject* pGo = m_pInstance->GetSingleGameObjectFromStorage(uiEntry))
         {
             if (Creature* pTarget = GetClosestCreatureWithEntry(pGo, NPC_BLUE_ORB_TARGET, 5.0f))
-                pTarget->CastSpell(pTarget, SPELL_RING_BLUE_FLAME, TRIGGERED_NONE);
+                pTarget->CastSpell(pTarget, SPELL_RING_BLUE_FLAME, TRIGGERED_NONE);//使宝珠可以用
         }
 
         // Make the orb usable
         m_pInstance->DoToggleGameObjectFlags(uiEntry, GO_FLAG_NO_INTERACT, false);
     }
-
+	//void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell) override
+	//{
+	//	sLog.outError("jd speel hit %u", pSpell->Id);
+	//	if (pTarget->GetTypeId() == TYPEID_PLAYER && pSpell->Id == 45909)
+	//		pTarget->CastSpell(pTarget, 45915, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_creature->GetObjectGuid());
+	//	ScriptedAI::SpellHitTarget(pTarget, pSpell);
+	//}
     void UpdateAI(const uint32 uiDiff) override
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
             return;
 
         DialogueUpdate(uiDiff);
+
+		if (Spell* curr=m_creature->GetCurrentSpell(CURRENT_CHANNELED_SPELL)) {//3秒一个暗影刺
+			if (curr->m_spellInfo->Id == 46680) {
+
+			sLog.outError("CURRENT_CHANNELED_SPELL %u", curr->m_spellInfo->Id);
+
+			if (m_uishottTimer < uiDiff)
+			{
+				if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
+					//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
+					m_creature->CastSpell(player, 46589, TRIGGERED_OLD_TRIGGERED);
+					sLog.outError("baooooo send %u", player->GetGUIDLow());
+				}
+				m_uishottTimer = 3000;
+			}
+			else
+				m_uishottTimer -= uiDiff;
+			}
+			return;
+		}
 
         switch (m_uiPhase)
         {
@@ -624,13 +668,29 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
             case PHASE_ARMAGEDDON:
 
                 // In the last phase he uses Armageddon continuously
-                if (m_uiArmageddonTimer < uiDiff)
-                {
-                    if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON) == CAST_OK)//流星风暴
-                        m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 20000 : 30000;
-                }
-                else
-                    m_uiArmageddonTimer -= uiDiff;
+
+
+				if (m_uiArmageddonTimer < uiDiff)
+				{
+					if (m_countLIUXIONG > 0) {
+						m_countLIUXIONG--;
+					}
+						if(m_countLIUXIONG==2)
+							DoCastSpellIfCan(m_creature, 45914, CAST_TRIGGERED);//火焰效果
+					if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
+						CanCastResult ret = DoCastSpellIfCan(pTarget, 45910, CAST_TRIGGERED);
+						m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 2000 : 3000;//三秒间隔
+						sLog.outError("PPPPPPP  SPELL_ARMAGEDDON index %u ret:%u", m_countLIUXIONG, ret);//测试代码，第一阶段也释放
+					}
+					if (m_countLIUXIONG == 0) {
+						m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 20000 : 30000;
+						sLog.outError("PPPPPPP  SPELL_ARMAGEDDON finish ！！！！！！1");
+						m_countLIUXIONG = 3;
+					}
+					return;
+				}
+				else
+					m_uiArmageddonTimer -= uiDiff;
 
                 // Go to next phase and start transition dialogue
                 if (m_uiPhase == PHASE_ARMAGEDDON && m_creature->GetHealthPercent() < 25.0f)
@@ -719,15 +779,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                         m_uiShieldOrbTimer -= uiDiff;
                 }
 
-				// In the last phase he uses Armageddon continuously
-				if (m_uiArmageddonTimer < uiDiff)
-				{
-					if (DoCastSpellIfCan(m_creature, SPELL_ARMAGEDDON) == CAST_OK)//流星风暴
-						m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 20000 : 30000;
-				}
-				else
-					m_uiArmageddonTimer -= uiDiff;
-
                 // Go to next phase and start transition dialogue
                 if (m_uiPhase == PHASE_INFERNO && m_creature->GetHealthPercent() < 85.0f)
                     StartNextDialogueText(PHASE_DARKNESS);
@@ -766,6 +817,7 @@ bool EffectAuraDummy_spell_aura_dummy_darkness_of_souls(const Aura* pAura, bool 
 
 struct npc_shield_orbAI : public ScriptedAI
 {
+	uint32 m_uishottTimer;
     npc_shield_orbAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = ((instance_sunwell_plateau*)pCreature->GetInstanceData());
@@ -774,7 +826,7 @@ struct npc_shield_orbAI : public ScriptedAI
 
     instance_sunwell_plateau* m_pInstance;
 
-    void Reset() override { }
+	void Reset() override { m_uishottTimer = 2000; }
 
     // Handle circel movement around the boss
     void MovementInform(uint32 uiMoveType, uint32 uiPointId) override
@@ -801,7 +853,21 @@ struct npc_shield_orbAI : public ScriptedAI
 
     void AttackStart(Unit* /*pWho*/) override {}
     void MoveInLineOfSight(Unit* /*pWho*/) override {}
-    void UpdateAI(const uint32 /*uiDiff*/) override { }
+    void UpdateAI(const uint32 uiDiff) override {
+	
+		if (m_uishottTimer < uiDiff)
+		{
+		
+			if(Player* player=m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 20, true)){
+			//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
+				m_creature->CastSpell(player, 45680, TRIGGERED_OLD_TRIGGERED);
+				sLog.outError("baooooo send %u", player->GetGUIDLow());
+			}
+			m_uishottTimer = urand(2000, 3000);
+		}
+		else
+			m_uishottTimer -= uiDiff;
+	}
 };
 
 /*######
@@ -838,8 +904,8 @@ struct npc_power_blue_flightAI : public ScriptedAI
             {
                 if (Player* pPlayer = m_creature->GetMap()->GetPlayer(m_creature->GetSpawnerGuid()))
                 {
-                    pPlayer->CastSpell(m_creature, SPELL_VENGEANCE_BLUE_FLIGHT, TRIGGERED_OLD_TRIGGERED);
-                    pPlayer->CastSpell(pPlayer, SPELL_POSSESS_DRAKE_IMMUNE, TRIGGERED_OLD_TRIGGERED);
+                    pPlayer->CastSpell(m_creature, SPELL_VENGEANCE_BLUE_FLIGHT, TRIGGERED_OLD_TRIGGERED);//45839:131="蓝龙的复仇",165="蓝龙军团的能量在你的体内奔涌。",182="为蓝龙军团复仇。"
+                    pPlayer->CastSpell(pPlayer, SPELL_POSSESS_DRAKE_IMMUNE, TRIGGERED_OLD_TRIGGERED);//45838:131="龙类免疫"
                 }
             }
 

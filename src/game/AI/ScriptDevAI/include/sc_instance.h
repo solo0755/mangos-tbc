@@ -57,7 +57,7 @@ class ScriptedInstance : public InstanceData
 
         // Get a Player from map
         Player* GetPlayerInMap(bool bOnlyAlive = false, bool bCanBeGamemaster = true) const;
-
+		Player* SelectRandomAliveWithDist(Creature* boss, ScriptedInstance* instance, uint32 distance, bool bOnlyAlive = false, bool bCanBeGamemaster = true);
         // Wrapper for simulating map-wide text in this instance. It is expected that the Creature is stored in m_npcEntryGuidStore if loaded.
         void DoOrSimulateScriptTextForThisInstance(int32 textEntry, uint32 creatureEntry)
         {

@@ -351,8 +351,13 @@ bool CreatureEventAI::CheckEvent(CreatureEventAIHolder& holder, Unit* actionInvo
                 return false;
             break;
         case EVENT_T_TIMER_OOC:
-            if (m_creature->IsInCombat() || m_creature->GetCombatManager().IsInEvadeMode())
+			if (m_creature->IsInCombat() || m_creature->GetCombatManager().IsInEvadeMode()) {
+				if (holder.event.event_id == 2573502) {
+					sLog.outError("test");//强制结束 流星BUG
+					return true;
+				}
                 return false;
+			}
             break;
         case EVENT_T_TIMER_GENERIC:
             break;

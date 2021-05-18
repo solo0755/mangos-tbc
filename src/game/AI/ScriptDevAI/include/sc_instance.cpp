@@ -196,6 +196,37 @@ GameObject* ScriptedInstance::GetSingleGameObjectFromStorage(uint32 entry) const
     return nullptr;
 }
 
+ Player* ScriptedInstance::SelectRandomAliveWithDist(Creature* boss,ScriptedInstance* instance, uint32 distance, bool bOnlyAlive /*=false*/, bool bCanBeGamemaster /*=true*/)
+{
+	std::list<Player*> temp;
+	if (!instance) return nullptr;
+	std::list<Player*>::iterator j;
+	//Creature* boss=instance->GetSingleCreatureFromStorage(targetBoss);
+	Map::PlayerList const& PlayerList = boss->GetMap()->GetPlayers();
+
+	if (!PlayerList.isEmpty())
+	{
+		for (const auto& itr : PlayerList)
+		{
+			if (Player* player = itr.getSource())
+			{
+				if ((!bOnlyAlive || player->IsAlive()) && (bCanBeGamemaster || !player->IsGameMaster()) && player->IsInCombat() && boss->IsWithinLOSInMap(player)) {
+					temp.push_back(player);
+				}
+			}
+		}
+	}
+
+	if (temp.empty())
+		return nullptr;
+
+	j = temp.begin();
+
+	if (temp.size() > 1) {
+		advance(j, urand(0, temp.size() - 1));
+	}
+	return (*j);
+}
 /// Returns a pointer to a loaded Creature that was stored in m_goEntryGuidStore. Can return nullptr
 Creature* ScriptedInstance::GetSingleCreatureFromStorage(uint32 entry, bool skipDebugLog /*=false*/) const
 {
