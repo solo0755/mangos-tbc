@@ -551,18 +551,34 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
             case PHASE_DARKNESS:
             case PHASE_ARMAGEDDON:
             case PHASE_SACRIFICE:
-                if (DoCastSpellIfCan(m_creature, SPELL_SINISTER_REFLECTION, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
-                {
-                    DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
 
-                    // In the 2nd and 3rd transition kill all drakes
-                    if (iEntry == PHASE_ARMAGEDDON || iEntry == PHASE_SACRIFICE)
-                        DoCastSpellIfCan(m_creature, SPELL_DESTROY_DRAKES, CAST_TRIGGERED);
+				if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
+						jingxiangplayer = player;
+					for (uint8 i = 0; i < 4; ++i) {
+						m_creature->CastSpell(player, 45891, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, player->GetObjectGuid());
+					}
 
-                    m_uiPhase = PHASE_TRANSITION;
-                    // Darkness of Souls needs the timer reseted
-                    m_uiDarknessOfSoulsTimer = iEntry == PHASE_SACRIFICE ? 30000 : 45000;
-                }
+					DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
+					// In the 2nd and 3rd transition kill all drakes
+					if (iEntry == PHASE_ARMAGEDDON || iEntry == PHASE_SACRIFICE)
+						DoCastSpellIfCan(m_creature, SPELL_DESTROY_DRAKES, CAST_TRIGGERED);
+
+					m_uiPhase = PHASE_TRANSITION;
+					// Darkness of Souls needs the timer reseted
+					m_uiDarknessOfSoulsTimer = iEntry == PHASE_SACRIFICE ? 30000 : 45000;
+				}
+                //if (DoCastSpellIfCan(m_creature, SPELL_SINISTER_REFLECTION, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
+                //{
+                //    DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
+
+                //    // In the 2nd and 3rd transition kill all drakes
+                //    if (iEntry == PHASE_ARMAGEDDON || iEntry == PHASE_SACRIFICE)
+                //        DoCastSpellIfCan(m_creature, SPELL_DESTROY_DRAKES, CAST_TRIGGERED);
+
+                //    m_uiPhase = PHASE_TRANSITION;
+                //    // Darkness of Souls needs the timer reseted
+                //    m_uiDarknessOfSoulsTimer = iEntry == PHASE_SACRIFICE ? 30000 : 45000;
+                //}
                 break;
             case EVENT_SWITCH_PHASE_2:
             case EVENT_SWITCH_PHASE_3:
@@ -624,13 +640,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         // Make the orb usable
         m_pInstance->DoToggleGameObjectFlags(uiEntry, GO_FLAG_NO_INTERACT, false);
     }
-	//void SpellHitTarget(Unit* pTarget, const SpellEntry* pSpell) override
-	//{
-	//	sLog.outError("jd speel hit %u", pSpell->Id);
-	//	if (pTarget->GetTypeId() == TYPEID_PLAYER && pSpell->Id == 45909)
-	//		pTarget->CastSpell(pTarget, 45915, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, m_creature->GetObjectGuid());
-	//	ScriptedAI::SpellHitTarget(pTarget, pSpell);
-	//}
+
     void UpdateAI(const uint32 uiDiff) override
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->GetVictim())
@@ -638,21 +648,20 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 
         DialogueUpdate(uiDiff);
 
+		//AI前面增加个循环判断
 		if (Spell* curr=m_creature->GetCurrentSpell(CURRENT_CHANNELED_SPELL)) {//3秒一个暗影刺
-			if (curr->m_spellInfo->Id == 46680) {
-
-			sLog.outError("CURRENT_CHANNELED_SPELL %u", curr->m_spellInfo->Id);
-
-			if (m_uishottTimer < uiDiff)
-			{
-				if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
-					//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
-					m_creature->CastSpell(player, 46589, TRIGGERED_OLD_TRIGGERED);
+			if (curr->m_spellInfo->Id == 46680) {//如果在引导暗影之刺
+				if (m_uishottTimer < uiDiff)
+				{
+					sLog.outError("CURRENT_CHANNELED_SPELL %u", curr->m_spellInfo->Id);
+					if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
+						//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
+						m_creature->CastSpell(player, 46589, TRIGGERED_OLD_TRIGGERED);//直接发送一个刺
+					}
+					m_uishottTimer = 3500;
 				}
-				m_uishottTimer = 3000;
-			}
-			else
-				m_uishottTimer -= uiDiff;
+				else
+					m_uishottTimer -= uiDiff;
 			}
 			return;
 		}
@@ -774,26 +783,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                         m_creature->SummonCreature(NPC_SHIELD_ORB, fX, fY, fZ, 0, TEMPSPAWN_CORPSE_DESPAWN, 0);
                         ++m_uiShieldOrbCount;
 
-
-						//test
-						if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
-							for (uint8 i = 0; i < 4; ++i)
-								m_creature->CastSpell(player, 45891, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, player->GetObjectGuid());
-
- 							DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
-							jingxiangplayer = player;
-	/*						if (DoCastSpellIfCan(player, SPELL_SINISTER_REFLECTION, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
-							{
-
-								sLog.outError("sum SPELL_SINISTER_REFLECTION");
-						
-							}
-							else {
-								sLog.outError("sum SPELL_SINISTER_REFLECTION failed");
-							}*/
-						}
-
-                        m_uiShieldOrbTimer = 10000;
+                        m_uiShieldOrbTimer = 30000;//宝珠的召唤周期30秒
                     }
                     else
                         m_uiShieldOrbTimer -= uiDiff;
@@ -882,7 +872,7 @@ struct npc_shield_orbAI : public ScriptedAI
 		
 			if(Player* player=m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 20, true)){
 			//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
-				m_creature->CastSpell(player, 45680, TRIGGERED_OLD_TRIGGERED);
+				m_creature->CastSpell(player, 45680, TRIGGERED_OLD_TRIGGERED);//扔宝珠
 			}
 			m_uishottTimer = urand(2000, 3000);
 		}
