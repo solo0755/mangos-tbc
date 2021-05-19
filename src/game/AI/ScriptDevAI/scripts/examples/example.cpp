@@ -537,17 +537,18 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 		}
 		else if (uiAction == 300) {
 			pPlayer->CLOSE_GOSSIP_MENU();
-			if (pPlayer->IsGameMaster()) {//GM 都可以传送
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
-			}
-			else if (pPlayer->GetTeam() == HORDE) {
+			//if (pPlayer->IsGameMaster()) {//GM 都可以传送
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 银月城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 铁炉堡", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 暴风城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 达纳苏斯", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
+			//	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 埃索达", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
+			//}
+			//else 
+			if (pPlayer->GetTeam() == HORDE) {
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 奥格瑞玛", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 幽暗城", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
 				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送--> 雷霆崖", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
@@ -683,7 +684,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				pPlayer->TeleportTo(530, 12582.3f, -6775.1f, 15.1f, 6.2f);
 				break;
 			case 17://鸡儿加单的房间
-				if (!pPlayer->IsGameMaster()|| !pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+				if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
 					ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 					pPlayer->CLOSE_GOSSIP_MENU();
 					return false;

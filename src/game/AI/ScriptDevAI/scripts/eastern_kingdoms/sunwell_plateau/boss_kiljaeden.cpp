@@ -510,8 +510,8 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
                 //if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pSummoned->GetSpawnerGuid()))
 				if(jingxiangplayer)
                 {
-					jingxiangplayer->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLONE, TRIGGERED_OLD_TRIGGERED);
-                    pSummoned->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLASS, TRIGGERED_OLD_TRIGGERED);
+					//jingxiangplayer->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLONE, TRIGGERED_OLD_TRIGGERED);
+					//jingxiangplayer->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLASS, TRIGGERED_OLD_TRIGGERED);
                     pSummoned->AI()->AttackStart(jingxiangplayer);
                 }
             }
@@ -555,7 +555,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 				if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
 						jingxiangplayer = player;
 					for (uint8 i = 0; i < 4; ++i) {
-						m_creature->CastSpell(player, 45891, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, player->GetObjectGuid());
+						player->CastSpell(player, 45891, TRIGGERED_NONE, nullptr, nullptr, m_creature->GetObjectGuid());
 					}
 
 					DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
@@ -663,7 +663,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 				else
 					m_uishottTimer -= uiDiff;
 			}
-			return;
+				return;
 		}
 
         switch (m_uiPhase)
@@ -686,7 +686,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 					}
 						if(m_countLIUXIONG==2)
 							DoCastSpellIfCan(m_creature, 45914, CAST_TRIGGERED);//火焰效果
-					if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
+					if (Player* pTarget = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
 						CanCastResult ret = DoCastSpellIfCan(pTarget, 45910, CAST_TRIGGERED);
 						m_uiArmageddonTimer = m_uiPhase == PHASE_SACRIFICE ? 2000 : 3000;//三秒间隔
 						sLog.outError("PPPPPPP  SPELL_ARMAGEDDON index %u ret:%u", m_countLIUXIONG, ret);//测试代码，第一阶段也释放
