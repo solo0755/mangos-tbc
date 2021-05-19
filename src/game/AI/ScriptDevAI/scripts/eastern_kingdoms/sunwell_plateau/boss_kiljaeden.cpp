@@ -420,7 +420,7 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
     uint32 m_uiArmageddonTimer;
 	uint32 m_countLIUXIONG;
 	uint32 m_uishottTimer;
-
+	Player* jingxiangplayer;
     void Reset() override
     {
         m_uiPhase                   = PHASE_INFERNO;
@@ -507,11 +507,12 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
         {
             if (pSummoned->IsTemporarySummon())
             {
-                if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pSummoned->GetSpawnerGuid()))
+                //if (Player* pPlayer = m_creature->GetMap()->GetPlayer(pSummoned->GetSpawnerGuid()))
+				if(jingxiangplayer)
                 {
-                    pPlayer->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLONE, TRIGGERED_OLD_TRIGGERED);
+					jingxiangplayer->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLONE, TRIGGERED_OLD_TRIGGERED);
                     pSummoned->CastSpell(pSummoned, SPELL_SINISTER_REFL_CLASS, TRIGGERED_OLD_TRIGGERED);
-                    pSummoned->AI()->AttackStart(pPlayer);
+                    pSummoned->AI()->AttackStart(jingxiangplayer);
                 }
             }
         }
@@ -647,7 +648,6 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 				if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
 					//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
 					m_creature->CastSpell(player, 46589, TRIGGERED_OLD_TRIGGERED);
-					sLog.outError("baooooo send %u", player->GetGUIDLow());
 				}
 				m_uishottTimer = 3000;
 			}
@@ -773,11 +773,33 @@ struct boss_kiljaedenAI : public Scripted_NoMovementAI, private DialogueHelper
 
                         m_creature->SummonCreature(NPC_SHIELD_ORB, fX, fY, fZ, 0, TEMPSPAWN_CORPSE_DESPAWN, 0);
                         ++m_uiShieldOrbCount;
-                        m_uiShieldOrbTimer = 30000;
+
+
+						//test
+						if (Player* player = m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 40, true)) {
+							for (uint8 i = 0; i < 4; ++i)
+								m_creature->CastSpell(player, 45891, TRIGGERED_OLD_TRIGGERED, nullptr, nullptr, player->GetObjectGuid());
+
+ 							DoScriptText(irand(0, 1) ? SAY_REFLECTION_1 : SAY_REFLECTION_2, m_creature);
+							jingxiangplayer = player;
+	/*						if (DoCastSpellIfCan(player, SPELL_SINISTER_REFLECTION, CAST_INTERRUPT_PREVIOUS) == CAST_OK)
+							{
+
+								sLog.outError("sum SPELL_SINISTER_REFLECTION");
+						
+							}
+							else {
+								sLog.outError("sum SPELL_SINISTER_REFLECTION failed");
+							}*/
+						}
+
+                        m_uiShieldOrbTimer = 10000;
                     }
                     else
                         m_uiShieldOrbTimer -= uiDiff;
                 }
+
+
 
                 // Go to next phase and start transition dialogue
                 if (m_uiPhase == PHASE_INFERNO && m_creature->GetHealthPercent() < 85.0f)
@@ -861,7 +883,6 @@ struct npc_shield_orbAI : public ScriptedAI
 			if(Player* player=m_pInstance->SelectRandomAliveWithDist(m_creature, m_pInstance, 20, true)){
 			//if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0, nullptr, SELECT_FLAG_PLAYER)) {
 				m_creature->CastSpell(player, 45680, TRIGGERED_OLD_TRIGGERED);
-				sLog.outError("baooooo send %u", player->GetGUIDLow());
 			}
 			m_uishottTimer = urand(2000, 3000);
 		}
