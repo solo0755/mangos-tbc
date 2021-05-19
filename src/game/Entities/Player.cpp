@@ -20768,7 +20768,7 @@ void Player::UpdateTerainEnvironmentFlags(Map* m, float x, float y, float z)
         if (liquid && liquid->SpellId)
         {
             // Exception for SSC water
-            uint32 liquidSpellId = liquid->SpellId == 37025 ? 37284 : liquid->SpellId;
+            uint32 liquidSpellId = liquid->SpellId == 37025 ? 37284 : liquid->SpellId;//修复鱼的问题
 
             if (res & (LIQUID_MAP_UNDER_WATER | LIQUID_MAP_IN_WATER))
             {
