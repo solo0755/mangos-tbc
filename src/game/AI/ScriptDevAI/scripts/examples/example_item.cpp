@@ -93,7 +93,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 501) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
@@ -225,7 +225,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 502) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
@@ -247,7 +247,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 507) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
@@ -268,7 +268,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 508) {
 		if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
@@ -278,7 +278,7 @@ bool GossipSelect_ItemPzx(Player *pPlayer, Item *_item, uint32 sender, const uin
 	}
 	else if (uiAction == 509) {
 		if (!pPlayer->GetGroup()||!(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
-			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团队领袖才能使用此功能");
+			ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 			pPlayer->CLOSE_GOSSIP_MENU();
 			return false;
 		}
