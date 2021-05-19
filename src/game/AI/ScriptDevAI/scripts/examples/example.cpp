@@ -568,8 +568,12 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 地狱火堡垒", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 14);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 时光之穴", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 15);
 			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 太阳井高地", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 16);
-			if(pPlayer->GetMap()&& pPlayer->GetMapId()==580)
-				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 基尔加丹房间 |cffff0000 (限团长使用)|h|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 17);
+
+			
+			if (pPlayer->GetMap() && pPlayer->GetMapId() == 580) {
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 卡雷苟斯平台 |cffff0000 (限团长使用)|h|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 17);
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, u8"传送区域--> 基尔加丹房间 |cffff0000 (限团长使用)|h|r", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 18);
+			}
 
 			pPlayer->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, guid);
 			return true;
@@ -683,7 +687,7 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(530, 12582.3f, -6775.1f, 15.1f, 6.2f);
 				break;
-			case 17://鸡儿加单的房间
+			case 18://鸡儿加单的房间
 				if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
 					ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
 					pPlayer->CLOSE_GOSSIP_MENU();
@@ -691,6 +695,15 @@ bool GossipMainMenu(Player *pPlayer, ObjectGuid guid, uint32 sender, const uint3
 				}
 				pPlayer->CLOSE_GOSSIP_MENU();
 				pPlayer->TeleportTo(580, 1693.13f, 546.2f , 33.4f, 6.2f);
+				break;
+			case 17://卡雷苟斯的平台
+				if (!pPlayer->GetGroup() || !(pPlayer->GetGroup() && pPlayer->HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER))) {
+					ChatHandler(pPlayer).PSendSysMessage(u8"|cffff0000[系统消息]:|h|r只有团长才能使用此功能");
+					pPlayer->CLOSE_GOSSIP_MENU();
+					return false;
+				}
+				pPlayer->CLOSE_GOSSIP_MENU();
+				pPlayer->TeleportTo(580, 1704.9f, 971.31f, 53.1f, 4.7f);
 				break;
 			default:
 				break;
